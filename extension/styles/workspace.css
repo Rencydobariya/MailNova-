@@ -1,0 +1,107 @@
+#mailnova-workspace{
+
+    position:fixed;
+
+    top:0;
+
+    right:0;
+
+    width:430px;
+
+    height:100vh;
+
+    background:white;
+
+    z-index:999999999;
+
+    box-shadow:-8px 0 35px rgba(0,0,0,.15);
+
+    display:flex;
+
+    flex-direction:column;
+
+    animation:slideWorkspace .35s ease;
+
+}
+
+@keyframes slideWorkspace{
+
+    from{
+
+        transform:translateX(100%);
+    }
+
+    to{
+
+        transform:translateX(0);
+    }
+
+}
+
+.mailnova-header{
+
+    height:65px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 18px;
+
+    border-bottom:1px solid #eee;
+
+}
+
+.mailnova-logo{
+
+    font-size:20px;
+
+    font-weight:bold;
+
+}
+
+.mailnova-actions{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.mailnova-actions button{
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+}
+
+.mailnova-body{
+
+    flex:1;
+
+    padding:25px;
+
+}
+
+#mailnova-resizer{
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    width:6px;
+
+    height:100%;
+
+    cursor:ew-resize;
+
+}
