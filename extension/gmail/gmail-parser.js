@@ -38,6 +38,7 @@ function getInboxEmails() {
 
         const threadId =
             row.getAttribute("data-legacy-thread-id") || "";
+            console.log("MailNova Thread ID:", threadId);
 
         emails.push({
 

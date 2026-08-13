@@ -42,10 +42,10 @@ function createEmailCard(email) {
         <div class="mailnova-card-actions">
 
             <button
-    class="mn-view"
-    data-id="${email.gmailId}">
+                    class="mn-view"
+                    data-id="${email.id}">
 
-    👁 View
+                    👁 View 
 
 </button>
             <button class="mn-ai">

@@ -11,6 +11,7 @@
             min-width:100px;
 
             max-width:1300px;
+            transition: width 0.4s ease;
 
 
             height: 100vh;

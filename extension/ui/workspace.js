@@ -79,19 +79,46 @@ document.querySelectorAll(".mailnova-chip").forEach(chip => {
 
 });
 
-        document.querySelectorAll(".mn-view").forEach(btn => {
 
-    btn.addEventListener("click", (e) => {
 
-        e.stopPropagation();
 
-        const id = btn.dataset.id;
+workspace.addEventListener("click", (e) => {
 
-        console.log(id);
+    const viewButton = e.target.closest(".mn-view");
 
-    });
+    if (!viewButton) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const emailIndex = Number(viewButton.dataset.id);
+
+    const gmailRows = document.querySelectorAll("tr.zA");
+
+    const gmailRow = gmailRows[emailIndex];
+
+    if (!gmailRow) {
+
+        console.log("Gmail row not found:", emailIndex);
+        return;
+
+    }
+
+    // Shrink MailNova workspace smoothly
+    workspace.style.width = "300px";
+
+    // Open the original Gmail email after animation
+    setTimeout(() => {
+
+        gmailRow.click();
+
+    }, 400);
 
 });
+
+
+
+
            
     // refresh
     document
