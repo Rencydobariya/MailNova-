@@ -22,19 +22,44 @@
     "matches": [
       "https://mail.google.com/*"
     ],
-    "js": [
-    "content.js",
-    "utils/drag.js",
-    "utils/resize.js",
-    "utils/api.js",
-    "ui/workspace.js",
-    "ui/floating-button.js"
+
+
+        "js": [
+      "content.js",
+
+      "utils/drag.js",
+      "utils/resize.js",
+      "utils/api.js",
+      "utils/priority.js",
+      "utils/category-engine.js",
+      "utils/filter.js",
+      
+
+      "gmail/gmail-parser.js",
+
+      "ui/header.js",
+      "ui/search.js",
+      "ui/category-bar.js",
+      "ui/email-card.js",
+      "ui/email-list.js",
+      "ui/settings.js",
+      "ui/notifications.js",
+
+      "ui/workspace.js",
+      "ui/floating-button.js"
     ],
     
-    "css": [
-      "styles/button.css",
-      "styles/workspace.css"
-    ]
+        "css": [
+        "styles/button.css",
+        "styles/workspace.css",
+        "styles/header.css",
+        "styles/search.css",
+        "styles/categories.css",
+        "styles/cards.css",
+        "styles/settings.css",
+        "styles/notifications.css",
+        "styles/animations.css"
+      ]
   }
 ]
 }

@@ -1,22 +1,57 @@
-// Prevent duplicate button
-if (!document.getElementById("mailnova-ai-button")) {
-  const button = document.createElement("div");
-  button.id = "mailnova-ai-button";
+if (!document.getElementById("mailnova-ai-button")) 
+    {
 
-  button.innerHTML = `
+    const button = document.createElement("div");
+    button.id = "mailnova-ai-button";
+
+    button.innerHTML = `
         <div class="mailnova-badge">12</div>
         🤖
     `;
 
-  document.body.appendChild(button);
+    document.body.appendChild(button);
 
 
-  button.addEventListener("click", () => {
+    let isDragging = false;
 
-    createWorkspace();
+    
+    button.addEventListener("mousedown", () => {
 
-});
+        isDragging = false;
 
-  makeDraggable(button);
-  console.log("MailNova Floating Button Loaded 🚀");
+    });
+
+    button.addEventListener("mousemove", () => {
+
+        isDragging = true;
+
+    });
+
+    button.addEventListener("click", () => {
+
+        if (isDragging) {
+
+            isDragging = false;
+            return;
+
+        }
+
+        if (!workspace) {
+
+            createWorkspace();
+
+        }
+
+        else {
+
+            restoreWorkspace();
+
+        }
+
+    });
+
+    makeDraggable(button);
+
+    console.log("MailNova Floating Button Loaded 🚀");
+
 }

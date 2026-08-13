@@ -1,0 +1,71 @@
+.mailnova-categories{
+
+    display:flex;
+
+    gap:8px;
+
+    overflow-x:auto;
+
+    padding:10px 16px;
+
+    scrollbar-width:none;
+
+}
+
+.mailnova-categories::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+.mailnova-chip{
+
+    flex:none;
+
+    padding:9px 16px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:10px;
+
+    background:#FFFFFF;
+
+    color:#4B5563;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    white-space:nowrap;
+
+}
+
+.mailnova-chip:hover{
+
+    background:#F4F7FD;
+
+    border-color:#CBD5E1;
+
+    color:#2563EB;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+
+}
+
+.mailnova-chip.active{
+
+    background:#EEF4FF;
+
+    color:#1D4ED8;
+
+    border-color:#AFC8FF;
+
+    font-weight:600;
+
+}

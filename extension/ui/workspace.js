@@ -1,63 +1,200 @@
+let workspace = null;
+
 function createWorkspace() {
 
-    // Agar pehle se open hai to kuch mat karo
-    if (document.getElementById("mailnova-workspace")) return;
+    if (document.getElementById("mailnova-workspace")) {
+        return;
+    }
 
-    // Workspace
-    const workspace = document.createElement("div");
+    workspace = document.createElement("div");
     workspace.id = "mailnova-workspace";
 
-    workspace.innerHTML = `
+        workspace.innerHTML = `
 
+        ${renderHeader()}
+
+        ${renderSearch()}
+
+        ${renderCategoryBar()}
+
+        ${renderEmailList()}
         <div id="mailnova-resizer"></div>
-
-        <div class="mailnova-header">
-
-            <div class="mailnova-logo">
-                🤖 MailNova AI
-            </div>
-
-            <div class="mailnova-actions">
-
-                <button id="mn-refresh">🔄</button>
-                <button id="mn-settings">⚙️</button>
-                <button id="mn-minimize">➖</button>
-                <button id="mn-close">✖</button>
-
-            </div>
-
-        </div>
-
-        <div class="mailnova-body">
-
-            <h2>Welcome to MailNova 🚀</h2>
-
-            <p>
-
-                AI Email Workspace
-
-            </p>
-
-        </div>
-
-    `;
+        `;
 
     document.body.appendChild(workspace);
+    enableWorkspaceResize(workspace);
+           
+        const emails = getInboxEmails();
+        sortEmailsByPriority(emails);
 
-    // Close Button
+       renderEmails(emails);
+const counts = getCategoryCounts(emails);
 
+const bar = document.getElementById("mailnova-category-bar");
+
+bar.innerHTML = `
+
+                <div class="mailnova-chip active" data-category="All">
+                📥 All (${counts.All}) 
+                </div>
+
+                <div class="mailnova-chip" data-category="Work">
+                💼 Work (${counts.Work})
+                </div>
+
+                <div class="mailnova-chip" data-category="Education">
+                🎓 Education (${counts.Education})
+                </div>
+
+                <div class="mailnova-chip" data-category="Shopping">
+                🛒 Shopping (${counts.Shopping})
+                </div>
+
+                <div class="mailnova-chip" data-category="Banking">
+                💳 Banking (${counts.Banking})
+                </div>
+
+                <div class="mailnova-chip" data-category="Personal">
+                👤 Personal (${counts.Personal})
+                </div>
+
+
+             `;
+document.querySelectorAll(".mailnova-chip").forEach(chip => {
+
+    chip.addEventListener("click", () => {
+
+        document.querySelectorAll(".mailnova-chip")
+            .forEach(c => c.classList.remove("active"));
+
+        chip.classList.add("active");
+
+        const category = chip.dataset.category;
+
+        const filtered = filterEmails(emails, category);
+        sortEmailsByPriority(filtered);
+        renderEmails(filtered);
+
+    });
+
+});
+
+        document.querySelectorAll(".mn-view").forEach(btn => {
+
+    btn.addEventListener("click", (e) => {
+
+        e.stopPropagation();
+
+        const id = btn.dataset.id;
+
+        console.log(id);
+
+    });
+
+});
+           
+    // refresh
+    document
+        .getElementById("mn-refresh")
+        .addEventListener("click", refreshWorkspace);
+
+    // close
+    
     document
         .getElementById("mn-close")
-        .addEventListener("click", () => {
+        .addEventListener("click", closeWorkspace);
 
-            workspace.remove();
+    document
+        .getElementById("mn-width-plus")
+        .addEventListener("click", increaseWidth);
 
-            document.body.classList.remove("mailnova-open");
+    document
+        .getElementById("mn-width-minus")
+        .addEventListener("click", decreaseWidth);
 
-        });
+    
+}
 
-    // Gmail Width Adjust
+function closeWorkspace() {
 
-    document.body.classList.add("mailnova-open");
+    if (workspace) {
 
+        workspace.remove();
+
+        workspace = null;
+
+    }
+
+}
+
+function minimizeWorkspace() {
+
+    if (!workspace) return;
+
+    workspace.style.display = "none";
+
+}
+
+function restoreWorkspace() {
+
+    if (workspace) {
+
+        if (workspace.style.display === "none") {
+
+            workspace.style.display = "flex";
+
+        } else {
+
+            workspace.style.display = "none";
+
+        }
+
+    }
+
+}
+function renderEmails(emailList){
+
+    document.querySelector(".mailnova-email-list").innerHTML =
+        emailList.map(createEmailCard).join("");
+
+}
+function increaseWidth() {
+
+    const width = workspace.offsetWidth;
+
+    if(width < 1300){
+
+        workspace.style.width = (width + 40) + "px";
+
+    }
+
+}
+function decreaseWidth() {
+
+    const width = workspace.offsetWidth;
+
+    if(width > 300){
+
+        workspace.style.width = (width - 40) + "px";
+
+    }
+
+}
+
+function refreshWorkspace() {
+
+    const btn = document.getElementById("mn-refresh");
+
+    btn.style.transform = "rotate(360deg)";
+    btn.style.transition = "0.5s";
+
+    setTimeout(() => {
+        btn.style.transform = "rotate(0deg)";
+    }, 500);
+
+    const emails = getInboxEmails();
+
+    sortEmailsByPriority(emails);
+
+    renderEmails(emails);
 }

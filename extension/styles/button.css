@@ -1,42 +1,33 @@
-#mailnova-ai-button{
+#mailnova-ai-button
+{
 
-    position:fixed;
+            position:fixed;
+            right:30px;
+            bottom:40px;
+            width:70px;
+            height:70px;
 
-    right:30px;
+            border-radius:50%;
+            
+            background:linear-gradient(135deg,#6C63FF,#4F8CFF);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:32px;
+            cursor:pointer;
+            z-index:999999999;
 
-    bottom:40px;
+            color:white;
+            box-shadow:
+            0 12px 35px rgba(79,140,255,.45);
 
-    width:70px;
+            transition:.3s;
 
-    height:70px;
-
-    border-radius:50%;
-
-    background:linear-gradient(135deg,#6C63FF,#4F8CFF);
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    font-size:32px;
-
-    cursor:pointer;
-
-    z-index:999999999;
-
-    color:white;
-
-    box-shadow:
-    0 12px 35px rgba(79,140,255,.45);
-
-    transition:.3s;
-
-    user-select:none;
+            user-select:none;
 }
 
-#mailnova-ai-button:hover{
+#mailnova-ai-button:hover
+{
 
     transform:scale(1.08);
 
@@ -44,26 +35,28 @@
     0 15px 45px rgba(79,140,255,.65);
 }
 
-.mailnova-badge{
+.mailnova-badge
+{
 
-    position:absolute;
+    position :absolute;
 
-    top:-5px;
+    top :-5px;
 
-    right:-3px;
+    right : -3px;
 
-    background:#ff3b30;
 
-    color:white;
+    background : #ff3b30;
+
+    color : white ;
 
     width:24px;
 
     height:24px;
 
+
     border-radius:50%;
 
     display:flex;
-
     justify-content:center;
 
     align-items:center;
@@ -74,3 +67,4 @@
 
     border:2px solid white;
 }
+
