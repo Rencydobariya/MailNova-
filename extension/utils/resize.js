@@ -26,9 +26,9 @@ function enableWorkspaceResize(workspace){
 
         }
 
-        if(width > 1000){
+        if(width > 1300){
 
-            width = 1000;
+            width = 1300;
 
         }
 
