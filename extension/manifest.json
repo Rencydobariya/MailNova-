@@ -61,5 +61,18 @@
         "styles/animations.css"
       ]
   }
+],
+
+"web_accessible_resources": [
+  {
+    "resources": [
+      "assets/icons/mailnova-logo.png"
+      
+    ],
+    "matches": [
+      "https://mail.google.com/*"
+    ]
+  }
 ]
+
 }

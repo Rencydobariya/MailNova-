@@ -13,7 +13,7 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            font-size:32px;
+           
             cursor:pointer;
             z-index:999999999;
 
@@ -24,6 +24,39 @@
             transition:.3s;
 
             user-select:none;
+            overflow: visible;
+            padding: 0;
+            border: none;
+}
+.mailnova-logo-wrapper {
+    width: 70px;
+    height: 70px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.mailnova-logo
+{
+    width: 108%;
+    height: 108%;
+
+    object-fit: cover;
+    object-position: center;
+
+    border-radius: 50%;
+
+    display: block;
+
+    pointer-events: none;
+    flex-shrink: 0;
 }
 
 #mailnova-ai-button:hover
@@ -66,5 +99,6 @@
     font-weight:bold;
 
     border:2px solid white;
+    z-index: 20; 
 }
 

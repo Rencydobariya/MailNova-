@@ -4,10 +4,17 @@ if (!document.getElementById("mailnova-ai-button"))
     const button = document.createElement("div");
     button.id = "mailnova-ai-button";
 
-    button.innerHTML = `
-        <div class="mailnova-badge">12</div>
-        🤖
-    `;
+  button.innerHTML = `
+    <div class="mailnova-logo-wrapper">
+        <img  
+            src="${chrome.runtime.getURL('assets/icons/mailnova-logo.png')}"  
+            class="mailnova-logo" 
+            alt="MailNova"
+        >
+    </div>
+
+    <div class="mailnova-badge">12</div>
+`;
 
     document.body.appendChild(button);
 
