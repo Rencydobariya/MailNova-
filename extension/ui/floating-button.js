@@ -7,7 +7,7 @@ if (!document.getElementById("mailnova-ai-button"))
   button.innerHTML = `
     <div class="mailnova-logo-wrapper">
         <img  
-            src="${chrome.runtime.getURL('assets/icons/mailnova-logo.png')}"  
+            src="${chrome.runtime.getURL('assets/icons/logo_17.png')}"  
             class="mailnova-logo" 
             alt="MailNova"
         >

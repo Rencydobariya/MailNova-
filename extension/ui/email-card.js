@@ -48,7 +48,7 @@ function createEmailCard(email) {
                     👁 View 
 
 </button>
-            <button class="mn-ai">
+            <button class="mn-ai"  data-id="${email.id}">
 
              🤖 Ask AI
 

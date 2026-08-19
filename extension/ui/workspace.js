@@ -80,42 +80,98 @@ document.querySelectorAll(".mailnova-chip").forEach(chip => {
 });
 
 
-
-
 workspace.addEventListener("click", (e) => {
+
+    // =========================
+    // VIEW BUTTON
+    // =========================
 
     const viewButton = e.target.closest(".mn-view");
 
-    if (!viewButton) return;
+    if (viewButton) {
 
-    e.preventDefault();
-    e.stopPropagation();
+        e.preventDefault();
+        e.stopPropagation();
 
-    const emailIndex = Number(viewButton.dataset.id);
+        const emailIndex =
+            Number(viewButton.dataset.id);
 
-    const gmailRows = document.querySelectorAll("tr.zA");
+        const gmailRows =
+            document.querySelectorAll("tr.zA");
 
-    const gmailRow = gmailRows[emailIndex];
+        const gmailRow =
+            gmailRows[emailIndex];
 
-    if (!gmailRow) {
+        if (!gmailRow) {
 
-        console.log("Gmail row not found:", emailIndex);
+            console.log(
+                "Gmail row not found:",
+                emailIndex
+            );
+
+            return;
+        }
+
+        // Shrink MailNova workspace
+        workspace.style.width = "300px";
+
+        // Open Gmail email
+        setTimeout(() => {
+
+            gmailRow.click();
+
+        }, 400);
+
         return;
-
     }
 
-    // Shrink MailNova workspace smoothly
-    workspace.style.width = "300px";
 
-    // Open the original Gmail email after animation
-    setTimeout(() => {
+    // =========================
+    // ASK AI BUTTON
+    // =========================
 
-        gmailRow.click();
+    const askAIButton =
+        e.target.closest(".mn-ai");
 
-    }, 400);
+    if (askAIButton) {
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const emailIndex =
+            Number(askAIButton.dataset.id);
+
+        console.log(
+            "MailNova Ask AI clicked:",
+            emailIndex
+        );
+
+        const email =
+            emails.find(
+                mail => mail.id === emailIndex
+            );
+
+        if (!email) {
+
+            console.log(
+                "MailNova: Email not found",
+                emailIndex
+            );
+
+            return;
+        }
+
+        console.log(
+            "MailNova: Opening Ask AI for:",
+            email
+        );
+
+        openAskAI(email);
+
+        return;
+    }
 
 });
-
 
 
 

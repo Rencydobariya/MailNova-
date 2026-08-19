@@ -10,7 +10,9 @@
   ],
 
   "host_permissions": [
-    "https://mail.google.com/*"
+    "https://mail.google.com/*",
+       "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
   ],
 
   "background": {
@@ -44,7 +46,8 @@
       "ui/email-list.js",
       "ui/settings.js",
       "ui/notifications.js",
-
+       
+      "ui/ask-ai.js",
       "ui/workspace.js",
       "ui/floating-button.js"
     ],
@@ -58,7 +61,8 @@
         "styles/cards.css",
         "styles/settings.css",
         "styles/notifications.css",
-        "styles/animations.css"
+        "styles/animations.css",
+        "styles/ask-ai.css"
       ]
   }
 ],
@@ -66,7 +70,7 @@
 "web_accessible_resources": [
   {
     "resources": [
-      "assets/icons/mailnova-logo.png"
+      "assets/icons/logo_17.png"
       
     ],
     "matches": [
