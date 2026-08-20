@@ -3,7 +3,11 @@ function createEmailCard(email) {
 
   return `
 
-   <div class="mailnova-email-card" data-id="${email.gmailId}">
+  <div 
+    class="mailnova-email-card" 
+    data-id="${email.id}"
+    data-thread-id="${email.threadId || ""}"
+>
 
         <div class="mailnova-card-header">
 

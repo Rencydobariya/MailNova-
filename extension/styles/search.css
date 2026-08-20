@@ -1,0 +1,322 @@
+/* =========================================
+   MAILNOVA SEARCH ROW
+========================================= */
+
+.mailnova-search {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   SEARCH BOX
+   EXISTING SIZE / LOOK PRESERVED
+========================================= */
+
+.mailnova-search-box {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    background: #f5f7fb;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 16px;
+
+    padding: 0 14px;
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+
+.mailnova-search-box:focus-within {
+
+    background: #ffffff;
+
+    border-color: #4f8cff;
+
+    box-shadow:
+        0 0 0 4px rgba(79,140,255,.12);
+}
+
+
+/* Search icon */
+
+.mailnova-search-icon {
+
+    flex: none;
+
+    font-size: 18px;
+
+    margin-right: 11px;
+
+    opacity: .85;
+}
+
+
+/* Search input */
+
+#mailnova-search-input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    font-size: 15px;
+
+    font-family: Inter, sans-serif;
+
+    color: #374151;
+}
+
+
+#mailnova-search-input::placeholder {
+
+    color: #8b8f98;
+}
+
+
+/* Voice button */
+
+#mailnova-voice-btn {
+
+    flex: none;
+
+    width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 17px;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+
+#mailnova-voice-btn:hover {
+
+    background: #eaf1ff;
+
+    transform: scale(1.08);
+}
+
+
+/* =========================================
+   MONTH FILTER
+========================================= */
+.mailnova-month-filter {
+
+    flex: none;
+
+    width: 158px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    position: relative;
+
+    box-sizing: border-box;
+
+    padding: 0 11px;
+
+    gap: 8px;
+
+    background: #f5f7fb;
+
+    border: 1px solid #d9dfeb;
+
+    border-radius: 16px;
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+
+/* Hover */
+
+.mailnova-month-filter:hover {
+
+    background: #f0f4fb;
+
+    border-color: #b9c8e4;
+
+    box-shadow:
+        0 4px 12px rgba(50,70,110,.07);
+}
+
+
+/* Calendar */
+
+.mailnova-month-icon {
+
+    flex: none;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #e9eef8;
+
+    font-size: 15px;
+
+    pointer-events: none;
+}
+
+
+/* Month select */
+
+#mailnova-month-select {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 100%;
+
+    padding: 0 17px 0 0;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #374151;
+
+    font-family: Inter, sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+}
+
+
+/* Custom arrow */
+
+.mailnova-month-arrow {
+
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #64748b;
+
+    font-size: 20px;
+
+    pointer-events: none;
+}
+
+
+/* Focus */
+
+.mailnova-month-filter:focus-within {
+
+    background: #ffffff;
+
+    border-color: #4f8cff;
+
+    box-shadow:
+        0 0 0 4px rgba(79,140,255,.12);
+}
+
+
+/* Dropdown options */
+
+#mailnova-month-select option {
+
+    background: #f5f7fb;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    font-family: Inter, sans-serif;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 650px) {
+
+    .mailnova-search {
+
+        gap: 8px;
+
+        padding: 14px;
+    }
+
+    .mailnova-month-filter {
+
+        width: 125px;
+
+    }
+
+}

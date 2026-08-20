@@ -43,3 +43,48 @@ function enableWorkspaceResize(workspace){
     });
 
 }
+function increaseWidth() {
+
+    if (!workspace) return;
+
+
+    const currentWidth =
+        workspace.offsetWidth;
+
+
+    if (currentWidth >= 1300) {
+        return;
+    }
+
+
+    workspace.style.width =
+        Math.min(
+            currentWidth + 40,
+            1300
+        ) + "px";
+
+}
+
+
+
+function decreaseWidth() {
+
+    if (!workspace) return;
+
+
+    const currentWidth =
+        workspace.offsetWidth;
+
+
+    if (currentWidth <= 300) {
+        return;
+    }
+
+
+    workspace.style.width =
+        Math.max(
+            currentWidth - 40,
+            300
+        ) + "px";
+
+}

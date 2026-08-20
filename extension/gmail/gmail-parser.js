@@ -1,79 +1,72 @@
+async function getInboxEmails() {
 
+    try {
 
-function getInboxEmails() {
+        const data = await fetchGmailEmails();
 
-    const rows = document.querySelectorAll("tr.zA");
+        if (!data.success) {
 
-    const emails = [];
+            console.error(
+                "MailNova: Gmail emails could not be loaded."
+            );
 
-    rows.forEach((row, index) => {
+            return [];
+        }
 
-        if (index >= 100)
-            return;
+        const emails = data.emails.map((email, index) => {
 
-        const sender =
-            row.querySelector(".yP")?.innerText || "";
+            return {
 
-        const subject =
-            row.querySelector(".bog")?.innerText || "";
+                id: email.id,
 
-        const snippet =
-            row.querySelector(".y2")?.innerText
-                .replace("-", "")
-                .trim() || "";
+                threadId: email.threadId || "",
 
-        const date =
-            row.querySelector(".xW span")?.getAttribute("title") ||
-            row.querySelector(".xW")?.innerText ||
-            "";
+                sender: email.sender || "",
 
-        const unread =
-            row.classList.contains("zE");
+                subject: email.subject || "",
 
-        const starred =
-            row.querySelector(".T-KT")?.getAttribute("aria-checked") === "true";
+                snippet: email.snippet || "",
 
-        const important =
-            row.querySelector(".aKz") !== null;
+                date: email.date || "",
 
-        const threadId =
-            row.getAttribute("data-legacy-thread-id") || "";
-            console.log("MailNova Thread ID:", threadId);
+                unread: email.unread || false,
 
-        emails.push({
+                starred: email.starred || false,
 
-            id: index,
+                important: email.important || false,
 
-            threadId,
+                category: detectCategory({
 
-            sender,
+                    sender: email.sender || "",
 
-            subject,
+                    subject: email.subject || "",
 
-            snippet,
+                    snippet: email.snippet || ""
 
-            date,
+                })
 
-            unread,
-
-            starred,
-
-            important,
-
-            category: detectCategory({
-
-            sender,
-
-            subject,
-
-            snippet
-
-                    }),
+            };
 
         });
 
-    });
+        console.log(
+            "MailNova: Gmail API emails loaded:",
+            emails.length
+        );
 
-    return emails;
+        return emails;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MailNova Gmail Parser Error:",
+            error
+        );
+
+        return [];
+
+    }
 
 }

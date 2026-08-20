@@ -1,13 +1,17 @@
-
 function detectCategory(email) {
 
     const text = (
-        email.sender +
+        (email.sender || "") +
         " " +
-        email.subject +
+        (email.subject || "") +
         " " +
-        email.snippet
+        (email.snippet || "")
     ).toLowerCase();
+
+
+    // =========================
+    // SHOPPING
+    // =========================
 
     if (
         text.includes("amazon") ||
@@ -16,6 +20,11 @@ function detectCategory(email) {
     ) {
         return "Shopping";
     }
+
+
+    // =========================
+    // BANKING
+    // =========================
 
     if (
         text.includes("bank") ||
@@ -26,6 +35,11 @@ function detectCategory(email) {
         return "Banking";
     }
 
+
+    // =========================
+    // WORK
+    // =========================
+
     if (
         text.includes("interview") ||
         text.includes("career") ||
@@ -33,6 +47,11 @@ function detectCategory(email) {
     ) {
         return "Work";
     }
+
+
+    // =========================
+    // EDUCATION
+    // =========================
 
     if (
         text.includes("college") ||
@@ -42,32 +61,45 @@ function detectCategory(email) {
         return "Education";
     }
 
+
+    // =========================
+    // DEFAULT
+    // =========================
+
     return "Personal";
-
 }
-function getCategoryCounts(emails){
 
-    const counts={
 
-        All:emails.length,
 
-        Work:0,
+function getCategoryCounts(emails) {
 
-        Education:0,
+    const counts = {
 
-        Shopping:0,
+        All: emails.length,
 
-        Banking:0,
+        Work: 0,
 
-        Personal:0
+        Education: 0,
+
+        Shopping: 0,
+
+        Banking: 0,
+
+        Personal: 0
 
     };
 
-    emails.forEach(email=>{
 
-        counts[email.category]++;
+    emails.forEach(email => {
+
+        if (counts[email.category] !== undefined) {
+
+            counts[email.category]++;
+
+        }
 
     });
+
 
     return counts;
 

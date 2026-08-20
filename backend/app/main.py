@@ -6,6 +6,9 @@ from google import genai
 import os
 
 from backend.app.api.summary import router as summary_router
+from backend.app.api.gmail_routes import router as gmail_router
+from backend.app.api.gmail import router as gmail_emails_router
+
 
 load_dotenv()
 app = FastAPI(title="MailNova AI Backend")
@@ -16,7 +19,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(summary_router)
+app.include_router(gmail_router)
+app.include_router(gmail_emails_router)
 
 
 api_key = os.getenv("GEMINI_API_KEY")
