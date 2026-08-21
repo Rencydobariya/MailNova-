@@ -48,6 +48,7 @@
       "ui/notifications.js",
        
       "ui/ask-ai.js",
+      "ui/reply.js",
       "ui/workspace.js",
       "ui/floating-button.js"
     ],
@@ -62,7 +63,8 @@
         "styles/settings.css",
         "styles/notifications.css",
         "styles/animations.css",
-        "styles/ask-ai.css"
+        "styles/ask-ai.css",
+        "styles/reply.css"
       ]
   }
 ],
@@ -70,7 +72,7 @@
 "web_accessible_resources": [
   {
     "resources": [
-      "assets/icons/logo_17.png"
+      "assets/icons/logo_1.png"
       
     ],
     "matches": [

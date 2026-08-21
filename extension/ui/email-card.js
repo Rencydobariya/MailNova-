@@ -58,10 +58,14 @@ function createEmailCard(email) {
 
             </button>
 
-            <button class="mn-reply">
+          
+<button
+    class="mn-reply"
+    data-id="${email.id}">
 
-                ↩ Reply
-            </button>
+    ↩ Reply
+
+</button>
         </div>
     </div>
     `;

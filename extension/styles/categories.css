@@ -1,71 +1,254 @@
-.mailnova-categories{
+/* =========================================
+   MAILNOVA CATEGORY BAR
+========================================= */
 
-    display:flex;
+.mailnova-categories {
 
-    gap:8px;
+    display: flex;
 
-    overflow-x:auto;
+    gap: 8px;
 
-    padding:10px 16px;
+    overflow-x: auto;
 
-    scrollbar-width:none;
+    padding: 10px 16px;
 
-}
-
-.mailnova-categories::-webkit-scrollbar{
-
-    display:none;
+    scrollbar-width: none;
 
 }
 
-.mailnova-chip{
+.mailnova-categories::-webkit-scrollbar {
 
-    flex:none;
-
-    padding:9px 16px;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:10px;
-
-    background:#FFFFFF;
-
-    color:#4B5563;
-
-    font-size:14px;
-
-    font-weight:500;
-
-    cursor:pointer;
-
-    transition:.25s;
-
-    white-space:nowrap;
+    display: none;
 
 }
 
-.mailnova-chip:hover{
 
-    background:#F4F7FD;
+/* =========================================
+   CATEGORY CHIP
+========================================= */
 
-    border-color:#CBD5E1;
+.mailnova-chip {
 
-    color:#2563EB;
+    flex: none;
 
-    transform:translateY(-2px);
+    padding: 9px 16px;
 
-    box-shadow:0 6px 16px rgba(0,0,0,.08);
+    border: 1px solid #E5E7EB;
+
+    border-radius: 10px;
+
+    background: #FFFFFF;
+
+    color: #4B5563;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+    white-space: nowrap;
 
 }
 
-.mailnova-chip.active{
 
-    background:#EEF4FF;
+.mailnova-chip:hover {
 
-    color:#1D4ED8;
+    background: #F4F7FD;
 
-    border-color:#AFC8FF;
+    border-color: #CBD5E1;
 
-    font-weight:600;
+    color: #2563EB;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 16px rgba(0,0,0,.08);
+
+}
+
+
+.mailnova-chip.active {
+
+    background: #EEF4FF;
+
+    color: #1D4ED8;
+
+    border-color: #AFC8FF;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================
+   MAILNOVA SORT WRAPPER
+========================================= */
+
+.mailnova-sort-wrapper {
+
+    position: relative;
+
+    flex: none;
+
+    margin-left: 2px;
+
+}
+
+
+/* =========================================
+   SORT BUTTON
+   SAME STYLE AS CATEGORY CHIPS
+========================================= */
+
+.mailnova-sort-btn {
+
+    height: 38px;
+
+    padding: 9px 16px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 10px;
+
+    background: #FFFFFF;
+
+    color: #4B5563;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    font-family: Inter, sans-serif;
+
+    display: block;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    transition: .25s;
+
+}
+
+
+.mailnova-sort-btn:hover {
+
+    background: #F4F7FD;
+
+    border-color: #CBD9FF;
+
+    color: #2563EB;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.08);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================
+   SORT DROPDOWN
+========================================= */
+
+.mailnova-sort-menu {
+
+    position: fixed;
+
+    width: 190px;
+
+    padding: 7px;
+
+    background: rgba(255,255,255,.98);
+
+    border: 1px solid #E2E8F0;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 14px 35px rgba(15,23,42,.16);
+
+    backdrop-filter: blur(16px);
+
+    -webkit-backdrop-filter: blur(16px);
+
+    display: none;
+
+    z-index: 2147483647;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================
+   SORT DROPDOWN OPEN
+========================================= */
+
+.mailnova-sort-menu.open {
+
+    display: block;
+
+}
+
+
+/* =========================================
+   SORT OPTION
+========================================= */
+
+.mailnova-sort-option {
+
+    padding: 11px 13px;
+
+    border-radius: 10px;
+
+    color: #4B5563;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    font-family: Inter, sans-serif;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+
+}
+
+
+.mailnova-sort-option:hover {
+
+    background: #EEF4FF;
+
+    color: #2563EB;
+
+}
+
+
+/* =========================================
+   ACTIVE SORT OPTION
+========================================= */
+
+.mailnova-sort-option.active {
+
+    background: #F3F7FF;
+
+    color: #1D4ED8;
+
+    font-weight: 600;
 
 }

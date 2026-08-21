@@ -1,5 +1,8 @@
 from fastapi import APIRouter
 from googleapiclient.discovery import build
+from pydantic import BaseModel
+from email.mime.text import MIMEText
+import base64
 
 from backend.app.api.gmail_auth import get_gmail_credentials
 
@@ -90,4 +93,169 @@ def get_gmail_emails(
         "count": len(emails),
         "next_page_token": results.get("nextPageToken"),
         "emails": emails
+    }
+
+# =========================================
+# GMAIL REPLY
+# =========================================
+
+class GmailReplyRequest(BaseModel):
+
+    thread_id: str
+
+    to: str
+
+    subject: str
+
+    body: str
+
+
+@router.post("/gmail/reply")
+def send_gmail_reply(
+    request: GmailReplyRequest
+):
+
+    service = get_gmail_service()
+
+
+    # -----------------------------------------
+    # Get latest message from the thread
+    # -----------------------------------------
+
+    thread = service.users().threads().get(
+        userId="me",
+        id=request.thread_id,
+        format="metadata",
+        metadataHeaders=[
+            "Message-ID",
+            "References",
+            "Subject",
+            "From",
+            "To"
+        ]
+    ).execute()
+
+
+    messages =  thread.get("messages", [])
+
+
+    if not messages:
+
+        return {
+            "success": False,
+            "message": "Gmail thread not found."
+        }
+
+
+    latest_message =messages[-1]
+
+
+    headers =latest_message.get(
+            "payload",
+            {}
+        ).get(
+            "headers",
+            []
+        )
+
+
+    message_id = ""
+
+    references = ""
+
+
+    for header in headers:
+
+        name = header["name"].lower()
+
+        value = header["value"]
+
+
+        if name == "message-id":
+
+            message_id = value
+
+
+        elif name == "references":
+
+            references = value
+
+
+    # -----------------------------------------
+    # Create Reply Email
+    # -----------------------------------------
+
+    subject = request.subject or ""
+
+
+    if not subject.lower().startswith("re:"):
+
+        subject = "Re: " + subject
+
+
+    message = MIMEText(
+        request.body,
+        "plain",
+        "utf-8"
+    )
+
+
+    message["To"] = request.to
+
+    message["Subject"] = subject
+
+
+    if message_id:
+
+        message["In-Reply-To"] = message_id
+
+
+        if references:
+
+            message["References"] = (
+                references +
+                " " +
+                message_id
+            )
+
+        else:
+
+            message["References"] = message_id
+
+
+    # -----------------------------------------
+    # Encode Gmail Message
+    # -----------------------------------------
+
+    raw_message = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode()
+
+
+    # -----------------------------------------
+    # Send Reply
+    # -----------------------------------------
+
+    sent_message =service.users().messages().send(
+            userId="me",
+            body={
+                "raw": raw_message,
+                "threadId": request.thread_id
+            }
+        ).execute()
+
+
+    return {
+
+        "success": True,
+
+        "message":
+            "Reply sent successfully.",
+
+        "message_id":
+            sent_message.get("id"),
+
+        "thread_id":
+            sent_message.get("threadId")
+
     }

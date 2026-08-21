@@ -37,8 +37,17 @@ def get_gmail_credentials():
             SCOPES
         )
 
-    if creds and creds.valid:
-        return creds
+    if (
+    creds
+    and creds.valid
+    and creds.scopes
+    and set(SCOPES).issubset(
+        set(creds.scopes)
+    )
+): return creds
+
+
+
 
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())

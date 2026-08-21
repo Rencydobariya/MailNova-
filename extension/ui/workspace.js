@@ -13,9 +13,11 @@ async function createWorkspace() {
         return;
     }
 
+
     workspace = document.createElement("div");
 
     workspace.id = "mailnova-workspace";
+
 
     workspace.innerHTML = `
 
@@ -31,49 +33,77 @@ async function createWorkspace() {
 
     `;
 
+
     document.body.appendChild(workspace);
+
 
     enableWorkspaceResize(workspace);
 
 
     /* =========================================
-   HEADER CONTROLS
-========================================= */
+       HEADER CONTROLS
+    ========================================= */
 
-document
-    .getElementById("mn-refresh")
-    .addEventListener(
-        "click",
-        refreshWorkspace
-    );
+    const refreshButton =
+        document.getElementById("mn-refresh");
 
-document
-    .getElementById("mn-close")
-    .addEventListener(
-        "click",
-        closeWorkspace
-    );
+    const closeButton =
+        document.getElementById("mn-close");
 
-document
-    .getElementById("mn-width-plus")
-    .addEventListener(
-        "click",
-        increaseWidth
-    );
+    const widthPlusButton =
+        document.getElementById("mn-width-plus");
 
-document
-    .getElementById("mn-width-minus")
-    .addEventListener(
-        "click",
-        decreaseWidth
-    );
+    const widthMinusButton =
+        document.getElementById("mn-width-minus");
+
+
+    if (refreshButton) {
+
+        refreshButton.addEventListener(
+            "click",
+            refreshWorkspace
+        );
+
+    }
+
+
+    if (closeButton) {
+
+        closeButton.addEventListener(
+            "click",
+            closeWorkspace
+        );
+
+    }
+
+
+    if (widthPlusButton) {
+
+        widthPlusButton.addEventListener(
+            "click",
+            increaseWidth
+        );
+
+    }
+
+
+    if (widthMinusButton) {
+
+        widthMinusButton.addEventListener(
+            "click",
+            decreaseWidth
+        );
+
+    }
 
 
     /* =========================================
        LOAD GMAIL API EMAILS
     ========================================= */
 
-    const result = await fetchGmailEmails();
+    const result =
+        await fetchGmailEmails();
+
 
     if (!result.success) {
 
@@ -82,31 +112,42 @@ document
         );
 
         return;
+
     }
 
-mailnovaEmails = (result.emails || []).map((email, index) => {
 
-    return {
+    /* =========================================
+       BUILD EMAIL DATA
+    ========================================= */
 
-        ...email,
+    mailnovaEmails =
+        (result.emails || []).map(
+            (email, index) => {
 
-        // MailNova UI ke liye local ID
-        uiId: index,
+                return {
 
-        // Email ko category assign karo
-        category: detectCategory({
+                    ...email,
 
-            sender: email.sender || "",
+                    uiId: index,
 
-            subject: email.subject || "",
+                    category:
+                        detectCategory({
 
-            snippet: email.snippet || ""
+                            sender:
+                                email.sender || "",
 
-        })
+                            subject:
+                                email.subject || "",
 
-    };
+                            snippet:
+                                email.snippet || ""
 
-});
+                        })
+
+                };
+
+            }
+        );
 
 
     console.log(
@@ -119,24 +160,83 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
        INITIAL SORT
     ========================================= */
 
-    sortEmailsByPriority(mailnovaEmails);
-
-
-    renderEmails(mailnovaEmails);
+    sortEmailsByPriority(
+        mailnovaEmails
+    );
 
 
     /* =========================================
-       CATEGORY COUNTS
+       RENDER EMAILS
     ========================================= */
 
-    const counts =
-        getCategoryCounts(mailnovaEmails);
+    renderEmails(
+        mailnovaEmails
+    );
 
+
+    /* =========================================
+       CATEGORY BAR
+    ========================================= */
+
+    updateCategoryBarWithSort(
+        mailnovaEmails
+    );
+
+
+    /* =========================================
+       CATEGORY FILTER
+    ========================================= */
+
+    setupCategoryFilter();
+
+
+    /* =========================================
+       SEARCH
+    ========================================= */
+
+    setupEmailSearch();
+
+
+    /* =========================================
+       MONTH FILTER
+    ========================================= */
+
+    setupMonthFilter();
+
+
+    /* =========================================
+       SORT
+    ========================================= */
+
+    setupSortMenu();
+
+
+    /* =========================================
+       ASK AI + VIEW BUTTONS
+    ========================================= */
+
+    setupEmailActions();
+
+}
+
+
+/* =========================================
+   CATEGORY BAR + SORT
+========================================= */
+
+function updateCategoryBarWithSort(emails) {
 
     const bar =
         document.getElementById(
             "mailnova-category-bar"
         );
+
+
+    if (!bar) return;
+
+
+    const counts =
+        getCategoryCounts(emails);
 
 
     bar.innerHTML = `
@@ -149,6 +249,7 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
 
         </div>
 
+
         <div
             class="mailnova-chip"
             data-category="Work">
@@ -156,6 +257,7 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
             💼 Work (${counts.Work})
 
         </div>
+
 
         <div
             class="mailnova-chip"
@@ -165,6 +267,7 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
 
         </div>
 
+
         <div
             class="mailnova-chip"
             data-category="Shopping">
@@ -172,6 +275,7 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
             🛒 Shopping (${counts.Shopping})
 
         </div>
+
 
         <div
             class="mailnova-chip"
@@ -181,6 +285,7 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
 
         </div>
 
+
         <div
             class="mailnova-chip"
             data-category="Personal">
@@ -189,14 +294,92 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
 
         </div>
 
+
+        <div class="mailnova-sort-wrapper">
+
+            <button
+                id="mailnova-sort-btn"
+                class="mailnova-sort-btn"
+                type="button">
+
+                ↕ Sort
+
+            </button>
+
+
+            <div
+                id="mailnova-sort-menu"
+                class="mailnova-sort-menu">
+
+                <div
+                    class="mailnova-sort-option active"
+                    data-sort="priority">
+
+                    ⭐ Priority
+
+                </div>
+
+
+                <div
+                    class="mailnova-sort-option"
+                    data-sort="newest">
+
+                    🕐 Newest
+
+                </div>
+
+
+                <div
+                    class="mailnova-sort-option"
+                    data-sort="oldest">
+
+                    🕐 Oldest
+
+                </div>
+
+
+                <div
+                    class="mailnova-sort-option"
+                    data-sort="az">
+
+                    🔤 Sender A–Z
+
+                </div>
+
+
+                <div
+                    class="mailnova-sort-option"
+                    data-sort="za">
+
+                    🔤 Sender Z–A
+
+                </div>
+
+            </div>
+
+        </div>
+
     `;
 
+}
 
-    /* =========================================
-       CATEGORY FILTER
-    ========================================= */
 
-    document
+/* =========================================
+   CATEGORY FILTER
+========================================= */
+
+function setupCategoryFilter() {
+
+    const bar =
+        document.getElementById(
+            "mailnova-category-bar"
+        );
+
+
+    if (!bar) return;
+
+
+    bar
         .querySelectorAll(".mailnova-chip")
         .forEach(chip => {
 
@@ -204,18 +387,22 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
                 "click",
                 () => {
 
-                    document
+                    bar
                         .querySelectorAll(
                             ".mailnova-chip"
                         )
-                        .forEach(c =>
+                        .forEach(c => {
+
                             c.classList.remove(
                                 "active"
-                            )
-                        );
+                            );
+
+                        });
 
 
-                    chip.classList.add("active");
+                    chip.classList.add(
+                        "active"
+                    );
 
 
                     const category =
@@ -234,50 +421,343 @@ mailnovaEmails = (result.emails || []).map((email, index) => {
                     );
 
 
-                    renderEmails(filtered);
+                    renderEmails(
+                        filtered
+                    );
 
                 }
             );
 
         });
 
-setupEmailSearch();
-setupMonthFilter();
+}
+
+
+/* =========================================
+   SORT MENU
+========================================= */
+
+function setupSortMenu() {
+
+    const sortButton =
+        document.getElementById(
+            "mailnova-sort-btn"
+        );
+
+
+    const sortMenu =
+        document.getElementById(
+            "mailnova-sort-menu"
+        );
+
+
+    if (
+        !sortButton ||
+        !sortMenu
+    ) {
+
+        console.log(
+            "MailNova: Sort menu not found."
+        );
+
+        return;
+
+    }
+    document.body.appendChild(sortMenu);
+
+console.log(
+    "MailNova: Sort button found",
+    sortButton
+);
+
+console.log(
+    "MailNova: Sort menu found",
+    sortMenu
+);
 
 
     /* =========================================
-       ASK AI + VIEW BUTTONS
+       OPEN / CLOSE SORT MENU
     ========================================= */
+
+    sortButton.addEventListener(
+        "click",
+        (e) => {
+            
+            console.log(
+    "MailNova: SORT BUTTON CLICKED"
+);
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+
+            const isOpen =
+                sortMenu.classList.contains(
+                    "open"
+                );
+
+
+            if (isOpen) {
+
+                sortMenu.classList.remove(
+                    "open"
+                );
+
+                return;
+
+            }
+
+
+            /*
+               Fixed dropdown ko Sort button
+               ke exact neeche position karo.
+            */
+
+            const rect =
+                sortButton.getBoundingClientRect();
+
+
+            sortMenu.style.top =
+                (rect.bottom + 8) + "px";
+
+
+            sortMenu.style.left =
+                (rect.right - 190) + "px";
+
+
+            sortMenu.classList.add(
+                "open"
+            );
+
+            console.log(
+    "SORT OPEN CLASS:",
+    sortMenu.classList.contains("open")
+);
+
+console.log(
+    "SORT DISPLAY:",
+    getComputedStyle(sortMenu).display
+);
+ 
+        }
+        
+
+
+        
+    );
+
+
+    /* =========================================
+       SORT OPTIONS
+    ========================================= */
+
+    sortMenu
+        .querySelectorAll(
+            ".mailnova-sort-option"
+        )
+        .forEach(option => {
+
+            option.addEventListener(
+                "click",
+                (e) => {
+
+                    e.preventDefault();
+
+                    e.stopPropagation();
+
+
+                    const sortType =
+                        option.dataset.sort;
+
+
+                    sortMenu
+                        .querySelectorAll(
+                            ".mailnova-sort-option"
+                        )
+                        .forEach(item => {
+
+                            item.classList.remove(
+                                "active"
+                            );
+
+                        });
+
+
+                    option.classList.add(
+                        "active"
+                    );
+
+
+                    sortMenu.classList.remove(
+                        "open"
+                    );
+
+
+                    applyMailnovaSort(
+                        sortType
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =========================================
+       CLOSE WHEN CLICKING OUTSIDE
+    ========================================= */
+
+    document.addEventListener(
+        "click",
+        (e) => {
+
+            if (
+                !sortMenu.contains(e.target) &&
+                e.target !== sortButton
+            ) {
+
+                sortMenu.classList.remove(
+                    "open"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   EMAIL ACTIONS
+========================================= */
+
+function setupEmailActions() {
+
+    if (!workspace) return;
+
 
     workspace.addEventListener(
         "click",
         (e) => {
 
 
-/* =========================
-    VIEW BUTTON
+            /* =========================
+               VIEW BUTTON
+            ========================= */
+
+            const viewButton =
+                e.target.closest(".mn-view");
+
+
+            if (viewButton) {
+
+                e.preventDefault();
+
+                e.stopPropagation();
+
+
+                const emailId =
+                    viewButton.dataset.id;
+
+
+                const email =
+                    mailnovaEmails.find(
+                        mail =>
+                            mail.id === emailId
+                    );
+
+
+                if (!email) {
+
+                    console.log(
+                        "MailNova: Email not found",
+                        emailId
+                    );
+
+                    return;
+
+                }
+
+
+                const threadId =
+                    email.threadId;
+
+
+                if (!threadId) {
+
+                    console.log(
+                        "MailNova: Thread ID not found",
+                        email
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "MailNova: Opening Gmail thread:",
+                    threadId
+                );
+
+
+                /*
+                   Gmail workspace ko refresh kiye bina
+                   exact thread open karega.
+                */
+
+                if (workspace) {
+
+                    workspace.style.width =
+                        "400px";
+
+                }
+
+
+                setTimeout(
+                    () => {
+
+                        window.location.hash =
+                            `all/${threadId}`;
+
+                    },
+                    150
+                );
+
+
+                return;
+
+            }
+
+
+
+            /* =========================
+   REPLY BUTTON
 ========================= */
 
-const viewButton =
-    e.target.closest(".mn-view");
+const replyButton =
+    e.target.closest(".mn-reply");
 
-if (viewButton) {
+if (replyButton) {
 
     e.preventDefault();
     e.stopPropagation();
 
     const emailId =
-        viewButton.dataset.id;
+        replyButton.dataset.id;
 
     const email =
         mailnovaEmails.find(
-            mail => mail.id === emailId
+            mail => String(mail.id) === String(emailId)
         );
 
     if (!email) {
 
         console.log(
-            "MailNova: Email not found",
+            "MailNova: Reply email not found",
             emailId
         );
 
@@ -285,40 +765,17 @@ if (viewButton) {
 
     }
 
-    const threadId =
-        email.threadId;
-
-    if (!threadId) {
-
-        console.log(
-            "MailNova: Thread ID not found",
-            email
-        );
-
-        return;
-
-    }
-
     console.log(
-        "MailNova: Opening Gmail thread:",
-        threadId
+        "MailNova: Opening Reply Composer:",
+        email
     );
 
-    /*
-       Open the exact Gmail thread
-       using Gmail's thread ID.
-    */
+    openReplyComposer(email);
 
-   workspace.style.width = "400px";
-
-setTimeout(() => {
-
-    window.location.hash =
-        `all/${threadId}`;
-
-}, 150);
+    return;
 
 }
+
 
 
             /* =========================
@@ -365,7 +822,9 @@ setTimeout(() => {
                 );
 
 
-                openAskAI(email);
+                openAskAI(
+                    email
+                );
 
 
                 return;
@@ -374,50 +833,6 @@ setTimeout(() => {
 
         }
     );
-
-
-    /* =========================================
-       REFRESH
-    ========================================= */
-
-    document
-        .getElementById("mn-refresh")
-        .addEventListener(
-            "click",
-            refreshWorkspace
-        );
-
-
-    /* =========================================
-       CLOSE
-    ========================================= */
-
-    document
-        .getElementById("mn-close")
-        .addEventListener(
-            "click",
-            closeWorkspace
-        );
-
-
-    /* =========================================
-       WIDTH CONTROLS
-    ========================================= */
-
-    document
-        .getElementById("mn-width-plus")
-        .addEventListener(
-            "click",
-            increaseWidth
-        );
-
-
-    document
-        .getElementById("mn-width-minus")
-        .addEventListener(
-            "click",
-            decreaseWidth
-        );
 
 }
 
@@ -447,7 +862,9 @@ function minimizeWorkspace() {
 
     if (!workspace) return;
 
-    workspace.style.display = "none";
+
+    workspace.style.display =
+        "none";
 
 }
 
@@ -461,19 +878,101 @@ function restoreWorkspace() {
     if (!workspace) return;
 
 
-    if (workspace.style.display === "none") {
+    if (
+        workspace.style.display ===
+        "none"
+    ) {
 
-        workspace.style.display = "flex";
+        workspace.style.display =
+            "flex";
 
     }
 
     else {
 
-        workspace.style.display = "none";
+        workspace.style.display =
+            "none";
 
     }
 
 }
+
+
+/* =========================================
+   INCREASE WIDTH
+========================================= */
+
+function increaseWidth() {
+
+    if (!workspace) return;
+
+
+    const currentWidth =
+        workspace.offsetWidth;
+
+
+    const newWidth =
+        Math.min(
+            currentWidth + 50,
+            1300
+        );
+
+
+    workspace.style.width =
+        newWidth + "px";
+
+}
+
+
+/* =========================================
+   DECREASE WIDTH
+========================================= */
+
+function decreaseWidth() {
+
+    if (!workspace) return;
+
+
+    const currentWidth =
+        workspace.offsetWidth;
+
+
+    const newWidth =
+        Math.max(
+            currentWidth - 50,
+            300
+        );
+
+
+    workspace.style.width =
+        newWidth + "px";
+
+}
+
+
+/* =========================================
+   RENDER EMAILS
+========================================= */
+
+function renderEmails(emailList) {
+
+    const container =
+        document.querySelector(
+            ".mailnova-email-list"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML =
+        emailList
+            .map(createEmailCard)
+            .join("");
+
+}
+
+
 /* =========================================
    REFRESH WORKSPACE
 ========================================= */
@@ -481,29 +980,40 @@ function restoreWorkspace() {
 async function refreshWorkspace() {
 
     const button =
-        document.getElementById("mn-refresh");
+        document.getElementById(
+            "mn-refresh"
+        );
+
 
     if (!button) return;
 
 
-    /* Refresh animation */
+    /* =========================================
+       REFRESH ANIMATION
+    ========================================= */
 
     button.style.transition =
         "transform .5s ease";
+
 
     button.style.transform =
         "rotate(360deg)";
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        button.style.transform =
-            "rotate(0deg)";
+            button.style.transform =
+                "rotate(0deg)";
 
-    }, 500);
+        },
+        500
+    );
 
 
-    /* Fetch latest Gmail emails */
+    /* =========================================
+       FETCH LATEST EMAILS
+    ========================================= */
 
     const result =
         await fetchGmailEmails();
@@ -520,7 +1030,9 @@ async function refreshWorkspace() {
     }
 
 
-    /* Rebuild email data */
+    /* =========================================
+       REBUILD EMAIL DATA
+    ========================================= */
 
     mailnovaEmails =
         (result.emails || []).map(
@@ -555,169 +1067,222 @@ async function refreshWorkspace() {
         );
 
 
-    /* Sort */
+    /* =========================================
+       SORT
+    ========================================= */
 
     sortEmailsByPriority(
         mailnovaEmails
     );
 
 
-    /* Render */
+    /* =========================================
+       PRESERVE SEARCH
+    ========================================= */
 
-  const searchInput =
-    document.getElementById(
-        "mailnova-search-input"
-    );
-
-const searchQuery =
-    searchInput
-        ? searchInput.value.trim()
-        : "";
+    const searchInput =
+        document.getElementById(
+            "mailnova-search-input"
+        );
 
 
-if (searchQuery) {
-
-    performEmailSearch(
-        searchQuery
-    );
-
-} else {
-
-    renderEmails(
-        mailnovaEmails
-    );
-
-}
+    const searchQuery =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
 
 
-    /* Update category counts */
+    if (searchQuery) {
 
-    const counts =
-        getCategoryCounts(
+        performEmailSearch(
+            searchQuery
+        );
+
+    }
+
+    else {
+
+        renderEmails(
             mailnovaEmails
         );
 
-
-    const bar =
-        document.getElementById(
-            "mailnova-category-bar"
-        );
+    }
 
 
-    if (!bar) return;
+    /* =========================================
+       REBUILD CATEGORY BAR
+    ========================================= */
+
+    updateCategoryBarWithSort(
+        mailnovaEmails
+    );
 
 
-    bar.innerHTML = `
+    /* =========================================
+       RECONNECT CATEGORY
+       AND SORT CONTROLS
+    ========================================= */
 
-        <div
-            class="mailnova-chip active"
-            data-category="All">
+    setupCategoryFilter();
 
-            📥 All (${counts.All})
-
-        </div>
-
-        <div
-            class="mailnova-chip"
-            data-category="Work">
-
-            💼 Work (${counts.Work})
-
-        </div>
-
-        <div
-            class="mailnova-chip"
-            data-category="Education">
-
-            🎓 Education (${counts.Education})
-
-        </div>
-
-        <div
-            class="mailnova-chip"
-            data-category="Shopping">
-
-            🛒 Shopping (${counts.Shopping})
-
-        </div>
-
-        <div
-            class="mailnova-chip"
-            data-category="Banking">
-
-            💳 Banking (${counts.Banking})
-
-        </div>
-
-        <div
-            class="mailnova-chip"
-            data-category="Personal">
-
-            👤 Personal (${counts.Personal})
-
-        </div>
-
-    `;
-
-
-    /* Reconnect category buttons */
-
-    document
-        .querySelectorAll(
-            ".mailnova-chip"
-        )
-        .forEach(chip => {
-
-            chip.addEventListener(
-                "click",
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            ".mailnova-chip"
-                        )
-                        .forEach(c =>
-                            c.classList.remove(
-                                "active"
-                            )
-                        );
-
-
-                    chip.classList.add(
-                        "active"
-                    );
-
-
-                    const category =
-                        chip.dataset.category;
-
-
-                    const filtered =
-                        filterEmails(
-                            mailnovaEmails,
-                            category
-                        );
-
-
-                    sortEmailsByPriority(
-                        filtered
-                    );
-
-
-                    renderEmails(
-                        filtered
-                    );
-
-                }
-            );
-
-        });
+    setupSortMenu();
 
 
     console.log(
         "MailNova: Workspace refreshed:",
         mailnovaEmails.length,
         "emails"
+    );
+
+}
+
+
+/* =========================================
+   MAILNOVA SORT FUNCTION
+========================================= */
+
+function applyMailnovaSort(sortType) {
+
+    if (!mailnovaEmails.length) {
+
+        return;
+
+    }
+
+
+    let sortedEmails =
+        [...mailnovaEmails];
+
+
+    /* =========================================
+       PRIORITY
+    ========================================= */
+
+    if (sortType === "priority") {
+
+        sortEmailsByPriority(
+            sortedEmails
+        );
+
+    }
+
+
+    /* =========================================
+       NEWEST
+    ========================================= */
+
+    else if (sortType === "newest") {
+
+        sortedEmails.sort(
+            (a, b) => {
+
+                const dateA =
+                    new Date(
+                        a.date
+                    ).getTime();
+
+
+                const dateB =
+                    new Date(
+                        b.date
+                    ).getTime();
+
+
+                return dateB - dateA;
+
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       OLDEST
+    ========================================= */
+
+    else if (sortType === "oldest") {
+
+        sortedEmails.sort(
+            (a, b) => {
+
+                const dateA =
+                    new Date(
+                        a.date
+                    ).getTime();
+
+
+                const dateB =
+                    new Date(
+                        b.date
+                    ).getTime();
+
+
+                return dateA - dateB;
+
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       SENDER A-Z
+    ========================================= */
+
+    else if (sortType === "az") {
+
+        sortedEmails.sort(
+            (a, b) => {
+
+                return (
+
+                    (a.sender || "")
+                        .toLowerCase()
+                        .localeCompare(
+
+                            (b.sender || "")
+                                .toLowerCase()
+
+                        )
+
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       SENDER Z-A
+    ========================================= */
+
+    else if (sortType === "za") {
+
+        sortedEmails.sort(
+            (a, b) => {
+
+                return (
+
+                    (b.sender || "")
+                        .toLowerCase()
+                        .localeCompare(
+
+                            (a.sender || "")
+                                .toLowerCase()
+
+                        )
+
+                );
+
+            }
+        );
+
+    }
+
+
+    renderEmails(
+        sortedEmails
     );
 
 }
