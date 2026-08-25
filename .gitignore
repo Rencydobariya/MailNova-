@@ -1,16 +1,28 @@
 # Environment variables
 backend/.env
+.env
+
+# Gmail authentication token
+token.json
+
+# Google API credentials
+credentials.json
 
 # Python virtual environment
 backend/.venv/
+.venv/
 
 # Python cache
 __pycache__/
+*/__pycache__/
 *.py[cod]
 
-# IDE
+# IDE files
 .vscode/
 
 # OS files
 .DS_Store
 Thumbs.db
+
+# Node.js dependencies (if used)
+node_modules/
