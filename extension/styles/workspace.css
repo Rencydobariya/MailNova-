@@ -365,24 +365,178 @@
 
 }
 
- @keyframes mailnovaSlide
- {
 
-        from
-        {
+ /* =========================================
+   MAILNOVA SORT WRAPPER
+========================================= */
 
-                transform:translateX(100%);
-                opacity:0;
+.mailnova-sort-wrapper {
 
-        }
+    position: relative;
 
-        to
-        {
+    flex: none;
 
-                transform:translateX(0);
-                opacity:1;
+    z-index: 1000;
 
-        }
+}
 
-} 
- 
+
+/* =========================================
+   SORT BUTTON
+========================================= */
+
+.mailnova-sort-btn {
+
+    height: 38px;
+
+    padding: 8px 16px;
+
+    border: 1px solid #ECECEC;
+
+    border-radius: 30px;
+
+    background: #FFFFFF;
+
+    color: #555555;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    font-family: Inter, sans-serif;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.mailnova-sort-btn:hover {
+
+    background: #EEF4FF;
+
+    color: #2B5BD7;
+
+    border-color: #C9D9FF;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================
+   SORT MENU
+========================================= */
+
+.mailnova-sort-menu {
+
+    position: fixed !important;
+
+    display: none;
+
+    visibility: hidden;
+
+    opacity: 0;
+
+    width: 190px;
+
+    padding: 7px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E2E8F0;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 14px 35px rgba(15,23,42,.18);
+
+    box-sizing: border-box;
+
+    z-index: 2147483647 !important;
+
+}
+
+
+/* =========================================
+   OPEN MENU
+========================================= */
+
+.mailnova-sort-menu.open {
+
+    display: block !important;
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+}
+
+
+/* =========================================
+   SORT OPTION
+========================================= */
+
+.mailnova-sort-option {
+
+    padding: 11px 13px;
+
+    border-radius: 9px;
+
+    color: #4B5563;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    font-family: Inter, sans-serif;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+
+}
+
+
+.mailnova-sort-option:hover {
+
+    background: #EEF4FF;
+
+    color: #2563EB;
+
+}
+
+
+/* =========================================
+   ACTIVE SORT OPTION
+========================================= */
+
+.mailnova-sort-option.active {
+
+    background: #F3F7FF;
+
+    color: #1D4ED8;
+
+    font-weight: 600;
+
+}

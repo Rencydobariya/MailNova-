@@ -1,6 +1,21 @@
+/* =========================================
+   MAILNOVA WORKSPACE STATE
+========================================= */
+
 let workspace = null;
 
 let mailnovaEmails = [];
+
+let mailnovaFilterState = {
+    search: "",
+    month: "all",
+    category: "All",
+    sort: "priority"
+};
+
+let mailnovaSyncPromise = null;
+
+const MAILNOVA_SYNC_INTERVAL = 30000;
 
 
 /* =========================================
@@ -9,14 +24,50 @@ let mailnovaEmails = [];
 
 async function createWorkspace() {
 
-    if (document.getElementById("mailnova-workspace")) {
+    /* =====================================
+       PREVENT DUPLICATE WORKSPACE
+    ===================================== */
+
+    const existingWorkspace =
+        document.getElementById(
+            "mailnova-workspace"
+        );
+
+    if (existingWorkspace) {
+
+        workspace =
+            existingWorkspace;
+
         return;
+
     }
 
 
-    workspace = document.createElement("div");
+    /* =====================================
+       REMOVE OLD SORT MENU IF ANY
+    ===================================== */
 
-    workspace.id = "mailnova-workspace";
+    const oldSortMenu =
+        document.getElementById(
+            "mailnova-sort-menu"
+        );
+
+    if (oldSortMenu) {
+        oldSortMenu.remove();
+    }
+
+
+    /* =====================================
+       CREATE WORKSPACE
+    ===================================== */
+
+    workspace =
+        document.createElement(
+            "div"
+        );
+
+    workspace.id =
+        "mailnova-workspace";
 
 
     workspace.innerHTML = `
@@ -34,27 +85,39 @@ async function createWorkspace() {
     `;
 
 
-    document.body.appendChild(workspace);
+    document.body.appendChild(
+        workspace
+    );
 
 
-    enableWorkspaceResize(workspace);
+    enableWorkspaceResize(
+        workspace
+    );
 
 
-    /* =========================================
+    /* =====================================
        HEADER CONTROLS
-    ========================================= */
+    ===================================== */
 
     const refreshButton =
-        document.getElementById("mn-refresh");
+        document.getElementById(
+            "mn-refresh"
+        );
 
     const closeButton =
-        document.getElementById("mn-close");
+        document.getElementById(
+            "mn-close"
+        );
 
     const widthPlusButton =
-        document.getElementById("mn-width-plus");
+        document.getElementById(
+            "mn-width-plus"
+        );
 
     const widthMinusButton =
-        document.getElementById("mn-width-minus");
+        document.getElementById(
+            "mn-width-minus"
+        );
 
 
     if (refreshButton) {
@@ -97,15 +160,152 @@ async function createWorkspace() {
     }
 
 
-    /* =========================================
-       LOAD GMAIL API EMAILS
-    ========================================= */
+    /* =====================================
+       SETUP NORMAL CONTROLS
+    ===================================== */
+
+    setupCategoryFilter();
+
+    setupEmailSearch();
+
+    setupMonthFilter();
+
+    setupEmailActions();
+
+
+    /* =====================================
+       SORT SYSTEM
+       
+       IMPORTANT:
+       Sort button is created by
+       updateCategoryBarWithSort().
+       
+       Therefore sort listener is attached
+       after the first category render.
+    ===================================== */
+
+
+    /* =====================================
+       LOAD CACHE
+    ===================================== */
+
+    const cache =
+        await loadMailnovaEmailCache();
+
+
+    if (
+        cache &&
+        Array.isArray(cache.emails) &&
+        cache.emails.length > 0
+    ) {
+
+        console.log(
+            "MailNova: Persistent cache loaded:",
+            cache.emails.length
+        );
+
+
+        mailnovaEmails =
+            cache.emails.map(
+                (email, index) => {
+
+                    return {
+
+                        ...email,
+
+                        uiId:
+                            index,
+
+                        category:
+                            email.category ||
+                            detectCategory({
+
+                                sender:
+                                    email.sender ||
+                                    "",
+
+                                subject:
+                                    email.subject ||
+                                    "",
+
+                                snippet:
+                                    email.snippet ||
+                                    ""
+
+                            })
+
+                    };
+
+                }
+            );
+
+
+        /* =================================
+           SHOW CACHE IMMEDIATELY
+        ================================= */
+
+        applyAllMailnovaFilters();
+
+
+        /* =================================
+           RESTORE SEARCH
+        ================================= */
+
+        const searchInput =
+            document.getElementById(
+                "mailnova-search-input"
+            );
+
+
+        if (searchInput) {
+
+            searchInput.value =
+                mailnovaFilterState.search ||
+                "";
+
+        }
+
+
+        /* =================================
+           BACKGROUND SYNC
+        ================================= */
+
+        if (
+            Date.now() -
+            cache.timestamp >
+            MAILNOVA_SYNC_INTERVAL
+        ) {
+
+            syncMailnovaInBackground();
+
+        }
+
+
+        return;
+
+    }
+
+
+    /* =====================================
+       FIRST LOAD
+    ===================================== */
+
+    console.log(
+        "MailNova: First load - fetching Gmail..."
+    );
+
 
     const result =
-        await fetchGmailEmails();
+        await fetchGmailEmails(
+            null,
+            100
+        );
 
 
-    if (!result.success) {
+    if (
+        !result ||
+        !result.success
+    ) {
 
         console.error(
             "MailNova: Gmail emails could not be loaded."
@@ -116,106 +316,747 @@ async function createWorkspace() {
     }
 
 
-    /* =========================================
-       BUILD EMAIL DATA
-    ========================================= */
+    /* =====================================
+       BUILD FIRST PAGE
+    ===================================== */
 
     mailnovaEmails =
-        (result.emails || []).map(
-            (email, index) => {
-
-                return {
-
-                    ...email,
-
-                    uiId: index,
-
-                    category:
-                        detectCategory({
-
-                            sender:
-                                email.sender || "",
-
-                            subject:
-                                email.subject || "",
-
-                            snippet:
-                                email.snippet || ""
-
-                        })
-
-                };
-
-            }
+        buildMailnovaEmailData(
+            result.emails || []
         );
 
 
-    console.log(
-        "MailNova Gmail API emails:",
-        mailnovaEmails.length
-    );
+    /* =====================================
+       RENDER FIRST 100
+    ===================================== */
+
+    applyAllMailnovaFilters();
 
 
-    /* =========================================
-       INITIAL SORT
-    ========================================= */
-
-    sortEmailsByPriority(
-        mailnovaEmails
-    );
-
-
-    /* =========================================
-       RENDER EMAILS
-    ========================================= */
-
-    renderEmails(
-        mailnovaEmails
-    );
-
-
-    /* =========================================
-       CATEGORY BAR
-    ========================================= */
-
-    updateCategoryBarWithSort(
-        mailnovaEmails
-    );
-
-
-    /* =========================================
-       CATEGORY FILTER
-    ========================================= */
-
-    setupCategoryFilter();
-
-
-    /* =========================================
-       SEARCH
-    ========================================= */
-
-    setupEmailSearch();
-
-
-    /* =========================================
-       MONTH FILTER
-    ========================================= */
-
-    setupMonthFilter();
-
-
-    /* =========================================
-       SORT
-    ========================================= */
+    /* =====================================
+       SETUP SORT AFTER BUTTON EXISTS
+    ===================================== */
 
     setupSortMenu();
 
 
-    /* =========================================
-       ASK AI + VIEW BUTTONS
-    ========================================= */
+    /* =====================================
+       SAVE CACHE
+    ===================================== */
 
-    setupEmailActions();
+    await saveMailnovaEmailCache(
+        mailnovaEmails
+    );
+
+
+    /* =====================================
+       LOAD REMAINING PAGES
+       IN BACKGROUND
+    ===================================== */
+
+    syncRemainingMailPages(
+        result
+    );
+
+}
+
+
+/* =========================================
+   BUILD EMAIL DATA
+========================================= */
+
+function buildMailnovaEmailData(
+    emails
+) {
+
+    return (
+        emails || []
+    ).map(
+        (
+            email,
+            index
+        ) => {
+
+            return {
+
+                ...email,
+
+                uiId:
+                    index,
+
+                category:
+                    email.category ||
+                    detectCategory({
+
+                        sender:
+                            email.sender ||
+                            "",
+
+                        subject:
+                            email.subject ||
+                            "",
+
+                        snippet:
+                            email.snippet ||
+                            ""
+
+                    })
+
+            };
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   BACKGROUND SYNC
+========================================= */
+
+async function syncMailnovaInBackground() {
+
+    if (
+        mailnovaSyncPromise
+    ) {
+
+        return mailnovaSyncPromise;
+
+    }
+
+
+    mailnovaSyncPromise =
+        (async () => {
+
+            try {
+
+                console.log(
+                    "MailNova: Background sync started..."
+                );
+
+
+                const firstPage =
+                    await fetchGmailEmails(
+                        null,
+                        100
+                    );
+
+
+                if (
+                    !firstPage ||
+                    !firstPage.success
+                ) {
+
+                    return;
+
+                }
+
+
+                const latestEmails =
+                    buildMailnovaEmailData(
+                        firstPage.emails || []
+                    );
+
+
+                const latestIds =
+                    new Set(
+                        latestEmails.map(
+                            email =>
+                                String(
+                                    email.id
+                                )
+                        )
+                    );
+
+
+                const olderCachedEmails =
+                    mailnovaEmails.filter(
+                        email =>
+                            !latestIds.has(
+                                String(
+                                    email.id
+                                )
+                            )
+                    );
+
+
+                mailnovaEmails = [
+                    ...latestEmails,
+                    ...olderCachedEmails
+                ];
+
+
+                mailnovaEmails =
+                    deduplicateMailnovaEmails(
+                        mailnovaEmails
+                    );
+
+
+                applyAllMailnovaFilters();
+
+
+                await saveMailnovaEmailCache(
+                    mailnovaEmails
+                );
+
+
+                await syncRemainingMailPages(
+                    firstPage
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "MailNova: Background sync error:",
+                    error
+                );
+
+            }
+
+            finally {
+
+                mailnovaSyncPromise =
+                    null;
+
+            }
+
+        })();
+
+
+    return mailnovaSyncPromise;
+
+}
+
+
+/* =========================================
+   LOAD REMAINING PAGES
+========================================= */
+
+async function syncRemainingMailPages(
+    firstPage
+) {
+
+    try {
+
+        let nextPageToken =
+            firstPage.next_page_token;
+
+        let pageNumber = 1;
+
+
+        while (
+            nextPageToken
+        ) {
+
+            pageNumber++;
+
+
+            console.log(
+                `MailNova: Background loading page ${pageNumber}...`
+            );
+
+
+            const page =
+                await fetchGmailEmails(
+                    nextPageToken,
+                    100
+                );
+
+
+            if (
+                !page ||
+                !page.success
+            ) {
+
+                break;
+
+            }
+
+
+            const newEmails =
+                buildMailnovaEmailData(
+                    page.emails || []
+                );
+
+
+            if (
+                newEmails.length === 0
+            ) {
+
+                break;
+
+            }
+
+
+            mailnovaEmails =
+                deduplicateMailnovaEmails([
+                    ...mailnovaEmails,
+                    ...newEmails
+                ]);
+
+
+            applyAllMailnovaFilters();
+
+
+            /*
+               Make sure sort system remains
+               connected after every refresh.
+            */
+
+            setupSortMenu();
+
+
+            await saveMailnovaEmailCache(
+                mailnovaEmails
+            );
+
+
+            console.log(
+                "MailNova: Total cached emails:",
+                mailnovaEmails.length
+            );
+
+
+            nextPageToken =
+                page.next_page_token;
+
+
+            if (
+                pageNumber > 200
+            ) {
+
+                console.warn(
+                    "MailNova: Pagination safety limit reached."
+                );
+
+                break;
+
+            }
+
+        }
+
+
+        console.log(
+            "MailNova: Gmail background sync completed:",
+            mailnovaEmails.length
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MailNova: Remaining Gmail pages error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   DEDUPLICATE
+========================================= */
+
+function deduplicateMailnovaEmails(
+    emails
+) {
+
+    const map =
+        new Map();
+
+
+    for (
+        const email of emails
+    ) {
+
+        if (
+            !email ||
+            !email.id
+        ) {
+
+            continue;
+
+        }
+
+
+        map.set(
+            String(
+                email.id
+            ),
+            email
+        );
+
+    }
+
+
+    return Array.from(
+        map.values()
+    );
+
+}
+
+
+/* =========================================
+   REFRESH WORKSPACE
+========================================= */
+
+async function refreshWorkspace() {
+
+    const button =
+        document.getElementById(
+            "mn-refresh"
+        );
+
+
+    if (button) {
+
+        button.style.transition =
+            "transform .5s ease";
+
+        button.style.transform =
+            "rotate(360deg)";
+
+
+        setTimeout(
+            () => {
+
+                button.style.transform =
+                    "rotate(0deg)";
+
+            },
+            500
+        );
+
+    }
+
+
+    await syncMailnovaInBackground();
+
+}
+
+
+/* =========================================
+   APPLY ALL FILTERS
+========================================= */
+
+function applyAllMailnovaFilters() {
+
+    let filtered =
+        [...mailnovaEmails];
+
+
+    /* =====================================
+       SEARCH
+    ===================================== */
+
+    const searchQuery =
+        (
+            mailnovaFilterState.search ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (searchQuery) {
+
+        filtered =
+            filtered.filter(
+                (email) => {
+
+                    const sender =
+                        (
+                            email.sender ||
+                            ""
+                        ).toLowerCase();
+
+                    const subject =
+                        (
+                            email.subject ||
+                            ""
+                        ).toLowerCase();
+
+                    const snippet =
+                        (
+                            email.snippet ||
+                            ""
+                        ).toLowerCase();
+
+
+                    return (
+                        sender.includes(
+                            searchQuery
+                        ) ||
+
+                        subject.includes(
+                            searchQuery
+                        ) ||
+
+                        snippet.includes(
+                            searchQuery
+                        )
+                    );
+
+                }
+            );
+
+    }
+
+
+    /* =====================================
+       MONTH
+    ===================================== */
+
+    if (
+        mailnovaFilterState.month &&
+        mailnovaFilterState.month !== "all"
+    ) {
+
+        filtered =
+            filtered.filter(
+                (email) => {
+
+                    if (!email.date) {
+                        return false;
+                    }
+
+
+                    const date =
+                        new Date(
+                            email.date
+                        );
+
+
+                    if (
+                        isNaN(
+                            date.getTime()
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const emailMonth =
+                        `${date.getFullYear()}-${String(
+                            date.getMonth() + 1
+                        ).padStart(2, "0")}`;
+
+
+                    return (
+                        emailMonth ===
+                        mailnovaFilterState.month
+                    );
+
+                }
+            );
+
+    }
+
+
+    /* =====================================
+       CATEGORY COUNTS
+    ===================================== */
+
+    const categoryBase =
+        [...filtered];
+
+
+    updateCategoryBarWithSort(
+        categoryBase
+    );
+
+
+    /* =====================================
+       CATEGORY FILTER
+    ===================================== */
+
+    if (
+        mailnovaFilterState.category &&
+        mailnovaFilterState.category !== "All"
+    ) {
+
+        filtered =
+            filtered.filter(
+                email =>
+                    email.category ===
+                    mailnovaFilterState.category
+            );
+
+    }
+
+
+    /* =====================================
+       SORT
+    ===================================== */
+
+    applySortToEmailList(
+        filtered,
+        mailnovaFilterState.sort
+    );
+
+
+    /* =====================================
+       RENDER
+    ===================================== */
+
+    renderEmails(
+        filtered
+    );
+
+
+    console.log(
+        "MailNova Filter State:",
+        mailnovaFilterState
+    );
+
+
+    console.log(
+        "MailNova Filter Results:",
+        filtered.length
+    );
+
+}
+
+
+/* =========================================
+   SORT EMAILS
+========================================= */
+
+function applySortToEmailList(
+    emails,
+    sortType
+) {
+
+    if (
+        !Array.isArray(emails)
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        sortType === "priority"
+    ) {
+
+        sortEmailsByPriority(
+            emails
+        );
+
+    }
+
+
+    else if (
+        sortType === "newest"
+    ) {
+
+        emails.sort(
+            (a, b) => {
+
+                const dateA =
+                    new Date(
+                        a.date
+                    ).getTime();
+
+                const dateB =
+                    new Date(
+                        b.date
+                    ).getTime();
+
+
+                return (
+                    dateB -
+                    dateA
+                );
+
+            }
+        );
+
+    }
+
+
+    else if (
+        sortType === "oldest"
+    ) {
+
+        emails.sort(
+            (a, b) => {
+
+                const dateA =
+                    new Date(
+                        a.date
+                    ).getTime();
+
+                const dateB =
+                    new Date(
+                        b.date
+                    ).getTime();
+
+
+                return (
+                    dateA -
+                    dateB
+                );
+
+            }
+        );
+
+    }
+
+
+    else if (
+        sortType === "az"
+    ) {
+
+        emails.sort(
+            (a, b) => {
+
+                return (
+                    a.sender || ""
+                )
+                .toLowerCase()
+                .localeCompare(
+                    (
+                        b.sender ||
+                        ""
+                    ).toLowerCase()
+                );
+
+            }
+        );
+
+    }
+
+
+    else if (
+        sortType === "za"
+    ) {
+
+        emails.sort(
+            (a, b) => {
+
+                return (
+                    b.sender || ""
+                )
+                .toLowerCase()
+                .localeCompare(
+                    (
+                        a.sender ||
+                        ""
+                    ).toLowerCase()
+                );
+
+            }
+        );
+
+    }
 
 }
 
@@ -224,7 +1065,9 @@ async function createWorkspace() {
    CATEGORY BAR + SORT
 ========================================= */
 
-function updateCategoryBarWithSort(emails) {
+function updateCategoryBarWithSort(
+    emails
+) {
 
     const bar =
         document.getElementById(
@@ -232,134 +1075,302 @@ function updateCategoryBarWithSort(emails) {
         );
 
 
-    if (!bar) return;
+    if (!bar) {
+
+        return;
+
+    }
 
 
     const counts =
-        getCategoryCounts(emails);
+        getCategoryCounts(
+            emails
+        );
 
 
-    bar.innerHTML = `
+    /* =====================================
+       CREATE CATEGORY CHIPS ONLY ONCE
+    ===================================== */
 
-        <div
-            class="mailnova-chip active"
-            data-category="All">
-
-            📥 All (${counts.All})
-
-        </div>
-
-
-        <div
-            class="mailnova-chip"
-            data-category="Work">
-
-            💼 Work (${counts.Work})
-
-        </div>
+    let sortWrapper =
+        document.getElementById(
+            "mailnova-sort-wrapper"
+        );
 
 
-        <div
-            class="mailnova-chip"
-            data-category="Education">
+    if (!sortWrapper) {
 
-            🎓 Education (${counts.Education})
-
-        </div>
-
-
-        <div
-            class="mailnova-chip"
-            data-category="Shopping">
-
-            🛒 Shopping (${counts.Shopping})
-
-        </div>
-
-
-        <div
-            class="mailnova-chip"
-            data-category="Banking">
-
-            💳 Banking (${counts.Banking})
-
-        </div>
-
-
-        <div
-            class="mailnova-chip"
-            data-category="Personal">
-
-            👤 Personal (${counts.Personal})
-
-        </div>
-
-
-        <div class="mailnova-sort-wrapper">
-
-            <button
-                id="mailnova-sort-btn"
-                class="mailnova-sort-btn"
-                type="button">
-
-                ↕ Sort
-
-            </button>
-
+        bar.innerHTML = `
 
             <div
-                id="mailnova-sort-menu"
-                class="mailnova-sort-menu">
+                class="mailnova-chip"
+                data-category="All">
 
-                <div
-                    class="mailnova-sort-option active"
-                    data-sort="priority">
+                📥 All
 
-                    ⭐ Priority
-
-                </div>
-
-
-                <div
-                    class="mailnova-sort-option"
-                    data-sort="newest">
-
-                    🕐 Newest
-
-                </div>
-
-
-                <div
-                    class="mailnova-sort-option"
-                    data-sort="oldest">
-
-                    🕐 Oldest
-
-                </div>
-
-
-                <div
-                    class="mailnova-sort-option"
-                    data-sort="az">
-
-                    🔤 Sender A–Z
-
-                </div>
-
-
-                <div
-                    class="mailnova-sort-option"
-                    data-sort="za">
-
-                    🔤 Sender Z–A
-
-                </div>
+                <span
+                    class="mailnova-category-count">
+                    (${counts.All})
+                </span>
 
             </div>
 
-        </div>
 
-    `;
+            <div
+                class="mailnova-chip"
+                data-category="Work">
+
+                💼 Work
+
+                <span
+                    class="mailnova-category-count">
+                    (${counts.Work})
+                </span>
+
+            </div>
+
+
+            <div
+                class="mailnova-chip"
+                data-category="Education">
+
+                🎓 Education
+
+                <span
+                    class="mailnova-category-count">
+                    (${counts.Education})
+                </span>
+
+            </div>
+
+
+            <div
+                class="mailnova-chip"
+                data-category="Shopping">
+
+                🛒 Shopping
+
+                <span
+                    class="mailnova-category-count">
+                    (${counts.Shopping})
+                </span>
+
+            </div>
+
+
+            <div
+                class="mailnova-chip"
+                data-category="Banking">
+
+                💳 Banking
+
+                <span
+                    class="mailnova-category-count">
+                    (${counts.Banking})
+                </span>
+
+            </div>
+
+
+            <div
+                class="mailnova-chip"
+                data-category="Personal">
+
+                👤 Personal
+
+                <span
+                    class="mailnova-category-count">
+                    (${counts.Personal})
+                </span>
+
+            </div>
+
+
+            <div
+                id="mailnova-sort-wrapper"
+                class="mailnova-sort-wrapper">
+
+                <button
+                    id="mailnova-sort-btn"
+                    class="mailnova-sort-btn"
+                    type="button">
+
+                    ↕ Sort
+
+                </button>
+
+            </div>
+
+        `;
+
+
+        /* =================================
+           CREATE MENU OUTSIDE CATEGORY BAR
+           
+           This avoids overflow clipping.
+        ================================= */
+
+        sortWrapper =
+            document.getElementById(
+                "mailnova-sort-wrapper"
+            );
+
+
+        const sortMenu =
+            document.createElement(
+                "div"
+            );
+
+
+        sortMenu.id =
+            "mailnova-sort-menu";
+
+
+        sortMenu.className =
+            "mailnova-sort-menu";
+
+
+        sortMenu.innerHTML = `
+
+            <div
+                class="mailnova-sort-option"
+                data-sort="priority">
+
+                ⭐ Priority
+
+            </div>
+
+
+            <div
+                class="mailnova-sort-option"
+                data-sort="newest">
+
+                🕐 Newest
+
+            </div>
+
+
+            <div
+                class="mailnova-sort-option"
+                data-sort="oldest">
+
+                🕐 Oldest
+
+            </div>
+
+
+            <div
+                class="mailnova-sort-option"
+                data-sort="az">
+
+                🔤 Sender A–Z
+
+            </div>
+
+
+            <div
+                class="mailnova-sort-option"
+                data-sort="za">
+
+                🔤 Sender Z–A
+
+            </div>
+
+        `;
+
+
+        document.body.appendChild(
+            sortMenu
+        );
+
+
+        /* =================================
+           NOW INITIALIZE SORT
+        ================================= */
+
+        setupSortMenu();
+
+    }
+
+
+    /* =====================================
+       UPDATE COUNTS
+    ===================================== */
+
+    const chips =
+        bar.querySelectorAll(
+            ".mailnova-chip"
+        );
+
+
+    chips.forEach(
+        (chip) => {
+
+            const category =
+                chip.dataset.category;
+
+
+            const count =
+                counts[category] || 0;
+
+
+            const countElement =
+                chip.querySelector(
+                    ".mailnova-category-count"
+                );
+
+
+            if (countElement) {
+
+                countElement.textContent =
+                    `(${count})`;
+
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       ACTIVE CATEGORY
+    ===================================== */
+
+    chips.forEach(
+        (chip) => {
+
+            chip.classList.toggle(
+                "active",
+
+                chip.dataset.category ===
+                mailnovaFilterState.category
+            );
+
+        }
+    );
+
+
+    /* =====================================
+       ACTIVE SORT
+    ===================================== */
+
+    const sortOptions =
+        document.querySelectorAll(
+            "#mailnova-sort-menu .mailnova-sort-option"
+        );
+
+
+    sortOptions.forEach(
+        (option) => {
+
+            option.classList.toggle(
+                "active",
+
+                option.dataset.sort ===
+                mailnovaFilterState.sort
+            );
+
+        }
+    );
 
 }
 
@@ -376,59 +1387,63 @@ function setupCategoryFilter() {
         );
 
 
-    if (!bar) return;
+    if (!bar) {
+
+        return;
+
+    }
 
 
-    bar
-        .querySelectorAll(".mailnova-chip")
-        .forEach(chip => {
+    if (
+        bar.dataset.categoryListener ===
+        "true"
+    ) {
 
-            chip.addEventListener(
-                "click",
-                () => {
+        return;
 
-                    bar
-                        .querySelectorAll(
-                            ".mailnova-chip"
-                        )
-                        .forEach(c => {
-
-                            c.classList.remove(
-                                "active"
-                            );
-
-                        });
+    }
 
 
-                    chip.classList.add(
-                        "active"
-                    );
+    bar.dataset.categoryListener =
+        "true";
 
 
-                    const category =
-                        chip.dataset.category;
+    bar.addEventListener(
+        "click",
+        (e) => {
+
+            const chip =
+                e.target.closest(
+                    ".mailnova-chip"
+                );
 
 
-                    const filtered =
-                        filterEmails(
-                            mailnovaEmails,
-                            category
-                        );
+            if (!chip) {
+
+                return;
+
+            }
 
 
-                    sortEmailsByPriority(
-                        filtered
-                    );
+            const category =
+                chip.dataset.category;
 
 
-                    renderEmails(
-                        filtered
-                    );
+            if (!category) {
 
-                }
-            );
+                return;
 
-        });
+            }
+
+
+            mailnovaFilterState.category =
+                category;
+
+
+            applyAllMailnovaFilters();
+
+        }
+    );
 
 }
 
@@ -456,41 +1471,50 @@ function setupSortMenu() {
         !sortMenu
     ) {
 
-        console.log(
-            "MailNova: Sort menu not found."
+        return;
+
+    }
+
+
+    /* =====================================
+       PREVENT DUPLICATE SETUP
+    ===================================== */
+
+    if (
+        sortButton.dataset.sortListener ===
+        "true"
+    ) {
+
+        updateSortMenuPosition(
+            sortButton,
+            sortMenu
         );
 
         return;
 
     }
-    document.body.appendChild(sortMenu);
-
-console.log(
-    "MailNova: Sort button found",
-    sortButton
-);
-
-console.log(
-    "MailNova: Sort menu found",
-    sortMenu
-);
 
 
-    /* =========================================
-       OPEN / CLOSE SORT MENU
-    ========================================= */
+    sortButton.dataset.sortListener =
+        "true";
+
+
+    console.log(
+        "MailNova: Sort button initialized."
+    );
+
+
+    /* =====================================
+       SORT BUTTON CLICK
+    ===================================== */
 
     sortButton.addEventListener(
         "click",
-        (e) => {
-            
-            console.log(
-    "MailNova: SORT BUTTON CLICKED"
-);
+        (event) => {
 
-            e.preventDefault();
+            event.preventDefault();
 
-            e.stopPropagation();
+            event.stopPropagation();
 
 
             const isOpen =
@@ -501,125 +1525,412 @@ console.log(
 
             if (isOpen) {
 
-                sortMenu.classList.remove(
-                    "open"
-                );
+                closeSortMenu();
 
                 return;
 
             }
 
 
-            /*
-               Fixed dropdown ko Sort button
-               ke exact neeche position karo.
-            */
+            openSortMenu();
 
-            const rect =
-                sortButton.getBoundingClientRect();
-
-
-            sortMenu.style.top =
-                (rect.bottom + 8) + "px";
-
-
-            sortMenu.style.left =
-                (rect.right - 190) + "px";
-
-
-            sortMenu.classList.add(
-                "open"
-            );
-
-            console.log(
-    "SORT OPEN CLASS:",
-    sortMenu.classList.contains("open")
-);
-
-console.log(
-    "SORT DISPLAY:",
-    getComputedStyle(sortMenu).display
-);
- 
         }
-        
-
-
-        
     );
 
 
-    /* =========================================
+    /* =====================================
        SORT OPTIONS
-    ========================================= */
+    ===================================== */
 
     sortMenu
         .querySelectorAll(
             ".mailnova-sort-option"
         )
-        .forEach(option => {
+        .forEach(
+            (option) => {
 
-            option.addEventListener(
-                "click",
-                (e) => {
+                option.addEventListener(
+                    "click",
+                    (event) => {
 
-                    e.preventDefault();
+                        event.preventDefault();
 
-                    e.stopPropagation();
-
-
-                    const sortType =
-                        option.dataset.sort;
+                        event.stopPropagation();
 
 
-                    sortMenu
-                        .querySelectorAll(
-                            ".mailnova-sort-option"
-                        )
-                        .forEach(item => {
-
-                            item.classList.remove(
-                                "active"
-                            );
-
-                        });
+                        const sortType =
+                            option.dataset.sort;
 
 
-                    option.classList.add(
-                        "active"
-                    );
+                        if (!sortType) {
+
+                            return;
+
+                        }
 
 
-                    sortMenu.classList.remove(
-                        "open"
-                    );
+                        mailnovaFilterState.sort =
+                            sortType;
 
 
-                    applyMailnovaSort(
-                        sortType
-                    );
+                        /* =====================
+                           APPLY SORT
+                        ===================== */
 
-                }
-            );
-
-        });
+                        applyAllMailnovaFilters();
 
 
-    /* =========================================
-       CLOSE WHEN CLICKING OUTSIDE
-    ========================================= */
+                        /* =====================
+                           KEEP MENU OPEN
+                           ===================== */
+
+                        requestAnimationFrame(
+                            () => {
+
+                                openSortMenu();
+
+                            }
+                        );
+
+
+                        console.log(
+                            "MailNova: Sort selected:",
+                            sortType
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================
+   OPEN SORT MENU
+========================================= */
+
+function openSortMenu() {
+
+    const sortButton =
+        document.getElementById(
+            "mailnova-sort-btn"
+        );
+
+
+    const sortMenu =
+        document.getElementById(
+            "mailnova-sort-menu"
+        );
+
+
+    if (
+        !sortButton ||
+        !sortMenu
+    ) {
+
+        console.error(
+            "MailNova: Sort button/menu missing."
+        );
+
+        return;
+
+    }
+
+
+    updateSortMenuPosition(
+        sortButton,
+        sortMenu
+    );
+
+
+    sortMenu.classList.add(
+        "open"
+    );
+
+
+    sortMenu.style.display =
+        "block";
+
+
+    sortMenu.style.visibility =
+        "visible";
+
+
+    sortMenu.style.opacity =
+        "1";
+
+
+    sortMenu.style.zIndex =
+        "2147483647";
+
+
+    console.log(
+        "MailNova: Sort menu opened."
+    );
+
+}
+
+
+/* =========================================
+   CLOSE SORT MENU
+========================================= */
+
+function closeSortMenu() {
+
+    const sortMenu =
+        document.getElementById(
+            "mailnova-sort-menu"
+        );
+
+
+    if (!sortMenu) {
+
+        return;
+
+    }
+
+
+    sortMenu.classList.remove(
+        "open"
+    );
+
+
+    sortMenu.style.display =
+        "none";
+
+}
+
+
+/* =========================================
+   POSITION SORT MENU
+========================================= */
+
+function updateSortMenuPosition(
+    sortButton,
+    sortMenu
+) {
+
+    if (
+        !sortButton ||
+        !sortMenu
+    ) {
+
+        return;
+
+    }
+
+
+    const rect =
+        sortButton.getBoundingClientRect();
+
+
+    const menuWidth =
+        210;
+
+
+    /*
+       Temporarily show menu so its
+       height can be measured.
+    */
+
+    sortMenu.style.display =
+        "block";
+
+
+    sortMenu.style.visibility =
+        "hidden";
+
+
+    sortMenu.style.opacity =
+        "0";
+
+
+    const menuHeight =
+        sortMenu.offsetHeight ||
+        240;
+
+
+    let left =
+        rect.right -
+        menuWidth;
+
+
+    let top =
+        rect.bottom +
+        8;
+
+
+    /* =====================================
+       RIGHT BOUNDARY
+    ===================================== */
+
+    if (
+        left +
+        menuWidth >
+        window.innerWidth -
+        10
+    ) {
+
+        left =
+            window.innerWidth -
+            menuWidth -
+            10;
+
+    }
+
+
+    /* =====================================
+       LEFT BOUNDARY
+    ===================================== */
+
+    if (
+        left < 10
+    ) {
+
+        left = 10;
+
+    }
+
+
+    /* =====================================
+       BOTTOM BOUNDARY
+    ===================================== */
+
+    if (
+        top +
+        menuHeight >
+        window.innerHeight -
+        10
+    ) {
+
+        top =
+            rect.top -
+            menuHeight -
+            8;
+
+    }
+
+
+    sortMenu.style.position =
+        "fixed";
+
+
+    sortMenu.style.left =
+        `${left}px`;
+
+
+    sortMenu.style.top =
+        `${top}px`;
+
+
+    sortMenu.style.width =
+        `${menuWidth}px`;
+
+
+    sortMenu.style.zIndex =
+        "2147483647";
+
+}
+
+
+/* =========================================
+   OUTSIDE CLICK
+========================================= */
+
+if (
+    !window.__mailnovaSortOutsideClick
+) {
+
+    window.__mailnovaSortOutsideClick =
+        true;
+
 
     document.addEventListener(
         "click",
-        (e) => {
+        (event) => {
+
+            const sortMenu =
+                document.getElementById(
+                    "mailnova-sort-menu"
+                );
+
+
+            const sortButton =
+                document.getElementById(
+                    "mailnova-sort-btn"
+                );
+
 
             if (
-                !sortMenu.contains(e.target) &&
-                e.target !== sortButton
+                !sortMenu ||
+                !sortButton
             ) {
 
-                sortMenu.classList.remove(
+                return;
+
+            }
+
+
+            if (
+                !sortMenu.contains(
+                    event.target
+                ) &&
+                !sortButton.contains(
+                    event.target
+                )
+            ) {
+
+                closeSortMenu();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   KEEP MENU POSITIONED
+========================================= */
+
+if (
+    !window.__mailnovaSortResizeListener
+) {
+
+    window.__mailnovaSortResizeListener =
+        true;
+
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            const sortButton =
+                document.getElementById(
+                    "mailnova-sort-btn"
+                );
+
+
+            const sortMenu =
+                document.getElementById(
+                    "mailnova-sort-menu"
+                );
+
+
+            if (
+                sortButton &&
+                sortMenu &&
+                sortMenu.classList.contains(
                     "open"
+                )
+            ) {
+
+                updateSortMenuPosition(
+                    sortButton,
+                    sortMenu
                 );
 
             }
@@ -636,20 +1947,39 @@ console.log(
 
 function setupEmailActions() {
 
-    if (!workspace) return;
+    if (!workspace) {
+
+        return;
+
+    }
+
+
+    if (
+        workspace.dataset.emailActionsListener ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    workspace.dataset.emailActionsListener =
+        "true";
 
 
     workspace.addEventListener(
         "click",
         (e) => {
 
-
             /* =========================
-               VIEW BUTTON
+               VIEW
             ========================= */
 
             const viewButton =
-                e.target.closest(".mn-view");
+                e.target.closest(
+                    ".mn-view"
+                );
 
 
             if (viewButton) {
@@ -666,7 +1996,12 @@ function setupEmailActions() {
                 const email =
                     mailnovaEmails.find(
                         mail =>
-                            mail.id === emailId
+                            String(
+                                mail.id
+                            ) ===
+                            String(
+                                emailId
+                            )
                     );
 
 
@@ -698,17 +2033,6 @@ function setupEmailActions() {
                 }
 
 
-                console.log(
-                    "MailNova: Opening Gmail thread:",
-                    threadId
-                );
-
-
-                /*
-                   Gmail workspace ko refresh kiye bina
-                   exact thread open karega.
-                */
-
                 if (workspace) {
 
                     workspace.style.width =
@@ -733,57 +2057,64 @@ function setupEmailActions() {
             }
 
 
+            /* =========================
+               REPLY
+            ========================= */
+
+            const replyButton =
+                e.target.closest(
+                    ".mn-reply"
+                );
+
+
+            if (replyButton) {
+
+                e.preventDefault();
+
+                e.stopPropagation();
+
+
+                const emailId =
+                    replyButton.dataset.id;
+
+
+                const email =
+                    mailnovaEmails.find(
+                        mail =>
+                            String(
+                                mail.id
+                            ) ===
+                            String(
+                                emailId
+                            )
+                    );
+
+
+                if (!email) {
+
+                    return;
+
+                }
+
+
+                openReplyComposer(
+                    email
+                );
+
+
+                return;
+
+            }
+
 
             /* =========================
-   REPLY BUTTON
-========================= */
-
-const replyButton =
-    e.target.closest(".mn-reply");
-
-if (replyButton) {
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    const emailId =
-        replyButton.dataset.id;
-
-    const email =
-        mailnovaEmails.find(
-            mail => String(mail.id) === String(emailId)
-        );
-
-    if (!email) {
-
-        console.log(
-            "MailNova: Reply email not found",
-            emailId
-        );
-
-        return;
-
-    }
-
-    console.log(
-        "MailNova: Opening Reply Composer:",
-        email
-    );
-
-    openReplyComposer(email);
-
-    return;
-
-}
-
-
-
-            /* =========================
-               ASK AI BUTTON
+               ASK AI
             ========================= */
 
             const askAIButton =
-                e.target.closest(".mn-ai");
+                e.target.closest(
+                    ".mn-ai"
+                );
 
 
             if (askAIButton) {
@@ -800,34 +2131,25 @@ if (replyButton) {
                 const email =
                     mailnovaEmails.find(
                         mail =>
-                            mail.id === emailId
+                            String(
+                                mail.id
+                            ) ===
+                            String(
+                                emailId
+                            )
                     );
 
 
                 if (!email) {
-
-                    console.log(
-                        "MailNova: Email not found",
-                        emailId
-                    );
 
                     return;
 
                 }
 
 
-                console.log(
-                    "MailNova: Opening Ask AI:",
-                    email
-                );
-
-
                 openAskAI(
                     email
                 );
-
-
-                return;
 
             }
 
@@ -838,10 +2160,23 @@ if (replyButton) {
 
 
 /* =========================================
-   CLOSE
+   CLOSE WORKSPACE
 ========================================= */
 
 function closeWorkspace() {
+
+    const sortMenu =
+        document.getElementById(
+            "mailnova-sort-menu"
+        );
+
+
+    if (sortMenu) {
+
+        sortMenu.remove();
+
+    }
+
 
     if (workspace) {
 
@@ -860,7 +2195,11 @@ function closeWorkspace() {
 
 function minimizeWorkspace() {
 
-    if (!workspace) return;
+    if (!workspace) {
+
+        return;
+
+    }
 
 
     workspace.style.display =
@@ -875,7 +2214,11 @@ function minimizeWorkspace() {
 
 function restoreWorkspace() {
 
-    if (!workspace) return;
+    if (!workspace) {
+
+        return;
+
+    }
 
 
     if (
@@ -904,7 +2247,11 @@ function restoreWorkspace() {
 
 function increaseWidth() {
 
-    if (!workspace) return;
+    if (!workspace) {
+
+        return;
+
+    }
 
 
     const currentWidth =
@@ -930,7 +2277,11 @@ function increaseWidth() {
 
 function decreaseWidth() {
 
-    if (!workspace) return;
+    if (!workspace) {
+
+        return;
+
+    }
 
 
     const currentWidth =
@@ -954,7 +2305,9 @@ function decreaseWidth() {
    RENDER EMAILS
 ========================================= */
 
-function renderEmails(emailList) {
+function renderEmails(
+    emailList
+) {
 
     const container =
         document.querySelector(
@@ -962,327 +2315,29 @@ function renderEmails(emailList) {
         );
 
 
-    if (!container) return;
+    if (!container) {
+
+        return;
+
+    }
 
 
     container.innerHTML =
         emailList
-            .map(createEmailCard)
+            .map(
+                createEmailCard
+            )
             .join("");
 
 }
 
 
 /* =========================================
-   REFRESH WORKSPACE
+   REFRESH
 ========================================= */
 
-async function refreshWorkspace() {
+async function forceRefreshMailnova() {
 
-    const button =
-        document.getElementById(
-            "mn-refresh"
-        );
-
-
-    if (!button) return;
-
-
-    /* =========================================
-       REFRESH ANIMATION
-    ========================================= */
-
-    button.style.transition =
-        "transform .5s ease";
-
-
-    button.style.transform =
-        "rotate(360deg)";
-
-
-    setTimeout(
-        () => {
-
-            button.style.transform =
-                "rotate(0deg)";
-
-        },
-        500
-    );
-
-
-    /* =========================================
-       FETCH LATEST EMAILS
-    ========================================= */
-
-    const result =
-        await fetchGmailEmails();
-
-
-    if (!result.success) {
-
-        console.error(
-            "MailNova: Refresh failed"
-        );
-
-        return;
-
-    }
-
-
-    /* =========================================
-       REBUILD EMAIL DATA
-    ========================================= */
-
-    mailnovaEmails =
-        (result.emails || []).map(
-            (email, index) => {
-
-                return {
-
-                    ...email,
-
-                    uiId: index,
-
-                    category:
-                        detectCategory({
-
-                            sender:
-                                email.sender ||
-                                "",
-
-                            subject:
-                                email.subject ||
-                                "",
-
-                            snippet:
-                                email.snippet ||
-                                ""
-
-                        })
-
-                };
-
-            }
-        );
-
-
-    /* =========================================
-       SORT
-    ========================================= */
-
-    sortEmailsByPriority(
-        mailnovaEmails
-    );
-
-
-    /* =========================================
-       PRESERVE SEARCH
-    ========================================= */
-
-    const searchInput =
-        document.getElementById(
-            "mailnova-search-input"
-        );
-
-
-    const searchQuery =
-        searchInput
-            ? searchInput.value.trim()
-            : "";
-
-
-    if (searchQuery) {
-
-        performEmailSearch(
-            searchQuery
-        );
-
-    }
-
-    else {
-
-        renderEmails(
-            mailnovaEmails
-        );
-
-    }
-
-
-    /* =========================================
-       REBUILD CATEGORY BAR
-    ========================================= */
-
-    updateCategoryBarWithSort(
-        mailnovaEmails
-    );
-
-
-    /* =========================================
-       RECONNECT CATEGORY
-       AND SORT CONTROLS
-    ========================================= */
-
-    setupCategoryFilter();
-
-    setupSortMenu();
-
-
-    console.log(
-        "MailNova: Workspace refreshed:",
-        mailnovaEmails.length,
-        "emails"
-    );
-
-}
-
-
-/* =========================================
-   MAILNOVA SORT FUNCTION
-========================================= */
-
-function applyMailnovaSort(sortType) {
-
-    if (!mailnovaEmails.length) {
-
-        return;
-
-    }
-
-
-    let sortedEmails =
-        [...mailnovaEmails];
-
-
-    /* =========================================
-       PRIORITY
-    ========================================= */
-
-    if (sortType === "priority") {
-
-        sortEmailsByPriority(
-            sortedEmails
-        );
-
-    }
-
-
-    /* =========================================
-       NEWEST
-    ========================================= */
-
-    else if (sortType === "newest") {
-
-        sortedEmails.sort(
-            (a, b) => {
-
-                const dateA =
-                    new Date(
-                        a.date
-                    ).getTime();
-
-
-                const dateB =
-                    new Date(
-                        b.date
-                    ).getTime();
-
-
-                return dateB - dateA;
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       OLDEST
-    ========================================= */
-
-    else if (sortType === "oldest") {
-
-        sortedEmails.sort(
-            (a, b) => {
-
-                const dateA =
-                    new Date(
-                        a.date
-                    ).getTime();
-
-
-                const dateB =
-                    new Date(
-                        b.date
-                    ).getTime();
-
-
-                return dateA - dateB;
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       SENDER A-Z
-    ========================================= */
-
-    else if (sortType === "az") {
-
-        sortedEmails.sort(
-            (a, b) => {
-
-                return (
-
-                    (a.sender || "")
-                        .toLowerCase()
-                        .localeCompare(
-
-                            (b.sender || "")
-                                .toLowerCase()
-
-                        )
-
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       SENDER Z-A
-    ========================================= */
-
-    else if (sortType === "za") {
-
-        sortedEmails.sort(
-            (a, b) => {
-
-                return (
-
-                    (b.sender || "")
-                        .toLowerCase()
-                        .localeCompare(
-
-                            (a.sender || "")
-                                .toLowerCase()
-
-                        )
-
-                );
-
-            }
-        );
-
-    }
-
-
-    renderEmails(
-        sortedEmails
-    );
+    await syncMailnovaInBackground();
 
 }

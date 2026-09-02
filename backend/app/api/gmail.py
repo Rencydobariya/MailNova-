@@ -10,6 +10,10 @@ from backend.app.api.gmail_auth import get_gmail_credentials
 router = APIRouter()
 
 
+# =========================================
+# GMAIL SERVICE
+# =========================================
+
 def get_gmail_service():
 
     credentials = get_gmail_credentials()
@@ -17,9 +21,108 @@ def get_gmail_service():
     return build(
         "gmail",
         "v1",
-        credentials=credentials
+        credentials=credentials,
+        cache_discovery=False
     )
 
+
+# =========================================
+# PARSE GMAIL MESSAGE
+# =========================================
+
+def parse_gmail_message(message):
+
+    payload = message.get(
+        "payload",
+        {}
+    )
+
+    headers = payload.get(
+        "headers",
+        []
+    )
+
+    sender = ""
+    subject = ""
+    date = ""
+
+    for header in headers:
+
+        name = header.get(
+            "name",
+            ""
+        ).lower()
+
+        value = header.get(
+            "value",
+            ""
+        )
+
+        if name == "from":
+
+            sender = value
+
+        elif name == "subject":
+
+            subject = value
+
+        elif name == "date":
+
+            date = value
+
+    return {
+
+        "id":
+            message.get(
+                "id",
+                ""
+            ),
+
+        "threadId":
+            message.get(
+                "threadId",
+                ""
+            ),
+
+        "sender":
+            sender,
+
+        "subject":
+            subject,
+
+        "date":
+            date,
+
+        "snippet":
+            message.get(
+                "snippet",
+                ""
+            ),
+
+        "unread":
+            "UNREAD" in message.get(
+                "labelIds",
+                []
+            ),
+
+        "starred":
+            "STARRED" in message.get(
+                "labelIds",
+                []
+            ),
+
+        "important":
+            "IMPORTANT" in message.get(
+                "labelIds",
+                []
+            )
+
+    }
+
+
+# =========================================
+# GMAIL EMAILS
+# =========================================
 
 @router.get("/gmail/emails")
 def get_gmail_emails(
@@ -29,71 +132,276 @@ def get_gmail_emails(
 
     service = get_gmail_service()
 
-    # Gmail messages list
-    request = service.users().messages().list(
-        userId="me",
-        maxResults=max_results,
-        pageToken=page_token
+
+    # -----------------------------------------
+    # SAFE PAGE SIZE
+    # -----------------------------------------
+
+    max_results = max(
+        1,
+        min(
+            int(max_results),
+            100
+        )
     )
+
+
+    # -----------------------------------------
+    # GET MESSAGE IDS
+    # -----------------------------------------
+
+    request = (
+        service
+        .users()
+        .messages()
+        .list(
+            userId="me",
+
+            maxResults=max_results,
+
+            pageToken=page_token,
+
+            includeSpamTrash=True
+        )
+    )
+
 
     results = request.execute()
 
-    messages = results.get("messages", [])
 
-    emails = []
+    messages = results.get(
+        "messages",
+        []
+    )
+
+
+    if not messages:
+
+        return {
+
+            "success":
+                True,
+
+            "count":
+                0,
+
+            "next_page_token":
+                None,
+
+            "emails":
+                []
+
+        }
+
+
+    # =========================================
+    # GMAIL API-SPECIFIC BATCH
+    #
+    # IMPORTANT:
+    #
+    # DO NOT USE:
+    #
+    # BatchHttpRequest()
+    #
+    # Use Gmail service's own batch method.
+    # =========================================
+
+    message_data = {}
+
+
+    def batch_callback(
+        request_id,
+        response,
+        exception
+    ):
+
+        if exception:
+
+            print(
+                "MailNova: Gmail batch error:",
+                request_id,
+                exception
+            )
+
+            return
+
+
+        message_data[
+            request_id
+        ] = response
+
+
+    # =========================================
+    # API-SPECIFIC BATCH
+    # =========================================
+
+    batch = (
+        service
+        .new_batch_http_request(
+            callback=batch_callback
+        )
+    )
+
+
+    # =========================================
+    # ADD MESSAGE REQUESTS
+    # =========================================
 
     for message in messages:
 
-        msg = service.users().messages().get(
-            userId="me",
-            id=message["id"],
-            format="metadata",
-            metadataHeaders=[
-                "From",
-                "Subject",
-                "Date"
-            ]
-        ).execute()
-
-        headers = msg.get(
-            "payload",
-            {}
-        ).get(
-            "headers",
-            []
+        message_id = message.get(
+            "id"
         )
 
-        email_data = {
-            "id": message["id"],
-            "threadId": message.get("threadId", ""),
-            "sender": "",
-            "subject": "",
-            "date": "",
-            "snippet": msg.get("snippet", "")
+        if not message_id:
+
+            continue
+
+
+        batch.add(
+
+            service
+            .users()
+            .messages()
+            .get(
+
+                userId="me",
+
+                id=message_id,
+
+                format="metadata",
+
+                metadataHeaders=[
+                    "From",
+                    "Subject",
+                    "Date"
+                ]
+
+            ),
+
+            request_id=message_id
+
+        )
+
+
+    # =========================================
+    # EXECUTE BATCH
+    # =========================================
+
+    try:
+
+        batch.execute()
+
+    except Exception as error:
+
+        print(
+            "MailNova: Gmail batch execution failed:",
+            error
+        )
+
+        return {
+
+            "success":
+                False,
+
+            "count":
+                0,
+
+            "next_page_token":
+                results.get(
+                    "nextPageToken"
+                ),
+
+            "emails":
+                [],
+
+            "error":
+                str(error)
+
         }
 
-        for header in headers:
 
-            name = header["name"]
-            value = header["value"]
+    # =========================================
+    # BUILD EMAIL RESPONSE
+    # =========================================
 
-            if name.lower() == "from":
-                email_data["sender"] = value
+    emails = []
 
-            elif name.lower() == "subject":
-                email_data["subject"] = value
 
-            elif name.lower() == "date":
-                email_data["date"] = value
+    for message in messages:
 
-        emails.append(email_data)
+        message_id = message.get(
+            "id"
+        )
+
+        msg = message_data.get(
+            message_id
+        )
+
+
+        if not msg:
+
+            continue
+
+
+        email_data = parse_gmail_message(
+            msg
+        )
+
+
+        # Gmail list response has reliable
+        # threadId, so keep it if available.
+
+        if not email_data["threadId"]:
+
+            email_data["threadId"] = (
+                message.get(
+                    "threadId",
+                    ""
+                )
+            )
+
+
+        emails.append(
+            email_data
+        )
+
+
+    print(
+        f"MailNova: Gmail page loaded: "
+        f"{len(emails)} emails | "
+        f"Next page: "
+        f"{bool(results.get('nextPageToken'))}"
+    )
+
+
+    # =========================================
+    # RESPONSE
+    # =========================================
 
     return {
-        "success": True,
-        "count": len(emails),
-        "next_page_token": results.get("nextPageToken"),
-        "emails": emails
+
+        "success":
+            True,
+
+        "count":
+            len(emails),
+
+        "next_page_token":
+            results.get(
+                "nextPageToken"
+            ),
+
+        "result_size_estimate":
+            results.get(
+                "resultSizeEstimate"
+            ),
+
+        "emails":
+            emails
+
     }
+
 
 # =========================================
 # GMAIL REPLY
@@ -110,6 +418,10 @@ class GmailReplyRequest(BaseModel):
     body: str
 
 
+# =========================================
+# SEND GMAIL REPLY
+# =========================================
+
 @router.post("/gmail/reply")
 def send_gmail_reply(
     request: GmailReplyRequest
@@ -119,44 +431,67 @@ def send_gmail_reply(
 
 
     # -----------------------------------------
-    # Get latest message from the thread
+    # GET LATEST MESSAGE
     # -----------------------------------------
 
-    thread = service.users().threads().get(
-        userId="me",
-        id=request.thread_id,
-        format="metadata",
-        metadataHeaders=[
-            "Message-ID",
-            "References",
-            "Subject",
-            "From",
-            "To"
-        ]
-    ).execute()
+    thread = (
+        service
+        .users()
+        .threads()
+        .get(
+
+            userId="me",
+
+            id=request.thread_id,
+
+            format="metadata",
+
+            metadataHeaders=[
+                "Message-ID",
+                "References",
+                "Subject",
+                "From",
+                "To"
+            ]
+
+        )
+        .execute()
+    )
 
 
-    messages =  thread.get("messages", [])
+    messages = thread.get(
+        "messages",
+        []
+    )
 
 
     if not messages:
 
         return {
-            "success": False,
-            "message": "Gmail thread not found."
+
+            "success":
+                False,
+
+            "message":
+                "Gmail thread not found."
+
         }
 
 
-    latest_message =messages[-1]
+    latest_message = messages[-1]
 
 
-    headers =latest_message.get(
+    headers = (
+        latest_message
+        .get(
             "payload",
             {}
-        ).get(
+        )
+        .get(
             "headers",
             []
         )
+    )
 
 
     message_id = ""
@@ -164,11 +499,25 @@ def send_gmail_reply(
     references = ""
 
 
+    # -----------------------------------------
+    # READ HEADERS
+    # -----------------------------------------
+
     for header in headers:
 
-        name = header["name"].lower()
+        name = (
+            header
+            .get(
+                "name",
+                ""
+            )
+            .lower()
+        )
 
-        value = header["value"]
+        value = header.get(
+            "value",
+            ""
+        )
 
 
         if name == "message-id":
@@ -181,16 +530,24 @@ def send_gmail_reply(
             references = value
 
 
-    # -----------------------------------------
-    # Create Reply Email
-    # -----------------------------------------
+    # =========================================
+    # CREATE REPLY
+    # =========================================
 
-    subject = request.subject or ""
+    subject = (
+        request.subject
+        or ""
+    )
 
 
-    if not subject.lower().startswith("re:"):
+    if not subject.lower().startswith(
+        "re:"
+    ):
 
-        subject = "Re: " + subject
+        subject = (
+            "Re: " +
+            subject
+        )
 
 
     message = MIMEText(
@@ -205,9 +562,15 @@ def send_gmail_reply(
     message["Subject"] = subject
 
 
+    # -----------------------------------------
+    # THREADING HEADERS
+    # -----------------------------------------
+
     if message_id:
 
-        message["In-Reply-To"] = message_id
+        message["In-Reply-To"] = (
+            message_id
+        )
 
 
         if references:
@@ -220,42 +583,66 @@ def send_gmail_reply(
 
         else:
 
-            message["References"] = message_id
+            message["References"] = (
+                message_id
+            )
 
 
-    # -----------------------------------------
-    # Encode Gmail Message
-    # -----------------------------------------
+    # =========================================
+    # ENCODE
+    # =========================================
 
-    raw_message = base64.urlsafe_b64encode(
-        message.as_bytes()
-    ).decode()
+    raw_message = (
+        base64.urlsafe_b64encode(
+            message.as_bytes()
+        )
+        .decode()
+    )
 
 
-    # -----------------------------------------
-    # Send Reply
-    # -----------------------------------------
+    # =========================================
+    # SEND
+    # =========================================
 
-    sent_message =service.users().messages().send(
+    sent_message = (
+        service
+        .users()
+        .messages()
+        .send(
+
             userId="me",
+
             body={
-                "raw": raw_message,
-                "threadId": request.thread_id
+
+                "raw":
+                    raw_message,
+
+                "threadId":
+                    request.thread_id
+
             }
-        ).execute()
+
+        )
+        .execute()
+    )
 
 
     return {
 
-        "success": True,
+        "success":
+            True,
 
         "message":
             "Reply sent successfully.",
 
         "message_id":
-            sent_message.get("id"),
+            sent_message.get(
+                "id"
+            ),
 
         "thread_id":
-            sent_message.get("threadId")
+            sent_message.get(
+                "threadId"
+            )
 
     }

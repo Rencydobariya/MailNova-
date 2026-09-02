@@ -160,6 +160,10 @@
    SORT DROPDOWN
 ========================================= */
 
+/* =========================================
+   SORT DROPDOWN
+========================================= */
+
 .mailnova-sort-menu {
 
     position: fixed;
@@ -168,7 +172,7 @@
 
     padding: 7px;
 
-    background: rgba(255,255,255,.98);
+    background: #FFFFFF;
 
     border: 1px solid #E2E8F0;
 
@@ -183,9 +187,15 @@
 
     display: none;
 
+    visibility: hidden;
+
+    opacity: 0;
+
     z-index: 2147483647;
 
     box-sizing: border-box;
+
+    pointer-events: none;
 
 }
 
@@ -198,7 +208,15 @@
 
     display: block;
 
+    visibility: visible;
+
+    opacity: 1;
+
+    pointer-events: auto;
+
 }
+
+
 
 
 /* =========================================
