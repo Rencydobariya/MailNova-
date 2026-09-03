@@ -13,6 +13,14 @@ let mailnovaFilterState = {
     sort: "priority"
 };
 
+function refreshMailnovaPriorityRanking() {
+
+    if (!workspace) return;
+
+    applyAllMailnovaFilters();
+
+}
+
 let mailnovaSyncPromise = null;
 
 const MAILNOVA_SYNC_INTERVAL = 30000;
@@ -89,6 +97,17 @@ async function createWorkspace() {
         workspace
     );
 
+await loadMailnovaSettings();
+
+applyMailnovaTheme(
+    mailnovaSettings.theme
+);
+
+setMailnovaPriorityFocus(
+    mailnovaSettings.priorityFocus ||
+    "unread"
+);
+
 
     enableWorkspaceResize(
         workspace
@@ -99,66 +118,110 @@ async function createWorkspace() {
        HEADER CONTROLS
     ===================================== */
 
-    const refreshButton =
-        document.getElementById(
-            "mn-refresh"
-        );
+   const refreshButton =
+    document.getElementById(
+        "mn-refresh"
+    );
 
-    const closeButton =
-        document.getElementById(
-            "mn-close"
-        );
+const closeButton =
+    document.getElementById(
+        "mn-close"
+    );
 
-    const widthPlusButton =
-        document.getElementById(
-            "mn-width-plus"
-        );
+const widthPlusButton =
+    document.getElementById(
+        "mn-width-plus"
+    );
 
-    const widthMinusButton =
-        document.getElementById(
-            "mn-width-minus"
-        );
+const widthMinusButton =
+    document.getElementById(
+        "mn-width-minus"
+    );
 
-
-    if (refreshButton) {
-
-        refreshButton.addEventListener(
-            "click",
-            refreshWorkspace
-        );
-
-    }
+const settingsButton =
+    document.getElementById(
+        "mn-settings"
+    );
 
 
-    if (closeButton) {
+/* =====================================
+   REFRESH
+===================================== */
 
-        closeButton.addEventListener(
-            "click",
-            closeWorkspace
-        );
+if (refreshButton) {
 
-    }
+    refreshButton.addEventListener(
+        "click",
+        refreshWorkspace
+    );
 
-
-    if (widthPlusButton) {
-
-        widthPlusButton.addEventListener(
-            "click",
-            increaseWidth
-        );
-
-    }
+}
 
 
-    if (widthMinusButton) {
+/* =====================================
+   CLOSE
+===================================== */
 
-        widthMinusButton.addEventListener(
-            "click",
-            decreaseWidth
-        );
+if (closeButton) {
 
-    }
+    closeButton.addEventListener(
+        "click",
+        closeWorkspace
+    );
 
+}
+
+
+/* =====================================
+   SETTINGS
+===================================== */
+
+if (settingsButton) {
+
+    settingsButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            openMailnovaSettings(
+                event
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================
+   WIDTH PLUS
+===================================== */
+
+if (widthPlusButton) {
+
+    widthPlusButton.addEventListener(
+        "click",
+        increaseWidth
+    );
+
+}
+
+
+/* =====================================
+   WIDTH MINUS
+===================================== */
+
+if (widthMinusButton) {
+
+    widthMinusButton.addEventListener(
+        "click",
+        decreaseWidth
+    );
+
+}
 
     /* =====================================
        SETUP NORMAL CONTROLS
