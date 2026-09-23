@@ -38,13 +38,27 @@
     visibility: hidden;
 
     transition:
-        opacity .25s ease,
-        transform .25s ease,
-        visibility .25s ease;
+        opacity .18s ease,
+        transform .18s ease,
+        visibility .18s ease;
 
     font-family: Inter, sans-serif;
 
     overflow: hidden;
+
+    /*
+       Important for draggable composer.
+       The JS converts the initial centered
+       position into exact left/top values
+       when dragging begins.
+    */
+
+    box-sizing: border-box;
+
+    will-change:
+        left,
+        top,
+        transform;
 
 }
 
@@ -67,7 +81,29 @@
 
 
 /* =========================================
-   HEADER
+   DRAGGING STATE
+
+   Remove transform animation while dragging
+   so the composer follows the mouse instantly.
+========================================= */
+
+#mailnova-reply-composer.mailnova-reply-dragging {
+
+    transition: none !important;
+
+    transform: none !important;
+
+    cursor: grabbing;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+
+}
+
+
+/* =========================================
+   DRAG HEADER
 ========================================= */
 
 .mailnova-reply-header {
@@ -87,8 +123,26 @@
     border-bottom:
         1px solid #E5E7EB;
 
+    cursor: grab;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+
 }
 
+
+#mailnova-reply-composer.mailnova-reply-dragging
+.mailnova-reply-header {
+
+    cursor: grabbing;
+
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
 
 .mailnova-reply-title {
 
@@ -98,8 +152,14 @@
 
     color: #1F2937;
 
+    pointer-events: none;
+
 }
 
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
 
 .mailnova-reply-close {
 
@@ -125,7 +185,10 @@
 
     font-size: 16px;
 
-    transition: .2s ease;
+    transition:
+        background-color .06s ease,
+        color .06s ease,
+        transform .06s ease;
 
 }
 
@@ -258,8 +321,8 @@
     line-height: 1.55;
 
     transition:
-        border-color .2s ease,
-        box-shadow .2s ease;
+        border-color .08s ease,
+        box-shadow .08s ease;
 
 }
 
@@ -369,7 +432,11 @@
 
     cursor: pointer;
 
-    transition: .2s ease;
+    transition:
+        background-color .06s ease,
+        border-color .06s ease,
+        color .06s ease,
+        transform .06s ease;
 
 }
 
@@ -377,6 +444,10 @@
 .mailnova-generate-reply:hover {
 
     background: #E1EBFF;
+
+    border-color: #9DBBFF;
+
+    color: #1D4ED8;
 
     transform: translateY(-1px);
 
@@ -416,12 +487,21 @@
 
     cursor: pointer;
 
-    transition: .2s ease;
+    transition:
+        background-color .06s ease,
+        border-color .06s ease,
+        color .06s ease,
+        transform .06s ease,
+        box-shadow .06s ease;
+
+    transition-delay: 0s !important;
 
 }
 
 
-/* Secondary */
+/* =========================================
+   SECONDARY
+========================================= */
 
 .mailnova-reply-secondary {
 
@@ -438,14 +518,18 @@
 
     background: #F4F7FD;
 
-    border-color: #CBD5E1;
+    border-color: #9CB8EE;
 
     color: #2563EB;
+
+    transform: translateY(-1px);
 
 }
 
 
-/* Send */
+/* =========================================
+   SEND
+========================================= */
 
 .mailnova-send-reply {
 
@@ -462,10 +546,19 @@
 
     background: #1D4ED8;
 
+    border-color: #1D4ED8;
+
     transform: translateY(-1px);
 
     box-shadow:
         0 6px 16px rgba(37, 99, 235, .2);
+
+}
+
+
+.mailnova-send-reply:active {
+
+    transform: scale(.97);
 
 }
 
@@ -483,7 +576,9 @@
 }
 
 
-/* Cancel */
+/* =========================================
+   CANCEL
+========================================= */
 
 .mailnova-reply-cancel {
 
@@ -502,7 +597,292 @@
 
     background: #F8FAFC;
 
+    border-color: #CBD5E1;
+
     color: #374151;
+
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+~ #mailnova-reply-composer,
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+#mailnova-reply-composer {
+
+    background: #151a21;
+
+    border-color: #303743;
+
+    box-shadow:
+        0 28px 80px rgba(0, 0, 0, .55);
+
+    color: #E5E7EB;
+
+}
+
+
+/* =========================================
+   DARK — HEADER
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-header {
+
+    background: #1b2129;
+
+    border-bottom-color: #303743;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-title {
+
+    color: #F3F4F6;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-close {
+
+    background: #252b34;
+
+    color: #AAB4C2;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-close:hover {
+
+    background: #3a2427;
+
+    color: #F87171;
+
+}
+
+
+/* =========================================
+   DARK — BODY
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-label {
+
+    color: #94A3B8;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-recipient {
+
+    color: #E2E8F0;
+
+}
+
+
+/* =========================================
+   DARK — AI SECTION
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-ai-reply-section {
+
+    background: #1c222b;
+
+    border-color: #303743;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-ai-reply-title {
+
+    color: #E5E7EB;
+
+}
+
+
+/* =========================================
+   DARK — TEXTAREA
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+#mailnova-reply-text {
+
+    background: #11161d;
+
+    border-color: #343c48;
+
+    color: #E5E7EB;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+#mailnova-reply-text::placeholder {
+
+    color: #6B7280;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+#mailnova-reply-text:focus {
+
+    border-color: #4F8CFF;
+
+    box-shadow:
+        0 0 0 4px rgba(79, 140, 255, .14);
+
+}
+
+
+/* =========================================
+   DARK — CONTROLS
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-controls label {
+
+    color: #94A3B8;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+#mailnova-reply-tone {
+
+    background: #11161d;
+
+    border-color: #343c48;
+
+    color: #E2E8F0;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+#mailnova-reply-tone:focus {
+
+    border-color: #4F8CFF;
+
+}
+
+
+/* =========================================
+   DARK — GENERATE
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-generate-reply {
+
+    background: #172B43;
+
+    border-color: #315D91;
+
+    color: #7DB5FF;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-generate-reply:hover {
+
+    background: #1d3857;
+
+    border-color: #4F8CFF;
+
+    color: #A8CCFF;
+
+}
+
+
+/* =========================================
+   DARK — SECONDARY
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-secondary {
+
+    background: #20262f;
+
+    border-color: #373F4B;
+
+    color: #CBD5E1;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-secondary:hover {
+
+    background: #29313c;
+
+    border-color: #5A687A;
+
+    color: #E5E7EB;
+
+}
+
+
+/* =========================================
+   DARK — SEND
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-send-reply {
+
+    background: #2563EB;
+
+    border-color: #3B82F6;
+
+    color: #FFFFFF;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-send-reply:hover {
+
+    background: #1D4ED8;
+
+    border-color: #60A5FA;
+
+}
+
+
+/* =========================================
+   DARK — CANCEL
+========================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-cancel {
+
+    background: #20262f;
+
+    border-color: #373F4B;
+
+    color: #AAB4C2;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-reply-cancel:hover {
+
+    background: #29313c;
+
+    border-color: #505B6A;
+
+    color: #E5E7EB;
 
 }
 
@@ -517,6 +897,10 @@
 
         width: calc(100vw - 24px);
 
+        max-height: calc(100vh - 24px);
+
+        overflow-y: auto;
+
     }
 
 
@@ -528,6 +912,20 @@
 
 
     .mailnova-reply-cancel {
+
+        margin-left: 0;
+
+    }
+
+
+    .mailnova-reply-controls {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .mailnova-generate-reply {
 
         margin-left: 0;
 

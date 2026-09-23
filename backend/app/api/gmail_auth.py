@@ -5,11 +5,19 @@ from google.auth.exceptions import RefreshError
 import os
 
 
+# =========================================
+# GMAIL API SCOPES
+# =========================================
+
 SCOPES = [
-    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.modify",
     "https://www.googleapis.com/auth/gmail.send"
 ]
 
+
+# =========================================
+# PROJECT PATH
+# =========================================
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(
@@ -22,6 +30,10 @@ BASE_DIR = os.path.dirname(
 )
 
 
+# =========================================
+# CREDENTIAL FILES
+# =========================================
+
 CREDENTIALS_FILE = os.path.join(
     BASE_DIR,
     "credentials.json"
@@ -33,6 +45,10 @@ TOKEN_FILE = os.path.join(
     "token.json"
 )
 
+
+# =========================================
+# GET GMAIL CREDENTIALS
+# =========================================
 
 def get_gmail_credentials():
 
@@ -63,16 +79,52 @@ def get_gmail_credentials():
 
 
     # =========================================
+    # CHECK TOKEN SCOPES
+    # =========================================
+
+    if creds:
+
+        current_scopes = set(
+            creds.scopes or []
+        )
+
+        required_scopes = set(
+            SCOPES
+        )
+
+
+        # Existing token may have only
+        # gmail.readonly permission.
+        #
+        # Mark as Read requires
+        # gmail.modify permission.
+        #
+        # If the required permission is missing,
+        # a new Google authorization is required.
+
+        if not required_scopes.issubset(
+            current_scopes
+        ):
+
+            print(
+                "MailNova: Existing Gmail token "
+                "does not have required permissions."
+            )
+
+            print(
+                "MailNova: New Gmail authorization is required."
+            )
+
+            creds = None
+
+
+    # =========================================
     # CHECK VALID CREDENTIALS
     # =========================================
 
     if (
         creds
         and creds.valid
-        and creds.scopes
-        and set(SCOPES).issubset(
-            set(creds.scopes)
-        )
     ):
 
         return creds
@@ -99,10 +151,11 @@ def get_gmail_credentials():
             )
 
             print(
-                "MailNova: Gmail authentication refreshed successfully."
+                "MailNova: Gmail authentication "
+                "refreshed successfully."
             )
 
-        except RefreshError as error:
+        except RefreshError:
 
             print(
                 "MailNova: Gmail token expired or revoked."
@@ -161,7 +214,8 @@ def get_gmail_credentials():
 
 
     print(
-        "MailNova: Gmail authentication saved successfully."
+        "MailNova: Gmail authentication "
+        "saved successfully."
     )
 
 

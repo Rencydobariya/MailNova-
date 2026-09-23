@@ -143,6 +143,8 @@
 
     transform: scale(1.08);
 }
+
+
 /* =========================================
    MAILNOVA CUSTOM MONTH FILTER
 ========================================= */
@@ -452,6 +454,215 @@
     background: transparent;
 
 }
+
+
+/* =========================================
+   MAILNOVA DARK THEME
+========================================= */
+
+/* Search row */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-search {
+
+    background: #11161d;
+
+}
+
+
+/* Search box */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-search-box {
+
+    background: #1a212a;
+
+    border-color: #303946;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-search-box:focus-within {
+
+    background: #1c2530;
+
+    border-color: #5b9cff;
+
+    box-shadow:
+        0 0 0 4px rgba(91,156,255,.12);
+
+}
+
+
+/* Search input */
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-search-input {
+
+    color: #e5e7eb;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-search-input::placeholder {
+
+    color: #7f8a98;
+
+}
+
+
+/* Voice button */
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-voice-btn {
+
+    color: #cbd5e1;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-voice-btn:hover {
+
+    background: #26313e;
+
+}
+
+
+/* =========================================
+   DARK MONTH BUTTON
+========================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-month-button {
+
+    background: #1a212a;
+
+    border-color: #303946;
+
+    color: #dbe3ec;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-month-button:hover {
+
+    background: #222c37;
+
+    border-color: #46576b;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.22);
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-month-button.open {
+
+    background: #1d2732;
+
+    border-color: #5b9cff;
+
+    box-shadow:
+        0 0 0 4px rgba(91,156,255,.12);
+
+}
+
+
+/* Calendar icon */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-icon {
+
+    background: #27313d;
+
+}
+
+
+/* Month arrow */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-arrow {
+
+    color: #94a3b8;
+
+}
+
+
+/* =========================================
+   DARK MONTH DROPDOWN
+========================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-dropdown {
+
+    background: rgba(23,31,40,.97);
+
+    border-color: #35404d;
+
+    box-shadow:
+        0 18px 42px rgba(0,0,0,.46);
+
+}
+
+
+/* Month option */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-option {
+
+    color: #b8c2ce;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-option:hover {
+
+    background: #24303d;
+
+    color: #93c5fd;
+
+}
+
+
+/* Active month */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-option.active {
+
+    background: #202d3c;
+
+    color: #60a5fa;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================
+   DARK MONTH DROPDOWN SCROLLBAR
+========================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-dropdown::-webkit-scrollbar-thumb {
+
+    background: #4b5867;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-month-dropdown::-webkit-scrollbar-track {
+
+    background: transparent;
+
+}
+
 
 /* =========================================
    RESPONSIVE

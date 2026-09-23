@@ -4,15 +4,20 @@
 
 function openReplyComposer(email) {
 
-    /* Remove existing composer */
+    /* =========================================
+       REMOVE EXISTING COMPOSER
+    ========================================= */
 
     const existing =
         document.getElementById(
             "mailnova-reply-composer"
         );
 
+
     if (existing) {
+
         existing.remove();
+
     }
 
 
@@ -22,6 +27,7 @@ function openReplyComposer(email) {
 
     const composer =
         document.createElement("div");
+
 
     composer.id =
         "mailnova-reply-composer";
@@ -37,9 +43,13 @@ function openReplyComposer(email) {
 
             </div>
 
+
             <button
                 class="mailnova-reply-close"
-                id="mn-reply-close">
+                id="mn-reply-close"
+                type="button"
+                aria-label="Close Reply"
+            >
 
                 ✕
 
@@ -51,19 +61,26 @@ function openReplyComposer(email) {
         <div class="mailnova-reply-body">
 
 
-            <!-- Recipient -->
+            <!-- =================================
+                 RECIPIENT
+            ================================== -->
 
             <div class="mailnova-reply-field">
 
                 <span class="mailnova-reply-label">
+
                     To:
+
                 </span>
 
+
                 <span
-                    class="mailnova-reply-recipient">
+                    class="mailnova-reply-recipient"
+                >
 
                     ${escapeReplyHTML(
-                        email.sender || "Unknown sender"
+                        email.sender ||
+                        "Unknown sender"
                     )}
 
                 </span>
@@ -71,7 +88,9 @@ function openReplyComposer(email) {
             </div>
 
 
-            <!-- AI Section -->
+            <!-- =================================
+                 AI SECTION
+            ================================== -->
 
             <div class="mailnova-ai-reply-section">
 
@@ -88,12 +107,15 @@ function openReplyComposer(email) {
                 ></textarea>
 
 
-                <!-- Tone -->
+                <!-- =================================
+                     TONE
+                ================================== -->
 
                 <div class="mailnova-reply-controls">
 
                     <label
-                        for="mailnova-reply-tone">
+                        for="mailnova-reply-tone"
+                    >
 
                         Tone:
 
@@ -101,23 +123,28 @@ function openReplyComposer(email) {
 
 
                     <select
-                        id="mailnova-reply-tone">
+                        id="mailnova-reply-tone"
+                    >
 
                         <option value="professional">
                             Professional
                         </option>
 
+
                         <option value="friendly">
                             Friendly
                         </option>
+
 
                         <option value="short">
                             Short & Simple
                         </option>
 
+
                         <option value="formal">
                             Formal
                         </option>
+
 
                         <option value="appreciative">
                             Appreciative
@@ -128,7 +155,9 @@ function openReplyComposer(email) {
 
                     <button
                         id="mn-generate-reply"
-                        class="mailnova-generate-reply">
+                        class="mailnova-generate-reply"
+                        type="button"
+                    >
 
                         ✨ Generate
 
@@ -139,13 +168,17 @@ function openReplyComposer(email) {
             </div>
 
 
-            <!-- Actions -->
+            <!-- =================================
+                 ACTIONS
+            ================================== -->
 
             <div class="mailnova-reply-actions">
 
                 <button
                     id="mn-regenerate-reply"
-                    class="mailnova-reply-secondary">
+                    class="mailnova-reply-secondary"
+                    type="button"
+                >
 
                     🔄 Regenerate
 
@@ -154,7 +187,9 @@ function openReplyComposer(email) {
 
                 <button
                     id="mn-edit-reply"
-                    class="mailnova-reply-secondary">
+                    class="mailnova-reply-secondary"
+                    type="button"
+                >
 
                     ✏ Edit
 
@@ -163,7 +198,9 @@ function openReplyComposer(email) {
 
                 <button
                     id="mn-send-reply"
-                    class="mailnova-send-reply">
+                    class="mailnova-send-reply"
+                    type="button"
+                >
 
                     ➤ Send Reply
 
@@ -172,7 +209,9 @@ function openReplyComposer(email) {
 
                 <button
                     id="mn-cancel-reply"
-                    class="mailnova-reply-cancel">
+                    class="mailnova-reply-cancel"
+                    type="button"
+                >
 
                     Cancel
 
@@ -198,43 +237,69 @@ function openReplyComposer(email) {
     composer.dataset.emailId =
         email.id || "";
 
+
     composer.dataset.threadId =
         email.threadId || "";
+
+
+    /* =========================================
+       MAKE COMPOSER MOVABLE
+    ========================================= */
+
+    makeReplyComposerDraggable(
+        composer
+    );
 
 
     /* =========================================
        CLOSE
     ========================================= */
 
-    document
-        .getElementById(
+    const closeButton =
+        document.getElementById(
             "mn-reply-close"
-        )
-        .addEventListener(
+        );
+
+
+    if (closeButton) {
+
+        closeButton.addEventListener(
             "click",
             closeReplyComposer
         );
 
+    }
 
-    document
-        .getElementById(
+
+    const cancelButton =
+        document.getElementById(
             "mn-cancel-reply"
-        )
-        .addEventListener(
+        );
+
+
+    if (cancelButton) {
+
+        cancelButton.addEventListener(
             "click",
             closeReplyComposer
         );
+
+    }
 
 
     /* =========================================
        EDIT
     ========================================= */
 
-    document
-        .getElementById(
+    const editButton =
+        document.getElementById(
             "mn-edit-reply"
-        )
-        .addEventListener(
+        );
+
+
+    if (editButton) {
+
+        editButton.addEventListener(
             "click",
             () => {
 
@@ -243,26 +308,43 @@ function openReplyComposer(email) {
                         "mailnova-reply-text"
                     );
 
-                if (!textarea) return;
+
+                if (!textarea) {
+
+                    return;
+
+                }
+
 
                 textarea.focus();
+
 
                 textarea.selectionStart =
                     textarea.value.length;
 
+
+                textarea.selectionEnd =
+                    textarea.value.length;
+
             }
         );
+
+    }
 
 
     /* =========================================
        GENERATE
     ========================================= */
 
-    document
-        .getElementById(
+    const generateButton =
+        document.getElementById(
             "mn-generate-reply"
-        )
-        .addEventListener(
+        );
+
+
+    if (generateButton) {
+
+        generateButton.addEventListener(
             "click",
             () => {
 
@@ -272,17 +354,23 @@ function openReplyComposer(email) {
 
             }
         );
+
+    }
 
 
     /* =========================================
        REGENERATE
     ========================================= */
 
-    document
-        .getElementById(
+    const regenerateButton =
+        document.getElementById(
             "mn-regenerate-reply"
-        )
-        .addEventListener(
+        );
+
+
+    if (regenerateButton) {
+
+        regenerateButton.addEventListener(
             "click",
             () => {
 
@@ -293,16 +381,22 @@ function openReplyComposer(email) {
             }
         );
 
+    }
+
 
     /* =========================================
        SEND
     ========================================= */
 
-    document
-        .getElementById(
+    const sendButton =
+        document.getElementById(
             "mn-send-reply"
-        )
-        .addEventListener(
+        );
+
+
+    if (sendButton) {
+
+        sendButton.addEventListener(
             "click",
             () => {
 
@@ -313,18 +407,295 @@ function openReplyComposer(email) {
             }
         );
 
+    }
+
 
     /* =========================================
        OPEN ANIMATION
     ========================================= */
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(
+        () => {
 
-        composer.classList.add(
-            "show"
+            composer.classList.add(
+                "show"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   MAKE REPLY COMPOSER DRAGGABLE
+========================================= */
+
+function makeReplyComposerDraggable(
+    composer
+) {
+
+    if (!composer) {
+
+        return;
+
+    }
+
+
+    const header =
+        composer.querySelector(
+            ".mailnova-reply-header"
         );
 
-    });
+
+    if (!header) {
+
+        return;
+
+    }
+
+
+    let isDragging =
+        false;
+
+
+    let startX =
+        0;
+
+
+    let startY =
+        0;
+
+
+    let startLeft =
+        0;
+
+
+    let startTop =
+        0;
+
+
+    /* =====================================
+       START DRAG
+    ===================================== */
+
+    header.addEventListener(
+        "mousedown",
+        (event) => {
+
+            /*
+               Do not start dragging when the
+               user clicks the close button.
+            */
+
+            if (
+                event.target.closest(
+                    ".mailnova-reply-close"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                composer.getBoundingClientRect();
+
+
+            /*
+               Convert centered/fixed position
+               into exact screen coordinates.
+            */
+
+            composer.style.left =
+                `${rect.left}px`;
+
+
+            composer.style.top =
+                `${rect.top}px`;
+
+
+            composer.style.right =
+                "auto";
+
+
+            composer.style.bottom =
+                "auto";
+
+
+            composer.style.margin =
+                "0";
+
+
+            composer.style.transform =
+                "none";
+
+
+            startX =
+                event.clientX;
+
+
+            startY =
+                event.clientY;
+
+
+            startLeft =
+                rect.left;
+
+
+            startTop =
+                rect.top;
+
+
+            isDragging =
+                true;
+
+
+            composer.classList.add(
+                "mailnova-reply-dragging"
+            );
+
+
+            document.body.classList.add(
+                "mailnova-reply-is-dragging"
+            );
+
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+        }
+    );
+
+
+    /* =====================================
+       MOVE
+    ===================================== */
+
+    document.addEventListener(
+        "mousemove",
+        (event) => {
+
+            if (!isDragging) {
+
+                return;
+
+            }
+
+
+            let left =
+                startLeft +
+                (
+                    event.clientX -
+                    startX
+                );
+
+
+            let top =
+                startTop +
+                (
+                    event.clientY -
+                    startY
+                );
+
+
+            const width =
+                composer.offsetWidth;
+
+
+            const height =
+                composer.offsetHeight;
+
+
+            const margin =
+                8;
+
+
+            const maxLeft =
+                Math.max(
+                    margin,
+                    window.innerWidth -
+                    width -
+                    margin
+                );
+
+
+            const maxTop =
+                Math.max(
+                    margin,
+                    window.innerHeight -
+                    height -
+                    margin
+                );
+
+
+            /*
+               Keep composer inside viewport.
+            */
+
+            left =
+                Math.max(
+                    margin,
+                    Math.min(
+                        left,
+                        maxLeft
+                    )
+                );
+
+
+            top =
+                Math.max(
+                    margin,
+                    Math.min(
+                        top,
+                        maxTop
+                    )
+                );
+
+
+            composer.style.left =
+                `${left}px`;
+
+
+            composer.style.top =
+                `${top}px`;
+
+        }
+    );
+
+
+    /* =====================================
+       END DRAG
+    ===================================== */
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            if (!isDragging) {
+
+                return;
+
+            }
+
+
+            isDragging =
+                false;
+
+
+            composer.classList.remove(
+                "mailnova-reply-dragging"
+            );
+
+
+            document.body.classList.remove(
+                "mailnova-reply-is-dragging"
+            );
+
+        }
+    );
 
 }
 
@@ -340,17 +711,39 @@ function closeReplyComposer() {
             "mailnova-reply-composer"
         );
 
-    if (!composer) return;
+
+    if (!composer) {
+
+        return;
+
+    }
+
 
     composer.classList.remove(
         "show"
     );
 
-    setTimeout(() => {
 
-        composer.remove();
+    setTimeout(
+        () => {
 
-    }, 250);
+            /*
+               Make sure the same composer was
+               not recreated before removing it.
+            */
+
+            if (
+                composer &&
+                composer.parentNode
+            ) {
+
+                composer.remove();
+
+            }
+
+        },
+        250
+    );
 
 }
 
@@ -359,19 +752,27 @@ function closeReplyComposer() {
    GENERATE AI REPLY
 ========================================= */
 
-async function generateMailnovaReply(email) {
+async function generateMailnovaReply(
+    email
+) {
 
     const textarea =
         document.getElementById(
             "mailnova-reply-text"
         );
 
+
     const toneSelect =
         document.getElementById(
             "mailnova-reply-tone"
         );
 
-    if (!textarea) return;
+
+    if (!textarea) {
+
+        return;
+
+    }
 
 
     const tone =
@@ -393,17 +794,21 @@ async function generateMailnovaReply(email) {
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body: JSON.stringify({
 
                         sender:
-                            email.sender || "",
+                            email.sender ||
+                            "",
 
                         subject:
-                            email.subject || "",
+                            email.subject ||
+                            "",
 
                         body:
                             email.body ||
@@ -441,7 +846,8 @@ async function generateMailnovaReply(email) {
 
 
         textarea.value =
-            data.reply || "";
+            data.reply ||
+            "";
 
 
     }
@@ -466,14 +872,21 @@ async function generateMailnovaReply(email) {
    SEND REPLY
 ========================================= */
 
-async function sendMailnovaReply(email) {
+async function sendMailnovaReply(
+    email
+) {
 
     const textarea =
         document.getElementById(
             "mailnova-reply-text"
         );
 
-    if (!textarea) return;
+
+    if (!textarea) {
+
+        return;
+
+    }
 
 
     const message =
@@ -510,7 +923,9 @@ async function sendMailnovaReply(email) {
 
     if (sendButton) {
 
-        sendButton.disabled = true;
+        sendButton.disabled =
+            true;
+
 
         sendButton.textContent =
             "⏳ Sending...";
@@ -527,8 +942,10 @@ async function sendMailnovaReply(email) {
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body: JSON.stringify({
@@ -540,7 +957,8 @@ async function sendMailnovaReply(email) {
                             email.sender,
 
                         subject:
-                            email.subject || "",
+                            email.subject ||
+                            "",
 
                         body:
                             message
@@ -598,7 +1016,9 @@ async function sendMailnovaReply(email) {
 
         if (sendButton) {
 
-            sendButton.disabled = false;
+            sendButton.disabled =
+                false;
+
 
             sendButton.textContent =
                 "➤ Send Reply";
@@ -614,9 +1034,13 @@ async function sendMailnovaReply(email) {
    SAFE HTML
 ========================================= */
 
-function escapeReplyHTML(value) {
+function escapeReplyHTML(
+    value
+) {
 
-    return String(value || "")
+    return String(
+        value || ""
+    )
         .replace(
             /&/g,
             "&amp;"

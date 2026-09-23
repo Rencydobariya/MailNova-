@@ -3,29 +3,36 @@
    Professional Settings Modal
 ========================================================= */
 
-const MAILNOVA_SETTINGS_KEY = "mailnova_settings";
+const MAILNOVA_SETTINGS_KEY =
+    "mailnova_settings";
+
 
 const MAILNOVA_DEFAULT_SETTINGS = {
 
     theme: "light",
 
+    /* Appearance */
+    compactMode: false,
+    glassEffect: true,
+
+    /* Email Preferences */
     autoOpenWorkspace: true,
     unreadNotifications: true,
     categoryDetection: true,
     backgroundSync: true,
 
-    /* =====================================================
-       PRIORITY
-    ===================================================== */
-
+    /* Priority */
     priorityFocus: "unread",
 
+    /* AI */
     aiSummary: true,
     askAI: true,
     smartReply: true,
 
+    /* Loading */
     emailLoading: "fast",
 
+    /* Notifications */
     importantNotifications: true,
     notificationBadge: true
 
@@ -50,9 +57,15 @@ async function loadMailnovaSettings() {
                 MAILNOVA_SETTINGS_KEY
             );
 
+
         mailnovaSettings = {
+
             ...MAILNOVA_DEFAULT_SETTINGS,
-            ...(result[MAILNOVA_SETTINGS_KEY] || {})
+
+            ...(result[
+                MAILNOVA_SETTINGS_KEY
+            ] || {})
+
         };
 
     }
@@ -64,11 +77,13 @@ async function loadMailnovaSettings() {
             error
         );
 
+
         mailnovaSettings = {
             ...MAILNOVA_DEFAULT_SETTINGS
         };
 
     }
+
 
     return mailnovaSettings;
 
@@ -90,9 +105,13 @@ async function saveMailnovaSettings() {
 
         });
 
+
         console.log(
             "MailNova: Settings saved automatically."
         );
+
+
+        return true;
 
     }
 
@@ -101,6 +120,89 @@ async function saveMailnovaSettings() {
         console.error(
             "MailNova Settings Save Error:",
             error
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPATCH SETTING CHANGE
+========================================================= */
+
+function dispatchMailnovaSettingChange(
+    key,
+    value
+) {
+
+    /*
+       Workspace listens to this event.
+
+       This keeps settings.js independent from
+       workspace.js while allowing immediate
+       dashboard updates.
+    */
+
+    try {
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "mailnova-setting-changed",
+                {
+                    detail: {
+                        key,
+                        value
+                    }
+                }
+            )
+        );
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "MailNova: Could not dispatch setting change:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   REFRESH CURRENT EMAIL CARDS
+========================================================= */
+
+function refreshMailnovaCurrentCards() {
+
+    if (
+        typeof applyAllMailnovaFilters ===
+        "function"
+    ) {
+
+        applyAllMailnovaFilters();
+
+        return;
+
+    }
+
+
+    if (
+        typeof mailnovaEmails !==
+        "undefined" &&
+        Array.isArray(mailnovaEmails) &&
+        typeof renderEmails ===
+        "function"
+    ) {
+
+        renderEmails(
+            mailnovaEmails
         );
 
     }
@@ -117,14 +219,121 @@ async function updateMailnovaSetting(
     value
 ) {
 
-    mailnovaSettings[key] = value;
+    /*
+       Ignore unknown settings.
+       This prevents accidental storage pollution.
+    */
+
+    if (
+        !Object.prototype.hasOwnProperty.call(
+            MAILNOVA_DEFAULT_SETTINGS,
+            key
+        )
+    ) {
+
+        console.warn(
+            "MailNova: Unknown setting:",
+            key
+        );
+
+        return;
+
+    }
+
+
+    mailnovaSettings[key] =
+        value;
+
 
     await saveMailnovaSettings();
+
+
+    /* =====================================
+       APPLY LOCAL SETTING
+    ===================================== */
 
     applyMailnovaSetting(
         key,
         value
     );
+
+
+    /* =====================================
+       DISPATCH WORKSPACE EVENT
+    ===================================== */
+
+    dispatchMailnovaSettingChange(
+        key,
+        value
+    );
+
+
+    /* =====================================
+       AI CARD SETTINGS
+    ===================================== */
+
+    if (
+        key === "aiSummary" ||
+        key === "askAI" ||
+        key === "smartReply"
+    ) {
+
+        refreshMailnovaCurrentCards();
+
+    }
+
+
+    /* =====================================
+       CATEGORY DETECTION
+    ===================================== */
+
+    if (
+        key ===
+        "categoryDetection"
+    ) {
+
+        /*
+           When enabling category detection,
+           immediately recalculate categories.
+        */
+
+        if (
+            value === true &&
+            typeof refreshMailnovaCategories ===
+            "function"
+        ) {
+
+            refreshMailnovaCategories();
+
+        }
+
+
+        refreshMailnovaCurrentCards();
+
+    }
+
+
+    /* =====================================
+       NOTIFICATION SETTINGS
+    ===================================== */
+
+    if (
+        key ===
+        "importantNotifications" ||
+        key ===
+        "notificationBadge" ||
+        key ===
+        "unreadNotifications"
+    ) {
+
+        applyMailnovaNotificationSettings();
+
+    }
+
+
+    /* =====================================
+       UI
+    ===================================== */
 
     updateSettingsUI();
 
@@ -142,50 +351,249 @@ function applyMailnovaSetting(
     value
 ) {
 
-    if (key === "theme") {
-
-        applyMailnovaTheme(value);
-
-    }
-
-}
-
-/* =====================================================
-   PRIORITY FOCUS 
-===================================================== */
-
-if (key === "priorityFocus") {
+    /* =====================================
+       THEME
+    ===================================== */
 
     if (
-        typeof setMailnovaPriorityFocus === 
-        "function"
+        key ===
+        "theme"
     ) {
 
-        setMailnovaPriorityFocus(
+        applyMailnovaTheme(
             value
         );
 
     }
 
+
+    /* =====================================
+       PRIORITY FOCUS
+    ===================================== */
+
     if (
-        typeof refreshMailnovaPriorityRanking ===
-        "function"
+        key ===
+        "priorityFocus"
     ) {
 
-        refreshMailnovaPriorityRanking();
+        if (
+            typeof setMailnovaPriorityFocus ===
+            "function"
+        ) {
+
+            setMailnovaPriorityFocus(
+                value
+            );
+
+        }
+
+
+        if (
+            typeof refreshMailnovaPriorityRanking ===
+            "function"
+        ) {
+
+            refreshMailnovaPriorityRanking();
+
+        }
+
+    }
+
+
+    /* =====================================
+       COMPACT MODE
+    ===================================== */
+
+    if (
+        key ===
+        "compactMode"
+    ) {
+
+        const workspace =
+            document.getElementById(
+                "mailnova-workspace"
+            );
+
+
+        if (workspace) {
+
+            workspace.classList.toggle(
+                "mailnova-compact-mode",
+                Boolean(value)
+            );
+
+        }
+
+    }
+
+
+    /* =====================================
+       GLASS EFFECT
+    ===================================== */
+
+    if (
+        key ===
+        "glassEffect"
+    ) {
+
+        const workspace =
+            document.getElementById(
+                "mailnova-workspace"
+            );
+
+
+        if (workspace) {
+
+            workspace.classList.toggle(
+                "mailnova-glass-effect",
+                Boolean(value)
+            );
+
+        }
+
+    }
+
+
+    /* =====================================
+       AUTO OPEN
+       No current DOM change required.
+       Saved value is used by content.js.
+    ===================================== */
+
+    if (
+        key ===
+        "autoOpenWorkspace"
+    ) {
+
+        console.log(
+            "MailNova: Auto Open Workspace:",
+            value
+        );
+
+    }
+
+
+    /* =====================================
+       BACKGROUND SYNC
+    ===================================== */
+
+    if (
+        key ===
+        "backgroundSync"
+    ) {
+
+        console.log(
+            "MailNova: Background Sync:",
+            value
+        );
+
+    }
+
+
+    /* =====================================
+       EMAIL LOADING
+    ===================================== */
+
+    if (
+        key ===
+        "emailLoading"
+    ) {
+
+        console.log(
+            "MailNova: Email Loading Mode:",
+            value
+        );
 
     }
 
 }
 
+
 /* =========================================================
-   THEME
+   NOTIFICATION SETTINGS
+========================================================= */
+
+function applyMailnovaNotificationSettings() {
+
+    /*
+       The current project does not have a separate
+       notification engine yet.
+
+       These settings are still applied to the
+       MailNova UI state so future notification
+       logic can consume them directly.
+    */
+
+    const workspace =
+        document.getElementById(
+            "mailnova-workspace"
+        );
+
+
+    if (!workspace) {
+
+        return;
+
+    }
+
+
+    workspace.dataset.notificationsEnabled =
+        mailnovaSettings.unreadNotifications
+            ? "true"
+            : "false";
+
+
+    workspace.dataset.importantNotifications =
+        mailnovaSettings.importantNotifications
+            ? "true"
+            : "false";
+
+
+    workspace.dataset.notificationBadge =
+        mailnovaSettings.notificationBadge
+            ? "true"
+            : "false";
+
+
+    /*
+       If a notification refresh function exists,
+       use it without making it mandatory.
+    */
+
+    if (
+        typeof refreshMailnovaNotifications ===
+        "function"
+    ) {
+
+        try {
+
+            refreshMailnovaNotifications();
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "MailNova: Notification refresh failed:",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   EFFECTIVE THEME
 ========================================================= */
 
 function getMailnovaEffectiveTheme() {
 
     if (
-        mailnovaSettings.theme === "system"
+        mailnovaSettings.theme ===
+        "system"
     ) {
 
         return window.matchMedia(
@@ -196,10 +604,15 @@ function getMailnovaEffectiveTheme() {
 
     }
 
+
     return mailnovaSettings.theme;
 
 }
 
+
+/* =========================================================
+   THEME
+========================================================= */
 
 function applyMailnovaTheme(
     theme
@@ -210,11 +623,13 @@ function applyMailnovaTheme(
             "mailnova-workspace"
         );
 
+
     if (!workspace) {
 
         return;
 
     }
+
 
     const effectiveTheme =
         theme === "system"
@@ -235,11 +650,46 @@ function applyMailnovaTheme(
 
 
     workspace.classList.add(
-
         effectiveTheme === "dark"
             ? "mailnova-theme-dark"
             : "mailnova-theme-light"
+    );
 
+}
+
+
+/* =========================================================
+   APPEARANCE SETTINGS
+========================================================= */
+
+function applyMailnovaAppearanceSettings() {
+
+    const workspace =
+        document.getElementById(
+            "mailnova-workspace"
+        );
+
+
+    if (!workspace) {
+
+        return;
+
+    }
+
+
+    workspace.classList.toggle(
+        "mailnova-compact-mode",
+        Boolean(
+            mailnovaSettings.compactMode
+        )
+    );
+
+
+    workspace.classList.toggle(
+        "mailnova-glass-effect",
+        Boolean(
+            mailnovaSettings.glassEffect
+        )
     );
 
 }
@@ -256,17 +706,23 @@ function showSettingsSaved() {
             "mailnova-settings-saved"
         );
 
+
     if (!element) {
 
         return;
 
     }
 
-    element.classList.add("show");
+
+    element.classList.add(
+        "show"
+    );
+
 
     clearTimeout(
         window.__mailnovaSavedTimer
     );
+
 
     window.__mailnovaSavedTimer =
         setTimeout(
@@ -481,6 +937,7 @@ function createMailnovaSettingsModal() {
             "mailnova-workspace"
         );
 
+
     if (!workspace) {
 
         return;
@@ -500,7 +957,9 @@ function createMailnovaSettingsModal() {
 
 
     const overlay =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     overlay.id =
@@ -511,11 +970,9 @@ function createMailnovaSettingsModal() {
 
         <div class="mailnova-settings-modal">
 
-
             <!-- LEFT SIDEBAR -->
 
             <aside class="mn-settings-sidebar">
-
 
                 <div class="mn-settings-brand">
 
@@ -644,7 +1101,6 @@ function createMailnovaSettingsModal() {
 
             <main class="mn-settings-main">
 
-
                 <div class="mn-settings-main-header">
 
                     <div>
@@ -677,9 +1133,7 @@ function createMailnovaSettingsModal() {
                 </div>
 
 
-                <!-- =================================================
-                     APPEARANCE
-                ================================================== -->
+                <!-- APPEARANCE -->
 
                 <section
                     class="mn-settings-section-content active"
@@ -748,9 +1202,7 @@ function createMailnovaSettingsModal() {
                 </section>
 
 
-                <!-- =================================================
-                     EMAIL PREFERENCES
-                ================================================== -->
+                <!-- EMAIL -->
 
                 <section
                     class="mn-settings-section-content"
@@ -807,8 +1259,6 @@ function createMailnovaSettingsModal() {
                     <div class="mn-divider"></div>
 
 
-                    <!-- PRIORITY FOCUS -->
-
                     <div class="mn-content-heading">
 
                         <span class="mn-content-heading-icon">
@@ -833,14 +1283,12 @@ function createMailnovaSettingsModal() {
                             "Give unread emails a priority boost."
                         )}
 
-
                         ${createPriorityFocusOption(
                             "all",
                             "✦",
                             "All Emails",
                             "Rank emails without a read/unread preference."
                         )}
-
 
                         ${createPriorityFocusOption(
                             "read",
@@ -854,9 +1302,7 @@ function createMailnovaSettingsModal() {
                 </section>
 
 
-                <!-- =================================================
-                     AI INTELLIGENCE
-                ================================================== -->
+                <!-- AI -->
 
                 <section
                     class="mn-settings-section-content"
@@ -885,14 +1331,12 @@ function createMailnovaSettingsModal() {
                         "Generate intelligent email summaries."
                     )}
 
-
                     ${createSettingRow(
                         "askAI",
                         "◌",
                         "Ask AI",
                         "Ask questions about your emails."
                     )}
-
 
                     ${createSettingRow(
                         "smartReply",
@@ -904,9 +1348,7 @@ function createMailnovaSettingsModal() {
                 </section>
 
 
-                <!-- =================================================
-                     EMAIL LOADING
-                ================================================== -->
+                <!-- LOADING -->
 
                 <section
                     class="mn-settings-section-content"
@@ -937,14 +1379,12 @@ function createMailnovaSettingsModal() {
                             "First emails immediately."
                         )}
 
-
                         ${createLoadingOption(
                             "balanced",
                             "≈",
                             "Balanced",
                             "Smooth background loading."
                         )}
-
 
                         ${createLoadingOption(
                             "complete",
@@ -964,9 +1404,7 @@ function createMailnovaSettingsModal() {
                 </section>
 
 
-                <!-- =================================================
-                     NOTIFICATIONS
-                ================================================== -->
+                <!-- NOTIFICATIONS -->
 
                 <section
                     class="mn-settings-section-content"
@@ -995,7 +1433,6 @@ function createMailnovaSettingsModal() {
                         "Notify you about important emails."
                     )}
 
-
                     ${createSettingRow(
                         "notificationBadge",
                         "●",
@@ -1004,7 +1441,6 @@ function createMailnovaSettingsModal() {
                     )}
 
                 </section>
-
 
             </main>
 
@@ -1027,6 +1463,12 @@ function createMailnovaSettingsModal() {
    NAVIGATION + CONTROLS
 ========================================================= */
 
+/* =========================================================
+   SETTINGS CONTROLS
+   FINAL STABLE VERSION
+   Prevents Gmail / Workspace drag interference
+========================================================= */
+
 function setupMailnovaSettingsControls() {
 
     const overlay =
@@ -1035,171 +1477,369 @@ function setupMailnovaSettingsControls() {
         );
 
     if (!overlay) {
-
         return;
-
     }
+
+
+    /* =====================================================
+       PREVENT WORKSPACE DRAG FROM STEALING SETTINGS EVENTS
+    ===================================================== */
+
+    if (
+        overlay.dataset.settingsControlsReady ===
+        "true"
+    ) {
+        return;
+    }
+
+    overlay.dataset.settingsControlsReady =
+        "true";
+
+
+    /* =====================================================
+       POINTER DOWN CAPTURE
+       Stops workspace drag handlers before they receive
+       the event.
+    ===================================================== */
+
+    overlay.addEventListener(
+        "pointerdown",
+        function (event) {
+
+            const control =
+                event.target.closest(
+                    ".mn-settings-nav-item, " +
+                    ".mn-theme-card, " +
+                    ".mn-setting-switch, " +
+                    ".mn-priority-focus-option, " +
+                    ".mn-loading-option, " +
+                    ".mn-settings-modal-close"
+                );
+
+
+            if (!control) {
+                return;
+            }
+
+
+            /*
+               Important:
+               Do NOT preventDefault here.
+
+               We only stop propagation so Gmail/
+               workspace drag handlers cannot steal
+               the interaction.
+            */
+
+            event.stopPropagation();
+
+        },
+        true
+    );
 
 
     /* =====================================================
        NAVIGATION
     ===================================================== */
 
-    overlay
-        .querySelectorAll(
-            ".mn-settings-nav-item"
-        )
-        .forEach(
-            button => {
+    overlay.addEventListener(
+        "click",
+        function (event) {
 
-                button.addEventListener(
-                    "click",
-                    event => {
-
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        switchSettingsSection(
-                            button.dataset.section
-                        );
-
-                    }
+            const button =
+                event.target.closest(
+                    ".mn-settings-nav-item"
                 );
 
+
+            if (!button) {
+                return;
             }
-        );
+
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const section =
+                button.dataset.section;
+
+
+            if (!section) {
+                return;
+            }
+
+
+            switchSettingsSection(
+                section
+            );
+
+        },
+        true
+    );
 
 
     /* =====================================================
        THEME
     ===================================================== */
 
-    overlay
-        .querySelectorAll(
-            ".mn-theme-card"
-        )
-        .forEach(
-            button => {
+    overlay.addEventListener(
+        "click",
+        function (event) {
 
-                button.addEventListener(
-                    "click",
-                    event => {
+            const card =
+                event.target.closest(
+                    ".mn-theme-card"
+                );
 
-                        event.preventDefault();
-                        event.stopPropagation();
 
-                        updateMailnovaSetting(
-                            "theme",
-                            button.dataset.theme
+            if (!card) {
+                return;
+            }
+
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const theme =
+                card.dataset.theme;
+
+
+            if (!theme) {
+                return;
+            }
+
+
+            /*
+               Immediately update visual state.
+            */
+
+            overlay
+                .querySelectorAll(
+                    ".mn-theme-card"
+                )
+                .forEach(
+                    item => {
+
+                        item.classList.toggle(
+                            "active",
+                            item === card
                         );
 
                     }
                 );
 
-            }
-        );
+
+            /*
+               Save + apply setting.
+            */
+
+            updateMailnovaSetting(
+                "theme",
+                theme
+            );
+
+        },
+        true
+    );
 
 
     /* =====================================================
        TOGGLES
     ===================================================== */
 
-    overlay
-        .querySelectorAll(
-            ".mn-setting-switch"
-        )
-        .forEach(
-            button => {
+    overlay.addEventListener(
+        "click",
+        function (event) {
 
-                button.addEventListener(
-                    "click",
-                    event => {
-
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        const key =
-                            button.dataset.setting;
-
-                        const current =
-                            Boolean(
-                                mailnovaSettings[key]
-                            );
-
-                        updateMailnovaSetting(
-                            key,
-                            !current
-                        );
-
-                    }
+            const button =
+                event.target.closest(
+                    ".mn-setting-switch"
                 );
 
+
+            if (!button) {
+                return;
             }
-        );
+
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const key =
+                button.dataset.setting;
+
+
+            if (!key) {
+                return;
+            }
+
+
+            const current =
+                Boolean(
+                    mailnovaSettings[key]
+                );
+
+
+            const newValue =
+                !current;
+
+
+            /*
+               Immediate visual response.
+            */
+
+            button.classList.toggle(
+                "active",
+                newValue
+            );
+
+
+            button.setAttribute(
+                "aria-pressed",
+                String(newValue)
+            );
+
+
+            /*
+               Save setting.
+            */
+
+            updateMailnovaSetting(
+                key,
+                newValue
+            );
+
+        },
+        true
+    );
 
 
     /* =====================================================
        PRIORITY FOCUS
     ===================================================== */
 
-    overlay
-        .querySelectorAll(
-            ".mn-priority-focus-option"
-        )
-        .forEach(
-            button => {
+    overlay.addEventListener(
+        "click",
+        function (event) {
 
-                button.addEventListener(
-                    "click",
-                    event => {
+            const button =
+                event.target.closest(
+                    ".mn-priority-focus-option"
+                );
 
-                        event.preventDefault();
-                        event.stopPropagation();
 
-                        updateMailnovaSetting(
-                            "priorityFocus",
-                            button.dataset.priorityFocus
+            if (!button) {
+                return;
+            }
+
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const value =
+                button.dataset.priorityFocus;
+
+
+            if (!value) {
+                return;
+            }
+
+
+            overlay
+                .querySelectorAll(
+                    ".mn-priority-focus-option"
+                )
+                .forEach(
+                    item => {
+
+                        item.classList.toggle(
+                            "active",
+                            item === button
                         );
 
                     }
                 );
 
-            }
-        );
+
+            updateMailnovaSetting(
+                "priorityFocus",
+                value
+            );
+
+        },
+        true
+    );
 
 
     /* =====================================================
-       LOADING
+       EMAIL LOADING
     ===================================================== */
 
-    overlay
-        .querySelectorAll(
-            ".mn-loading-option"
-        )
-        .forEach(
-            button => {
+    overlay.addEventListener(
+        "click",
+        function (event) {
 
-                button.addEventListener(
-                    "click",
-                    event => {
+            const button =
+                event.target.closest(
+                    ".mn-loading-option"
+                );
 
-                        event.preventDefault();
-                        event.stopPropagation();
 
-                        updateMailnovaSetting(
-                            "emailLoading",
-                            button.dataset.loading
+            if (!button) {
+                return;
+            }
+
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const value =
+                button.dataset.loading;
+
+
+            if (!value) {
+                return;
+            }
+
+
+            overlay
+                .querySelectorAll(
+                    ".mn-loading-option"
+                )
+                .forEach(
+                    item => {
+
+                        item.classList.toggle(
+                            "active",
+                            item === button
                         );
 
                     }
                 );
 
-            }
-        );
+
+            updateMailnovaSetting(
+                "emailLoading",
+                value
+            );
+
+
+            updateLoadingHint(
+                value
+            );
+
+        },
+        true
+    );
 
 
     /* =====================================================
-       CLOSE
+       CLOSE BUTTON
     ===================================================== */
 
     const closeButton =
@@ -1212,14 +1852,15 @@ function setupMailnovaSettingsControls() {
 
         closeButton.addEventListener(
             "click",
-            event => {
+            function (event) {
 
                 event.preventDefault();
                 event.stopPropagation();
 
                 closeMailnovaSettings();
 
-            }
+            },
+            true
         );
 
     }
@@ -1231,10 +1872,11 @@ function setupMailnovaSettingsControls() {
 
     overlay.addEventListener(
         "click",
-        event => {
+        function (event) {
 
             if (
-                event.target === overlay
+                event.target ===
+                overlay
             ) {
 
                 closeMailnovaSettings();
@@ -1244,6 +1886,10 @@ function setupMailnovaSettingsControls() {
         }
     );
 
+
+    /* =====================================================
+       INITIAL UI
+    ===================================================== */
 
     updateSettingsUI();
 
@@ -1267,7 +1913,8 @@ function switchSettingsSection(
 
                 item.classList.toggle(
                     "active",
-                    item.dataset.section === section
+                    item.dataset.section ===
+                    section
                 );
 
             }
@@ -1283,7 +1930,8 @@ function switchSettingsSection(
 
                 content.classList.toggle(
                     "active",
-                    content.dataset.content === section
+                    content.dataset.content ===
+                    section
                 );
 
             }
@@ -1336,6 +1984,7 @@ function switchSettingsSection(
             "mn-settings-section-title"
         );
 
+
     const description =
         document.getElementById(
             "mn-settings-section-description"
@@ -1371,6 +2020,7 @@ function updateSettingsUI() {
             "mailnova-settings-overlay"
         );
 
+
     if (!overlay) {
 
         return;
@@ -1378,9 +2028,9 @@ function updateSettingsUI() {
     }
 
 
-    /* =====================================================
+    /* =====================================
        THEME
-    ===================================================== */
+    ===================================== */
 
     overlay
         .querySelectorAll(
@@ -1394,15 +2044,16 @@ function updateSettingsUI() {
 
                     card.dataset.theme ===
                     mailnovaSettings.theme
+
                 );
 
             }
         );
 
 
-    /* =====================================================
+    /* =====================================
        TOGGLES
-    ===================================================== */
+    ===================================== */
 
     overlay
         .querySelectorAll(
@@ -1414,15 +2065,18 @@ function updateSettingsUI() {
                 const key =
                     button.dataset.setting;
 
+
                 const active =
                     Boolean(
                         mailnovaSettings[key]
                     );
 
+
                 button.classList.toggle(
                     "active",
                     active
                 );
+
 
                 button.setAttribute(
                     "aria-pressed",
@@ -1433,9 +2087,9 @@ function updateSettingsUI() {
         );
 
 
-    /* =====================================================
+    /* =====================================
        PRIORITY FOCUS
-    ===================================================== */
+    ===================================== */
 
     overlay
         .querySelectorAll(
@@ -1459,9 +2113,9 @@ function updateSettingsUI() {
         );
 
 
-    /* =====================================================
+    /* =====================================
        LOADING
-    ===================================================== */
+    ===================================== */
 
     overlay
         .querySelectorAll(
@@ -1474,7 +2128,11 @@ function updateSettingsUI() {
                     "active",
 
                     button.dataset.loading ===
-                    mailnovaSettings.emailLoading
+                    (
+                        mailnovaSettings.emailLoading ||
+                        "fast"
+                    )
+
                 );
 
             }
@@ -1500,6 +2158,7 @@ function updateLoadingHint(
         document.getElementById(
             "mn-loading-hint"
         );
+
 
     if (!hint) {
 
@@ -1558,6 +2217,7 @@ async function openMailnovaSettings(
 
         createMailnovaSettingsModal();
 
+
         overlay =
             document.getElementById(
                 "mailnova-settings-overlay"
@@ -1575,14 +2235,17 @@ async function openMailnovaSettings(
 
     updateSettingsUI();
 
+
     applyMailnovaTheme(
         mailnovaSettings.theme
     );
 
 
-    /* =====================================================
-       APPLY PRIORITY FOCUS
-    ===================================================== */
+    applyMailnovaAppearanceSettings();
+
+
+    applyMailnovaNotificationSettings();
+
 
     if (
         typeof setMailnovaPriorityFocus ===
@@ -1621,6 +2284,7 @@ function closeMailnovaSettings() {
             "mailnova-settings-overlay"
         );
 
+
     if (!overlay) {
 
         return;
@@ -1652,7 +2316,8 @@ if (
         event => {
 
             if (
-                event.key !== "Escape"
+                event.key !==
+                "Escape"
             ) {
 
                 return;
@@ -1719,7 +2384,8 @@ if (
 
 
     if (
-        media.addEventListener
+        typeof media.addEventListener ===
+        "function"
     ) {
 
         media.addEventListener(
@@ -1729,7 +2395,10 @@ if (
 
     }
 
-    else {
+    else if (
+        typeof media.addListener ===
+        "function"
+    ) {
 
         media.addListener(
             handleThemeChange
@@ -1753,9 +2422,11 @@ loadMailnovaSettings()
             );
 
 
-            /* =============================================
-               INITIAL PRIORITY FOCUS
-            ============================================= */
+            applyMailnovaAppearanceSettings();
+
+
+            applyMailnovaNotificationSettings();
+
 
             if (
                 typeof setMailnovaPriorityFocus ===

@@ -197,6 +197,229 @@ function applyEmailFilters() {
 
 
 /* =========================================
+   CLOSE MONTH DROPDOWN
+========================================= */
+
+function closeMailnovaMonthDropdown() {
+
+    const dropdown =
+        document.getElementById(
+            "mailnova-month-dropdown"
+        );
+
+    const button =
+        document.getElementById(
+            "mailnova-month-button"
+        );
+
+
+    if (dropdown) {
+
+        dropdown.classList.remove(
+            "open"
+        );
+
+    }
+
+
+    if (button) {
+
+        button.classList.remove(
+            "open"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CLOSE SORT DROPDOWN
+========================================= */
+
+function closeMailnovaSortDropdown() {
+
+    const sortMenu =
+        document.getElementById(
+            "mailnova-sort-menu"
+        );
+
+
+    if (!sortMenu) {
+
+        return;
+
+    }
+
+
+    sortMenu.classList.remove(
+        "open"
+    );
+
+
+    /*
+       Sort menu ke existing JS mein
+       inline display bhi set hota hai.
+
+       Isliye sirf "open" remove karna
+       enough nahi hai.
+    */
+
+    sortMenu.style.display =
+        "none";
+
+    sortMenu.style.visibility =
+        "hidden";
+
+    sortMenu.style.opacity =
+        "0";
+
+}
+
+
+/* =========================================
+   MAILNOVA FILTER MENU CONTROLLER
+========================================= */
+
+/*
+   IMPORTANT:
+
+   Month aur Sort ek time par kabhi
+   open nahi honge.
+
+   Capture phase isliye use kiya gaya hai
+   kyunki existing Sort button handler
+   stopPropagation() use karta hai.
+*/
+
+function setupMailnovaFilterMenuController() {
+
+    if (
+        window.mailnovaFilterMenuControllerReady
+    ) {
+
+        return;
+
+    }
+
+
+    window.mailnovaFilterMenuControllerReady =
+        true;
+
+
+    document.addEventListener(
+        "click",
+        (e) => {
+
+            const target =
+                e.target;
+
+
+            if (!target) {
+
+                return;
+
+            }
+
+
+            /* =====================================
+               MONTH BUTTON CLICK
+            ===================================== */
+
+            const monthButton =
+                target.closest(
+                    "#mailnova-month-button"
+                );
+
+
+            if (monthButton) {
+
+                /*
+                   Month open hone se pehle
+                   Sort ko definitely close karo.
+                */
+
+                closeMailnovaSortDropdown();
+
+                return;
+
+            }
+
+
+            /* =====================================
+               SORT BUTTON CLICK
+            ===================================== */
+
+            const sortButton =
+                target.closest(
+                    "#mailnova-sort-btn"
+                );
+
+
+            if (sortButton) {
+
+                /*
+                   Sort open hone se pehle
+                   Month ko definitely close karo.
+                */
+
+                closeMailnovaMonthDropdown();
+
+                return;
+
+            }
+
+
+            /* =====================================
+               CLICK INSIDE MONTH
+            ===================================== */
+
+            const insideMonth =
+                target.closest(
+                    ".mailnova-month-filter"
+                );
+
+
+            if (insideMonth) {
+
+                return;
+
+            }
+
+
+            /* =====================================
+               CLICK INSIDE SORT
+            ===================================== */
+
+            const insideSort =
+                target.closest(
+                    "#mailnova-sort-menu, .mailnova-sort-wrapper"
+                );
+
+
+            if (insideSort) {
+
+                return;
+
+            }
+
+
+            /* =====================================
+               CLICK ANYWHERE ELSE
+            ===================================== */
+
+            closeMailnovaMonthDropdown();
+
+            closeMailnovaSortDropdown();
+
+        },
+        true
+    );
+
+}
+
+
+/* =========================================
    MONTH FILTER
 ========================================= */
 
@@ -233,6 +456,13 @@ function setupMonthFilter() {
     }
 
 
+    /*
+       Start global Month / Sort controller.
+    */
+
+    setupMailnovaFilterMenuController();
+
+
     const currentYear =
         new Date().getFullYear();
 
@@ -263,7 +493,9 @@ function setupMonthFilter() {
     /* All Months */
 
     const allOption =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     allOption.className =
@@ -289,7 +521,9 @@ function setupMonthFilter() {
         (month, index) => {
 
             const option =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             option.className =
@@ -299,7 +533,10 @@ function setupMonthFilter() {
             option.dataset.value =
                 `${currentYear}-${String(
                     index + 1
-                ).padStart(2, "0")}`;
+                ).padStart(
+                    2,
+                    "0"
+                )}`;
 
 
             option.textContent =
@@ -322,7 +559,27 @@ function setupMonthFilter() {
         "click",
         (e) => {
 
+            e.preventDefault();
+
             e.stopPropagation();
+
+
+            const willOpen =
+                !dropdown.classList.contains(
+                    "open"
+                );
+
+
+            /*
+               If Month is going to open,
+               Sort is ALWAYS closed first.
+            */
+
+            if (willOpen) {
+
+                closeMailnovaSortDropdown();
+
+            }
 
 
             dropdown.classList.toggle(
@@ -346,13 +603,20 @@ function setupMonthFilter() {
         "click",
         (e) => {
 
+            e.stopPropagation();
+
+
             const option =
                 e.target.closest(
                     ".mailnova-month-option"
                 );
 
 
-            if (!option) return;
+            if (!option) {
+
+                return;
+
+            }
 
 
             const value =
@@ -367,13 +631,15 @@ function setupMonthFilter() {
                 .querySelectorAll(
                     ".mailnova-month-option"
                 )
-                .forEach(item => {
+                .forEach(
+                    item => {
 
-                    item.classList.remove(
-                        "active"
-                    );
+                        item.classList.remove(
+                            "active"
+                        );
 
-                });
+                    }
+                );
 
 
             option.classList.add(
@@ -381,14 +647,12 @@ function setupMonthFilter() {
             );
 
 
-            dropdown.classList.remove(
-                "open"
-            );
+            /*
+               Selection ke baad Month
+               automatically close.
+            */
 
-
-            button.classList.remove(
-                "open"
-            );
+            closeMailnovaMonthDropdown();
 
 
             /* Store selected month */
@@ -400,35 +664,6 @@ function setupMonthFilter() {
             /* Apply all filters */
 
             applyAllMailnovaFilters();
-
-        }
-    );
-
-
-    /* =====================================
-       CLOSE WHEN CLICKING OUTSIDE
-    ===================================== */
-
-    document.addEventListener(
-        "click",
-        (e) => {
-
-            if (
-                !e.target.closest(
-                    ".mailnova-month-filter"
-                )
-            ) {
-
-                dropdown.classList.remove(
-                    "open"
-                );
-
-
-                button.classList.remove(
-                    "open"
-                );
-
-            }
 
         }
     );

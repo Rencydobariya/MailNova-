@@ -1,234 +1,1264 @@
-.mailnova-email-card 
-{
-  background: #fff;
-  border-radius:20px ;
-  padding:18px ;
+/* =========================================================
+   MAILNOVA EMAIL CARDS
+========================================================= */
 
-  margin-bottom: 18px ;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transition:0.25s;
-  cursor:pointer;
+.mailnova-email-card {
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 18px;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.08);
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        background-color 0.08s ease,
+        border-color 0.08s ease;
+
+    cursor: pointer;
+
+    border: 1px solid transparent;
+
+    box-sizing: border-box;
 }
+
 
 .mailnova-email-card:hover {
-  transform:translateY(-3px);
 
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 34px rgba(0, 0, 0, 0.12);
 }
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
 
 .mailnova-card-header {
-  display:flex;
 
-  justify-content: space-between ;
-  align-items:center;
-  margin-bottom:10px ;
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    gap: 12px;
 }
+
+
+/* =========================================================
+   SENDER WRAPPER
+========================================================= */
+
+.mailnova-sender-wrapper {
+
+    display: flex;
+
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   READ / UNREAD DOT
+========================================================= */
+
+.mailnova-read-status-dot {
+
+    width: 8px;
+
+    height: 8px;
+
+    min-width: 8px;
+
+    border-radius: 50%;
+
+    display: inline-block;
+
+    box-sizing: border-box;
+
+    flex: none;
+}
+
+
+/* =========================================================
+   UNREAD DOT — GREEN
+========================================================= */
+
+.mailnova-email-unread
+.mailnova-read-status-dot {
+
+    background: #16a34a;
+
+    box-shadow:
+        0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+
+/* =========================================================
+   READ DOT — GREY
+========================================================= */
+
+.mailnova-email-read
+.mailnova-read-status-dot {
+
+    background: #6b7280;
+
+    box-shadow:
+        0 0 0 3px rgba(107, 114, 128, 0.12);
+}
+
+
+/* =========================================================
+   READ / UNREAD BADGE
+========================================================= */
+
+.mailnova-read-status {
+
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 20px;
+
+    padding: 2px 7px;
+
+    border-radius: 6px;
+
+    font-family: Inter, sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.45px;
+
+    line-height: 1;
+
+    box-sizing: border-box;
+
+    border: 1px solid transparent;
+
+    cursor: pointer;
+
+    flex: none;
+
+    transition:
+        background-color 0.08s ease,
+        border-color 0.08s ease,
+        color 0.08s ease;
+}
+
+
+/* =========================================================
+   UNREAD BADGE
+========================================================= */
+
+.mailnova-email-unread
+.mailnova-read-status {
+
+    background: #ecfdf3;
+
+    color: #15803d;
+
+    border-color: #bbf7d0;
+}
+
+
+.mailnova-email-unread
+.mailnova-read-status:hover {
+
+    background: #dcfce7;
+
+    color: #166534;
+
+    border-color: #86efac;
+}
+
+
+/* =========================================================
+   READ BADGE
+========================================================= */
+
+.mailnova-email-read
+.mailnova-read-status {
+
+    background: #eef0f3;
+
+    color: #4b5563;
+
+    border-color: #cbd1d9;
+}
+
+
+.mailnova-email-read
+.mailnova-read-status:hover {
+
+    background: #e2e5e9;
+
+    color: #374151;
+
+    border-color: #b8c0ca;
+}
+
+
+/* =========================================================
+   SENDER
+========================================================= */
 
 .mailnova-sender {
-  font-size: 18px;
-  font-weight:700;
 
-  color: #222 ;
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #222222;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
 }
+
+
+.mailnova-email-unread
+.mailnova-sender,
+
+.mailnova-email-read
+.mailnova-sender {
+
+    font-weight: 700;
+
+    color: #222222;
+}
+
+
+/* =========================================================
+   META
+========================================================= */
 
 .mailnova-meta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 13px;
 
-  color: #666;
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    font-size: 13px;
+
+    color: #666666;
+
+    flex-shrink: 0;
 }
+
+
+/* =========================================================
+   PRIORITY
+========================================================= */
 
 .mailnova-priority {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  transition: 0.25s;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+
+    transition:
+        color 0.08s ease;
 }
+
 
 .priority-5 {
-  color: #e10303;
+    color: #dc2626;
 }
+
 
 .priority-45 {
-  color: #e3611b;
+    color: #ea580c;
 }
+
 
 .priority-4 {
-  color: #044ae1;
+    color: #2563eb;
 }
+
 
 .priority-35 {
-  /* color:#0F766E; */
-  color: #0e6962;
+    color: #0f766e;
 }
+
 
 .priority-3 {
-  /* color:#6B7280; */
-  color: #d9d62b;
+    color: #a16207;
 }
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.mailnova-date {
+
+    color: #6b7280;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SUBJECT
+========================================================= */
 
 .mailnova-subject {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #333;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    margin-bottom: 10px;
+
+    color: #333333;
 }
 
-.mailnova-summary 
-{
-  font-size:14px;
 
-  color: #666;
+.mailnova-email-unread
+.mailnova-subject,
 
-  line-height: 1.6;
+.mailnova-email-read
+.mailnova-subject {
 
-  display:  -webkit-box;
-
-  -webkit-line-clamp:3;
-
-  -webkit-box-orient:vertical;
-
-  overflow:hidden;
-
-  margin-bottom: 18px;
+    color: #333333;
 }
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.mailnova-summary {
+
+    font-size: 14px;
+
+    color: #666666;
+
+    line-height: 1.6;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 3;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   CARD ACTIONS
+========================================================= */
 
 .mailnova-card-actions {
-  display: flex;
-  margin-top: 14px;
 
-  flex-wrap: wrap;
+    display: flex;
 
-  gap: 10px;
+    margin-top: 14px;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    align-items: center;
 }
+
+
+/* =========================================================
+   ALL ACTION BUTTONS
+   FAST / INSTANT FEEL
+========================================================= */
 
 .mailnova-card-actions button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 18px;
-  border-radius: 12px;
 
-  /* border:1px solid rgba(24, 24, 24, 0.267);
+    display: flex;
 
-            background:rgba(255,255,255,.45); */
-  /* background:rgba(250,250,251,.88);
-border:1px solid #55575988;
-color:#191919c4;
+    align-items: center;
 
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px); */
+    justify-content: center;
 
-  /* color:#374151; */
-  border: 1px solid rgba(62, 95, 138, 0.18);
+    gap: 7px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.96),
-    rgba(247, 249, 252, 0.9)
-  );
-  /* color:#4B5563; */
-  /* color:#3A4B66;  */
-  color: #434e5f;
+    padding: 10px 18px;
 
-  /* color:#3A4B66; */
+    border-radius: 12px;
 
-  /* color:#455a7c; 2nd best color  */
-  /* color:#47516d; 3rd best mst color che no dark no light blueish tone*/
+    border:
+        1px solid rgba(62, 95, 138, 0.18);
 
-  /* color:#4e5670; */
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(247, 249, 252, 0.90)
+        );
 
-  font-size: 13px;
-  font-weight: 600;
+    color: #434e5f;
 
-  cursor: pointer;
+    font-size: 13px;
 
-  /* transition:
-            background .25s ease,
-            transform .25s ease,
-            box-shadow .25s ease,
-            border-color .25s ease,
-            color .25s ease; */
+    font-weight: 600;
 
-  box-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.04),
-    0 8px 20px rgba(39, 75, 141, 0.05);
-  transition: 0.22s ease;
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.04),
+        0 6px 16px rgba(39, 75, 141, 0.04);
+
+    transition:
+        transform 0.08s ease,
+        background-color 0.06s ease,
+        border-color 0.06s ease,
+        color 0.06s ease,
+        box-shadow 0.08s ease;
+
+    transition-delay: 0s !important;
+
+    will-change:
+        transform,
+        background-color,
+        border-color,
+        color;
 }
+
+
+/* =========================================================
+   INSTANT HOVER
+========================================================= */
 
 .mailnova-card-actions button:hover {
-  /* transform:translateY(-2px);
 
-                background:rgba(127, 85, 241, 0.094);
+    transform: translateY(-2px);
 
-                border:1px solid rgba(100,116,139,.35);
-            border-color:rgba(148,163,184,.55);
-                color:#1F2937;
+    background:
+        linear-gradient(
+            180deg,
+            #f8fbff,
+            #eef5ff
+        );
 
-                box-shadow:
-                    0 6px 18px rgba(0,0,0,.10),
-                    0 2px 6px rgba(0,0,0,.05); */
+    border-color: #78a9ff;
 
-  /* background:#ffffff;
-    color:#1F2937;
-    border-color:#BFC9D9;
+    color: #1e40af;
+
     box-shadow:
-    0 10px 18px rgba(15,23,42,.08); */
+        0 6px 16px rgba(30, 64, 175, 0.12);
 
-  transform: translateY(-2px);
-  background: linear-gradient(180deg, #f8fbff, #eef5ff);
-
-  border-color: #8ab4ff;
-
-  color: #1e40af;
-
-  box-shadow:
-    0 10px 24px rgba(30, 64, 175, 0.15),
-    0 3px 8px rgba(0, 0, 0, 0.08);
+    transition-delay: 0s !important;
 }
+
+
+/* =========================================================
+   ACTIVE
+========================================================= */
 
 .mailnova-card-actions button:active {
-  transform: scale(0.96);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    transform: scale(0.97);
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.08);
 }
-/* .mn-view:hover{
 
-    background:#EEF6FF;
-    color:#2563EB;
-    border-color:#BFDBFE;
 
-        }
-.mn-ai:hover{
+/* =========================================================
+   ACTION ICON
+========================================================= */
 
-    background:#F5F3FF;
-    color:#7C3AED;
+.mn-action-icon {
 
-    border-color:#DDD6FE;
+    display: inline-flex;
 
-        }
-.mn-reply:hover{
-    background:#ECFDF5;
-    color:#059669;
-    border-color:#A7F3D0;
+    align-items: center;
 
-} */
+    justify-content: center;
+
+    width: 17px;
+
+    height: 17px;
+
+    flex: none;
+
+    line-height: 1;
+
+    transition:
+        transform 0.08s ease,
+        color 0.06s ease;
+}
+
+
+.mailnova-card-actions button:hover
+.mn-action-icon {
+
+    transform: scale(1.05);
+
+}
+
+
+/* =========================================================
+   INDIVIDUAL LIGHT MODE COLORS
+========================================================= */
+
 .mn-view {
-  color: #475569;
+
+    color: #475569;
 }
+
+
 .mn-ai {
-  color: #5b4bdb;
+
+    color: #4f46b8;
 }
+
+
 .mn-reply {
-  color: #256f54;
+
+    color: #256f54;
 }
+
+
+/* =========================================================
+   INDIVIDUAL HOVER COLORS
+========================================================= */
+
 .mn-view:hover {
-  color: #0f172a;
+
+    color: #1d4ed8 !important;
+
+    border-color: #93b4ff !important;
 }
+
+
 .mn-ai:hover {
-  color: #1f2937;
+
+    color: #5b21b6 !important;
+
+    border-color: #b5a5ff !important;
 }
+
+
 .mn-reply:hover {
-  color: #1f2937;
+
+    color: #047857 !important;
+
+    border-color: #86d8b3 !important;
+}
+
+
+/* =========================================================
+   MARK READ / UNREAD
+   SMALLER ICON BUTTON
+========================================================= */
+
+.mn-mark-read {
+
+    position: relative;
+
+    width: 38px;
+
+    height: 38px;
+
+    min-width: 38px;
+
+    padding: 0 !important;
+
+    margin-left: 2px;
+
+    border-radius: 11px !important;
+
+    flex: none;
+
+    font-size: 0 !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(247, 249, 252, 0.90)
+        );
+
+    border:
+        1px solid rgba(62, 95, 138, 0.18);
+
+    color: #434e5f;
+
+    transition:
+        transform 0.08s ease,
+        background-color 0.06s ease,
+        border-color 0.06s ease,
+        color 0.06s ease,
+        box-shadow 0.08s ease;
+
+    transition-delay: 0s !important;
+}
+
+
+/* =========================================================
+   READ / UNREAD BUTTON HOVER
+========================================================= */
+
+.mn-mark-read:hover {
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fbff,
+            #eef5ff
+        );
+
+    border-color: #78a9ff;
+
+    color: #1e40af;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 16px rgba(30, 64, 175, 0.12);
+
+    transition-delay: 0s !important;
+}
+
+
+.mn-mark-read:active {
+
+    transform: scale(0.94);
+}
+
+
+/* =========================================================
+   DIFFERENT READ / UNREAD ICON COLORS
+========================================================= */
+
+/* Unread email = open envelope / mark as read */
+
+.mn-mark-read[data-unread="true"] {
+
+    color: #2563eb;
+}
+
+
+/* Read email = closed envelope / mark as unread */
+
+.mn-mark-read[data-unread="false"] {
+
+    color: #64748b;
+}
+
+
+.mn-mark-read[data-unread="true"]:hover {
+
+    color: #1d4ed8;
+}
+
+
+.mn-mark-read[data-unread="false"]:hover {
+
+    color: #334155;
+}
+
+
+/* =========================================================
+   ENVELOPE SVG
+   SMALLER
+========================================================= */
+
+.mn-mark-read-icon {
+
+    width: 16px !important;
+
+    height: 16px !important;
+
+    display: block;
+
+    pointer-events: none;
+
+    flex: none;
+
+    transition:
+        transform 0.08s ease,
+        color 0.06s ease;
+}
+
+
+.mn-mark-read:hover
+.mn-mark-read-icon {
+
+    transform: scale(1.04);
+
+}
+
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+.mn-mark-read::after {
+
+    content: attr(aria-label);
+
+    position: absolute;
+
+    right: 0;
+
+    bottom: calc(100% + 8px);
+
+    padding: 7px 10px;
+
+    border-radius: 8px;
+
+    background: #1f2937;
+
+    color: #ffffff;
+
+    font-family: Inter, sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translateY(3px);
+
+    pointer-events: none;
+
+    z-index: 1000;
+
+    transition:
+        opacity 0.08s ease,
+        visibility 0s linear 0s,
+        transform 0.08s ease;
+}
+
+
+.mn-mark-read::before {
+
+    content: "";
+
+    position: absolute;
+
+    right: 13px;
+
+    bottom: calc(100% + 4px);
+
+    width: 7px;
+
+    height: 7px;
+
+    background: #1f2937;
+
+    transform: rotate(45deg);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    z-index: 999;
+
+    transition:
+        opacity 0.08s ease;
+}
+
+
+.mn-mark-read:hover::after {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateY(0);
+}
+
+
+.mn-mark-read:hover::before {
+
+    opacity: 1;
+
+    visibility: visible;
+}
+
+
+/* =========================================================
+   DARK THEME — EMAIL CARDS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-card {
+
+    background: #171b22;
+
+    border-color: #2a303a;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.28);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-card:hover {
+
+    background: #1b2028;
+
+    border-color: #343b47;
+
+    box-shadow:
+        0 10px 34px rgba(0, 0, 0, 0.34);
+}
+
+
+/* =========================================================
+   DARK — SENDER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-sender,
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-unread
+.mailnova-sender,
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-sender {
+
+    color: #f3f4f6;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DARK — SUBJECT
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-subject,
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-unread
+.mailnova-subject,
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-subject {
+
+    color: #f3f4f6;
+}
+
+
+/* =========================================================
+   DARK — SUMMARY
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-summary {
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   DARK — DATE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-date {
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   DARK — UNREAD BADGE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-unread
+.mailnova-read-status {
+
+    background: #123524;
+
+    color: #4ade80;
+
+    border-color: #1f5d3a;
+}
+
+
+/* =========================================================
+   DARK — READ BADGE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-read-status {
+
+    background: #303640;
+
+    color: #d1d5db;
+
+    border-color: #4b5563;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-read-status:hover {
+
+    background: #3a414c;
+
+    color: #f3f4f6;
+
+    border-color: #5b6472;
+}
+
+
+/* =========================================================
+   DARK — UNREAD DOT
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-unread
+.mailnova-read-status-dot {
+
+    background: #22c55e;
+
+    box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+
+/* =========================================================
+   DARK — READ DOT
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-read-status-dot {
+
+    background: #9ca3af;
+
+    box-shadow:
+        0 0 0 3px rgba(156, 163, 175, 0.14);
+}
+
+
+/* =========================================================
+   DARK — ALL ACTION BUTTONS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-card-actions button {
+
+    background: #20252d;
+
+    border-color: #363d48;
+
+    color: #cbd5e1;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================================
+   DARK — FAST HOVER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-card-actions button:hover {
+
+    background: #282f39;
+
+    border-color: #566171;
+
+    color: #f3f4f6;
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.24);
+
+    transition-delay: 0s !important;
+}
+
+
+/* =========================================================
+   DARK — VIEW BLUE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-view {
+
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-view:hover {
+
+    color: #93c5fd !important;
+
+    background: #172b43 !important;
+
+    border-color: #3b82f6 !important;
+}
+
+
+/* =========================================================
+   DARK — ASK AI PURPLE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-ai {
+
+    color: #c4b5fd;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-ai:hover {
+
+    color: #ddd6fe !important;
+
+    background: #292344 !important;
+
+    border-color: #8b5cf6 !important;
+}
+
+
+/* =========================================================
+   DARK — REPLY GREEN
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-reply {
+
+    color: #6ee7b7;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-reply:hover {
+
+    color: #a7f3d0 !important;
+
+    background: #17372d !important;
+
+    border-color: #34d399 !important;
+}
+
+
+/* =========================================================
+   DARK — MARK READ / UNREAD
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read {
+
+    background: #20252d;
+
+    border-color: #363d48;
+
+    color: #cbd5e1;
+}
+
+
+/* =========================================================
+   DARK — UNREAD ICON BLUE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="true"] {
+
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="true"]:hover {
+
+    color: #93c5fd;
+
+    background: #172b43;
+
+    border-color: #3b82f6;
+}
+
+
+/* =========================================================
+   DARK — READ ICON GREY
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="false"] {
+
+    color: #94a3b8;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="false"]:hover {
+
+    color: #e2e8f0;
+
+    background: #2b313b;
+
+    border-color: #64748b;
+}
+
+
+/* =========================================================
+   DARK — ENVELOPE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read-icon {
+
+    width: 16px !important;
+
+    height: 16px !important;
+}
+
+
+/* =========================================================
+   DARK — PRIORITY
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.priority-5 {
+
+    color: #ff6b6b;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.priority-45 {
+
+    color: #fb923c;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.priority-4 {
+
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.priority-35 {
+
+    color: #5eead4;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.priority-3 {
+
+    color: #facc15;
+}
+
+
+/* =========================================================
+   DARK — TOOLTIP
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read::after {
+
+    background: #f3f4f6;
+
+    color: #111827;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read::before {
+
+    background: #f3f4f6;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .mailnova-card-header {
+
+        align-items: flex-start;
+    }
+
+
+    .mailnova-meta {
+
+        gap: 8px;
+    }
+
+
+    .mailnova-sender {
+
+        font-size: 16px;
+    }
+
+
+    .mailnova-card-actions button {
+
+        padding: 9px 13px;
+    }
+
+
+    .mn-mark-read {
+
+        width: 36px;
+
+        height: 36px;
+
+        min-width: 36px;
+    }
+
+
+    .mn-mark-read-icon {
+
+        width: 15px !important;
+
+        height: 15px !important;
+    }
+
 }

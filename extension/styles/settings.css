@@ -1,103 +1,66 @@
 /* =========================================================
-   MAILNOVA SETTINGS
-   PROFESSIONAL NEUTRAL + BLUE ACCENT
-   ========================================================= */
+   MAILNOVA SETTINGS — FINAL
+   ORIGINAL PROFESSIONAL DESIGN + DARK POLISH
+========================================================= */
 
 
 /* =========================================================
-   SETTINGS BACKDROP
-   ========================================================= */
+   BACKDROP
+========================================================= */
 
 #mailnova-settings-overlay {
-
     position: absolute;
-
     inset: 0;
 
     width: 100%;
     height: 100%;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     padding: 24px;
-
     box-sizing: border-box;
 
-    background:
-        rgba(15, 23, 42, 0.28);
+    background: rgba(15, 23, 42, 0.28);
 
-    backdrop-filter:
-        blur(3px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 
-    -webkit-backdrop-filter:
-        blur(3px);
+    z-index: 2147483646;
 
-    z-index:
-        2147483646;
+    opacity: 0;
+    pointer-events: none;
 
-    opacity:
-        0;
-
-    pointer-events:
-        none;
-
-    transition:
-        opacity .22s ease;
+    transition: opacity .18s ease;
 }
 
-
-/* =========================================================
-   OPEN BACKDROP
-   ========================================================= */
-
 #mailnova-settings-overlay.open {
-
-    opacity:
-        1;
-
-    pointer-events:
-        auto;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 
 /* =========================================================
    SETTINGS WINDOW
-   ========================================================= */
+========================================================= */
 
 .mailnova-settings-modal {
+    width: 880px;
+    height: 590px;
 
-    width:
-        880px;
+    max-width: 94%;
+    max-height: 88%;
 
-    height:
-        590px;
+    display: flex;
 
-    max-width:
-        94%;
+    overflow: hidden;
+    box-sizing: border-box;
 
-    max-height:
-        88%;
+    background: rgba(255,255,255,.97);
 
-    display:
-        flex;
-
-    overflow:
-        hidden;
-
-    box-sizing:
-        border-box;
-
-    background:
-        rgba(255,255,255,.97);
-
-    border:
-        1px solid #dce2e9;
-
-    border-radius:
-        22px;
+    border: 1px solid #dce2e9;
+    border-radius: 22px;
 
     box-shadow:
         0 28px 70px rgba(15,23,42,.22),
@@ -108,7 +71,8 @@
         scale(.97);
 
     transition:
-        transform .22s ease;
+        transform .18s ease,
+        opacity .18s ease;
 
     font-family:
         Inter,
@@ -116,16 +80,12 @@
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
+
+    color: #182235;
 }
-
-
-/* =========================================================
-   OPEN ANIMATION
-   ========================================================= */
 
 #mailnova-settings-overlay.open
 .mailnova-settings-modal {
-
     transform:
         translateY(0)
         scale(1);
@@ -133,31 +93,20 @@
 
 
 /* =========================================================
-   LEFT SIDEBAR
-   ========================================================= */
+   SIDEBAR
+========================================================= */
 
 .mn-settings-sidebar {
+    width: 235px;
+    min-width: 235px;
+    height: 100%;
 
-    width:
-        235px;
+    display: flex;
+    flex-direction: column;
 
-    min-width:
-        235px;
+    box-sizing: border-box;
 
-    height:
-        100%;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    box-sizing:
-        border-box;
-
-    padding:
-        24px 15px 16px;
+    padding: 24px 15px 16px;
 
     background:
         linear-gradient(
@@ -166,2437 +115,802 @@
             #f7f9fc 100%
         );
 
-    border-right:
-        1px solid #e1e6ed;
+    border-right: 1px solid #e1e6ed;
 }
 
 
 /* =========================================================
    BRAND
-   ========================================================= */
+========================================================= */
 
 .mn-settings-brand {
+    display: flex;
+    align-items: center;
 
-    display:
-        flex;
+    gap: 11px;
 
-    align-items:
-        center;
-
-    gap:
-        11px;
-
-    padding:
-        2px 8px 24px;
+    padding: 2px 8px 24px;
 }
-
-
-/* =========================================================
-   BRAND ICON
-   ========================================================= */
 
 .mn-settings-brand-icon {
+    width: 42px;
+    height: 42px;
 
-    width:
-        42px;
+    flex-shrink: 0;
 
-    height:
-        42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border-radius: 12px;
 
-    display:
-        flex;
+    background: #eaf2ff;
+    color: #2563eb;
 
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        12px;
-
-    background:
-        #eaf2ff;
-
-    color:
-        #2563eb;
-
-    font-size:
-        20px;
-
-    line-height:
-        1;
+    font-size: 20px;
+    line-height: 1;
 }
-
-
-/* =========================================================
-   BRAND TITLE
-   ========================================================= */
 
 .mn-settings-brand-title {
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 750;
 
-    font-size:
-        19px;
-
-    line-height:
-        1.2;
-
-    font-weight:
-        700;
-
-    color:
-        #1f2937;
+    color: #182238;
 }
 
-
-/* =========================================================
-   BRAND SUBTITLE
-   ========================================================= */
-
 .mn-settings-brand-subtitle {
+    margin-top: 4px;
 
-    margin-top:
-        4px;
+    font-size: 10px;
+    line-height: 1.3;
 
-    font-size:
-        11px;
-
-    line-height:
-        1.3;
-
-    color:
-        #7b8798;
+    color: #8996aa;
 }
 
 
 /* =========================================================
    NAVIGATION
-   ========================================================= */
+========================================================= */
 
 .mn-settings-navigation {
+    display: flex;
+    flex-direction: column;
 
-    display:
-        flex;
+    gap: 4px;
 
-    flex-direction:
-        column;
-
-    gap:
-        5px;
-
-    width:
-        100%;
+    width: 100%;
 }
-
-
-/* =========================================================
-   NAV ITEM
-   ========================================================= */
 
 .mn-settings-nav-item {
+    width: 100%;
+    height: 44px;
 
-    width:
-        100%;
+    display: flex;
+    align-items: center;
 
-    height:
-        46px;
+    gap: 10px;
 
-    display:
-        flex;
+    padding: 0 10px;
 
-    align-items:
-        center;
+    box-sizing: border-box;
 
-    gap:
-        10px;
+    border: none;
+    border-radius: 10px;
 
-    padding:
-        0 10px;
+    background: transparent;
 
-    box-sizing:
-        border-box;
+    color: #475569;
 
-    border:
-        none;
+    font-size: 11.5px;
+    font-weight: 600;
 
-    border-radius:
-        11px;
+    text-align: left;
 
-    background:
-        transparent;
-
-    color:
-        #4b5b70;
-
-    font-size:
-        14px;
-
-    font-weight:
-        600;
-
-    text-align:
-        left;
-
-    cursor:
-        pointer;
+    cursor: pointer;
 
     transition:
-        background .18s ease,
-        color .18s ease,
-        box-shadow .18s ease;
+        background .08s ease,
+        color .08s ease;
 }
-
-
-/* =========================================================
-   NAV HOVER
-   ========================================================= */
 
 .mn-settings-nav-item:hover {
-
-    background:
-        #eef1f5;
-
-    color:
-        #263242;
+    background: #f5f6fa;
+    color: #334155;
 }
-
-
-/* =========================================================
-   SELECTED NAV
-   ========================================================= */
 
 .mn-settings-nav-item.active {
-
-    background:
-        #e3e7ec;
-
-    color:
-        #202938;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(15,23,42,.06),
-        0 2px 7px rgba(15,23,42,.05);
+    background: #f0ecff;
+    color: #6541dc;
 }
 
 
 /* =========================================================
-   NAV ICON
-   ========================================================= */
+   NAV ICONS
+========================================================= */
 
 .mn-nav-icon {
+    width: 28px;
+    height: 28px;
 
-    width:
-        32px;
+    flex-shrink: 0;
 
-    height:
-        32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border-radius: 8px;
 
-    display:
-        flex;
+    background: transparent;
 
-    align-items:
-        center;
+    color: #718096;
 
-    justify-content:
-        center;
+    font-size: 13px;
+    line-height: 1;
+}
 
-    border-radius:
-        8px;
-
-    background:
-        transparent;
-
-    color:
-        #64748b;
-
-    font-size:
-        17px;
-
-    line-height:
-        1;
+.mn-settings-nav-item.active
+.mn-nav-icon {
+    background: rgba(255,255,255,.72);
+    color: #7048e8;
 }
 
 
-/* =========================================================
-   DIFFERENT NAV ICON COLORS
-   ========================================================= */
+/* Different light icon colors */
 
 .mn-settings-nav-item:nth-child(1)
 .mn-nav-icon {
-
-    color:
-        #2563eb;
+    color: #2563eb;
 }
 
 .mn-settings-nav-item:nth-child(2)
 .mn-nav-icon {
-
-    color:
-        #64748b;
+    color: #0f766e;
 }
 
 .mn-settings-nav-item:nth-child(3)
 .mn-nav-icon {
-
-    color:
-        #7c5cff;
+    color: #7c3aed;
 }
 
 .mn-settings-nav-item:nth-child(4)
 .mn-nav-icon {
-
-    color:
-        #f97316;
+    color: #ea580c;
 }
 
 .mn-settings-nav-item:nth-child(5)
 .mn-nav-icon {
-
-    color:
-        #0f766e;
-}
-
-
-/* =========================================================
-   ACTIVE NAV ICON
-   ========================================================= */
-
-.mn-settings-nav-item.active
-.mn-nav-icon {
-
-    background:
-        #f8fafc;
-
-    box-shadow:
-        0 2px 6px rgba(15,23,42,.07);
+    color: #db2777;
 }
 
 
 /* =========================================================
    SIDEBAR FOOTER
-   ========================================================= */
+========================================================= */
 
 .mn-settings-sidebar-footer {
+    margin-top: auto;
 
-    margin-top:
-        auto;
+    min-height: 42px;
 
-    min-height:
-        42px;
+    display: flex;
+    align-items: center;
 
-    display:
-        flex;
+    gap: 8px;
 
-    align-items:
-        center;
+    padding: 12px 7px 2px;
 
-    gap:
-        8px;
+    box-sizing: border-box;
 
-    padding:
-        12px 7px 2px;
+    border-top: 1px solid #e8edf3;
 
-    box-sizing:
-        border-box;
+    color: #8794a8;
 
-    border-top:
-        1px solid #e3e8ee;
-
-    color:
-        #7c899b;
-
-    font-size:
-        11px;
-
-    font-weight:
-        600;
+    font-size: 9.5px;
+    font-weight: 600;
 }
-
-
-/* =========================================================
-   SAVED INDICATOR
-   ========================================================= */
 
 .mailnova-settings-saved {
+    width: 22px;
+    height: 22px;
 
-    width:
-        24px;
+    flex-shrink: 0;
 
-    height:
-        24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border-radius: 50%;
 
-    display:
-        flex;
+    background: #ecfdf5;
+    color: #0d9b65;
 
-    align-items:
-        center;
+    font-size: 10px;
+    line-height: 1;
 
-    justify-content:
-        center;
+    opacity: 0;
 
-    border-radius:
-        50%;
+    transform: scale(.96);
 
-    background:
-        #e5f4ef;
-
-    color:
-        #16805c;
-
-    font-size:
-        12px;
-
-    line-height:
-        1;
+    transition:
+        opacity .08s ease,
+        transform .08s ease;
 }
-
-
-/* =========================================================
-   SAVED ANIMATION
-   ========================================================= */
 
 .mailnova-settings-saved.show {
-
-    transform:
-        scale(1.08);
+    opacity: 1;
+    transform: scale(1.08);
 }
 
 
 /* =========================================================
-   RIGHT MAIN
-   ========================================================= */
+   MAIN
+========================================================= */
 
 .mn-settings-main {
+    flex: 1;
 
-    flex:
-        1;
+    min-width: 0;
+    min-height: 0;
 
-    min-width:
-        0;
+    height: 100%;
 
-    min-height:
-        0;
+    display: flex;
+    flex-direction: column;
 
-    height:
-        100%;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    background:
-        #ffffff;
+    background: #ffffff;
 }
 
 
 /* =========================================================
    MAIN HEADER
-   ========================================================= */
+========================================================= */
 
 .mn-settings-main-header {
+    flex-shrink: 0;
 
-    flex-shrink:
-        0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
 
-    display:
-        flex;
+    gap: 20px;
 
-    align-items:
-        flex-start;
-
-    justify-content:
-        space-between;
-
-    gap:
-        20px;
-
-    padding:
-        28px 30px 16px;
+    padding: 28px 30px 16px;
 }
-
-
-/* =========================================================
-   MAIN TITLE
-   ========================================================= */
 
 .mn-main-title {
+    font-size: 25px;
+    line-height: 1.25;
 
-    font-size:
-        25px;
+    font-weight: 700;
 
-    line-height:
-        1.25;
-
-    font-weight:
-        700;
-
-    color:
-        #182235;
+    color: #182235;
 }
 
-
-/* =========================================================
-   MAIN DESCRIPTION
-   ========================================================= */
-
 .mn-main-description {
+    margin-top: 6px;
 
-    margin-top:
-        6px;
+    font-size: 12.5px;
+    line-height: 1.45;
 
-    font-size:
-        12.5px;
-
-    line-height:
-        1.45;
-
-    color:
-        #7c899d;
+    color: #7c899d;
 }
 
 
 /* =========================================================
    CLOSE
-   ========================================================= */
+========================================================= */
 
 .mn-settings-modal-close {
+    width: 38px;
+    height: 38px;
 
-    width:
-        38px;
+    flex-shrink: 0;
 
-    height:
-        38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border: 1px solid #e1e6ed;
+    border-radius: 11px;
 
-    display:
-        flex;
+    background: #f5f7fa;
 
-    align-items:
-        center;
+    color: #64748b;
 
-    justify-content:
-        center;
+    font-size: 19px;
+    line-height: 1;
 
-    border:
-        1px solid #e1e6ed;
-
-    border-radius:
-        11px;
-
-    background:
-        #f5f7fa;
-
-    color:
-        #64748b;
-
-    font-size:
-        19px;
-
-    line-height:
-        1;
-
-    cursor:
-        pointer;
+    cursor: pointer;
 
     transition:
-        background .18s ease,
-        color .18s ease,
-        transform .18s ease;
+        background .08s ease,
+        color .08s ease,
+        transform .08s ease;
 }
-
 
 .mn-settings-modal-close:hover {
+    background: #eceff3;
+    color: #1f2937;
 
-    background:
-        #eceff3;
-
-    color:
-        #1f2937;
-
-    transform:
-        scale(1.04);
+    transform: scale(1.04);
 }
 
 
 /* =========================================================
-   SETTINGS CONTENT
-   ========================================================= */
+   CONTENT
+========================================================= */
 
 .mn-settings-section-content {
+    display: none;
 
-    display:
-        none;
+    flex: 1;
 
-    flex:
-        1;
+    min-height: 0;
 
-    min-height:
-        0;
+    overflow-y: auto;
 
-    overflow-y:
-        auto;
+    padding: 4px 30px 28px;
 
-    padding:
-        4px 30px 28px;
-
-    box-sizing:
-        border-box;
+    box-sizing: border-box;
 }
-
 
 .mn-settings-section-content.active {
-
-    display:
-        block;
+    display: block;
 }
-
-
-/* =========================================================
-   CONTENT SCROLLBAR
-   ========================================================= */
 
 .mn-settings-section-content::-webkit-scrollbar {
-
-    width:
-        5px;
+    width: 5px;
 }
-
 
 .mn-settings-section-content::-webkit-scrollbar-track {
-
-    background:
-        transparent;
+    background: transparent;
 }
 
-
 .mn-settings-section-content::-webkit-scrollbar-thumb {
-
-    background:
-        #cbd2db;
-
-    border-radius:
-        20px;
+    background: #cbd2db;
+    border-radius: 20px;
 }
 
 
 /* =========================================================
    CONTENT HEADING
-   ========================================================= */
+========================================================= */
 
 .mn-content-heading {
+    display: flex;
+    align-items: center;
 
-    display:
-        flex;
+    gap: 10px;
 
-    align-items:
-        center;
+    font-size: 18px;
+    line-height: 1.3;
 
-    gap:
-        10px;
+    font-weight: 700;
 
-    font-size:
-        18px;
-
-    line-height:
-        1.3;
-
-    font-weight:
-        700;
-
-    color:
-        #1c273b;
+    color: #1c273b;
 }
-
-
-/* =========================================================
-   CONTENT HEADING ICON
-   ========================================================= */
 
 .mn-content-heading-icon {
+    width: 32px;
+    height: 32px;
 
-    width:
-        32px;
+    flex-shrink: 0;
 
-    height:
-        32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border-radius: 9px;
 
-    display:
-        flex;
+    background: #edf2f7;
+    color: #2563eb;
 
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        9px;
-
-    background:
-        #edf2f7;
-
-    color:
-        #2563eb;
-
-    font-size:
-        17px;
-
-    line-height:
-        1;
+    font-size: 17px;
 }
-
-
-/* =========================================================
-   SUBHEADING
-   ========================================================= */
 
 .mn-content-subheading {
+    margin-top: 6px;
 
-    margin:
-        6px 0 18px 42px;
+    font-size: 11px;
+    line-height: 1.45;
 
-    font-size:
-        12px;
-
-    line-height:
-        1.5;
-
-    color:
-        #8491a5;
+    color: #7c899d;
 }
 
-
-/* =========================================================
-   DIVIDER
-   ========================================================= */
-
 .mn-divider {
+    width: 100%;
+    height: 1px;
 
-    width:
-        100%;
+    margin: 18px 0;
 
-    height:
-        1px;
-
-    margin:
-        22px 0 9px;
-
-    background:
-        #e6ebf1;
+    background: #e8edf3;
 }
 
 
 /* =========================================================
    THEME GRID
-   ========================================================= */
+========================================================= */
 
 .mn-theme-grid {
-
-    display:
-        grid;
+    display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0,1fr));
+        repeat(3, minmax(0, 1fr));
 
-    gap:
-        12px;
+    gap: 12px;
 
-    width:
-        100%;
+    margin-top: 14px;
 }
-
-
-/* =========================================================
-   THEME CARD
-   ========================================================= */
 
 .mn-theme-card {
+    position: relative;
 
-    position:
-        relative;
+    min-height: 128px;
 
-    min-width:
-        0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    height:
-        128px;
+    gap: 6px;
 
-    display:
-        flex;
+    padding: 12px;
 
-    flex-direction:
-        column;
+    box-sizing: border-box;
 
-    align-items:
-        center;
+    border: 1px solid #dfe5ec;
+    border-radius: 14px;
 
-    justify-content:
-        center;
+    background: #ffffff;
 
-    box-sizing:
-        border-box;
+    color: #374151;
 
-    padding:
-        12px;
-
-    border:
-        1px solid #dbe2ea;
-
-    border-radius:
-        15px;
-
-    background:
-        #ffffff;
-
-    color:
-        #253147;
-
-    cursor:
-        pointer;
+    cursor: pointer;
 
     transition:
-        border-color .18s ease,
-        background .18s ease,
-        box-shadow .18s ease,
-        transform .18s ease;
+        background .08s ease,
+        border-color .08s ease,
+        transform .08s ease;
 }
-
 
 .mn-theme-card:hover {
+    background: #f8fbff;
 
-    background:
-        #f7f9fb;
+    border-color: #b9d5fa;
 
-    border-color:
-        #b9c2cd;
-
-    transform:
-        translateY(-1px);
-
-    box-shadow:
-        0 7px 18px rgba(15,23,42,.07);
+    transform: translateY(-1px);
 }
-
-
-/* =========================================================
-   SELECTED THEME
-   ========================================================= */
 
 .mn-theme-card.active {
+    background: #f3f7ff;
 
-    border:
-        2px solid #6b7280;
-
-    background:
-        linear-gradient(
-            145deg,
-            #edf0f3,
-            #e3e7eb
-        );
-
-    box-shadow:
-        0 7px 20px rgba(15,23,42,.12),
-        inset 0 1px 0 rgba(255,255,255,.80);
+    border: 2px solid #60a5fa;
 }
 
 
 /* =========================================================
-   THEME ICON
-   ========================================================= */
+   THEME ICONS
+========================================================= */
 
 .mn-theme-icon {
+    width: 38px;
+    height: 38px;
 
-    width:
-        38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    height:
-        38px;
+    border-radius: 10px;
 
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    margin-bottom:
-        9px;
-
-    border-radius:
-        10px;
-
-    background:
-        #f1f4f7;
-
-    color:
-        #64748b;
-
-    font-size:
-        22px;
-
-    line-height:
-        1;
+    font-size: 17px;
 }
-
 
 .mn-theme-card[data-theme="light"]
 .mn-theme-icon {
-
-    color:
-        #f59e0b;
-
-    background:
-        #fff5d9;
+    background: #fff7db;
+    color: #f59e0b;
 }
-
 
 .mn-theme-card[data-theme="dark"]
 .mn-theme-icon {
-
-    color:
-        #334155;
-
-    background:
-        #e2e7ed;
+    background: #eef2f7;
+    color: #475569;
 }
-
 
 .mn-theme-card[data-theme="system"]
 .mn-theme-icon {
-
-    color:
-        #2563eb;
-
-    background:
-        #e5efff;
+    background: #eaf2ff;
+    color: #2563eb;
 }
-
-
-.mn-theme-card.active
-.mn-theme-icon {
-
-    box-shadow:
-        0 2px 7px rgba(15,23,42,.07);
-}
-
 
 .mn-theme-name {
+    font-size: 13px;
+    font-weight: 700;
 
-    font-size:
-        14px;
-
-    line-height:
-        1.3;
-
-    font-weight:
-        650;
-
-    color:
-        #263248;
+    color: #182235;
 }
-
 
 .mn-theme-description {
+    font-size: 10.5px;
 
-    margin-top:
-        4px;
-
-    font-size:
-        10.5px;
-
-    line-height:
-        1.3;
-
-    color:
-        #7d899b;
+    color: #8a97aa;
 }
 
+
+/* IMPORTANT:
+   Only the selected theme gets a check.
+*/
 
 .mn-theme-check {
+    width: 23px;
+    height: 23px;
 
-    position:
-        absolute;
+    display: none;
 
-    top:
-        8px;
+    align-items: center;
+    justify-content: center;
 
-    right:
-        8px;
+    margin-top: 2px;
 
-    width:
-        23px;
+    border-radius: 50%;
 
-    height:
-        23px;
+    background: #3b82f6;
 
-    display:
-        flex;
+    color: #ffffff;
 
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        50%;
-
-    background:
-        #3b82f6;
-
-    color:
-        #ffffff;
-
-    font-size:
-        12px;
-
-    line-height:
-        1;
-
-    opacity:
-        0;
-
-    transform:
-        scale(.7);
-
-    transition:
-        opacity .18s ease,
-        transform .18s ease;
+    font-size: 12px;
+    font-weight: 700;
 }
-
 
 .mn-theme-card.active
 .mn-theme-check {
-
-    opacity:
-        1;
-
-    transform:
-        scale(1);
-
-    box-shadow:
-        0 3px 9px rgba(37,99,235,.22);
+    display: flex;
 }
 
 
 /* =========================================================
-   SETTING ROW
-   ========================================================= */
+   SETTING ROWS
+========================================================= */
 
 .mn-setting-row {
+    min-height: 70px;
 
-    min-height:
-        70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    display:
-        flex;
+    gap: 16px;
 
-    align-items:
-        center;
+    padding: 12px 0;
 
-    justify-content:
-        space-between;
+    box-sizing: border-box;
 
-    gap:
-        18px;
-
-    padding:
-        8px 5px;
-
-    box-sizing:
-        border-box;
-
-    border-bottom:
-        1px solid #e8edf2;
+    border-bottom: 1px solid #edf1f5;
 }
 
-
-/* =========================================================
-   SETTING LEFT
-   ========================================================= */
+.mn-setting-row:last-child {
+    border-bottom: none;
+}
 
 .mn-setting-row-left {
+    min-width: 0;
 
-    min-width:
-        0;
+    display: flex;
+    align-items: center;
 
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        12px;
+    gap: 12px;
 }
-
-
-/* =========================================================
-   SETTING ICON
-   ========================================================= */
 
 .mn-setting-icon {
+    width: 36px;
+    height: 36px;
 
-    width:
-        37px;
+    flex-shrink: 0;
 
-    height:
-        37px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border-radius: 10px;
 
-    display:
-        flex;
+    background: #eef4ff;
+    color: #2563eb;
 
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        10px;
-
-    background:
-        #f1f3f6;
-
-    color:
-        #526174;
-
-    font-size:
-        17px;
-
-    line-height:
-        1;
+    font-size: 15px;
 }
-
-
-/* =========================================================
-   LIGHT MODE SETTING ICON COLORS
-   SAME AS BEFORE
-   ========================================================= */
-
-.mn-setting-row:nth-child(1)
-.mn-setting-icon {
-
-    color:
-        #2563eb;
-}
-
-.mn-setting-row:nth-child(2)
-.mn-setting-icon {
-
-    color:
-        #0f766e;
-}
-
-.mn-setting-row:nth-child(3)
-.mn-setting-icon {
-
-    color:
-        #7c3aed;
-}
-
-.mn-setting-row:nth-child(4)
-.mn-setting-icon {
-
-    color:
-        #ea580c;
-}
-
-.mn-setting-row:nth-child(5)
-.mn-setting-icon {
-
-    color:
-        #0891b2;
-}
-
-
-/* =========================================================
-   SETTING TEXT
-   ========================================================= */
 
 .mn-setting-text {
-
-    min-width:
-        0;
+    min-width: 0;
 }
-
 
 .mn-setting-title {
+    font-size: 12.5px;
+    font-weight: 700;
 
-    font-size:
-        14px;
-
-    line-height:
-        1.35;
-
-    font-weight:
-        650;
-
-    color:
-        #202c40;
+    color: #1f2937;
 }
 
-
 .mn-setting-description {
+    margin-top: 3px;
 
-    margin-top:
-        3px;
+    font-size: 10.5px;
+    line-height: 1.4;
 
-    font-size:
-        11px;
-
-    line-height:
-        1.4;
-
-    color:
-        #8490a2;
+    color: #8a97aa;
 }
 
 
 /* =========================================================
    TOGGLE
-   ========================================================= */
+========================================================= */
 
 .mn-setting-switch {
+    position: relative;
 
-    position:
-        relative;
+    width: 44px;
+    height: 25px;
 
-    width:
-        44px;
+    flex-shrink: 0;
 
-    height:
-        25px;
+    padding: 0;
 
-    flex-shrink:
-        0;
+    border: none;
 
-    padding:
-        0;
+    border-radius: 999px;
 
-    border:
-        none;
+    background: #cbd5e1;
 
-    border-radius:
-        999px;
+    cursor: pointer;
 
-    background:
-        #cbd2da;
-
-    cursor:
-        pointer;
+    box-shadow: none;
 
     transition:
-        background .2s ease,
-        box-shadow .2s ease;
+        background .08s ease;
 }
 
+.mn-setting-switch.active {
+    background: #3b82f6;
+}
 
 .mn-setting-switch span {
+    position: absolute;
 
-    position:
-        absolute;
+    top: 3px;
+    left: 3px;
 
-    top:
-        3px;
+    width: 19px;
+    height: 19px;
 
-    left:
-        3px;
+    border-radius: 50%;
 
-    width:
-        19px;
-
-    height:
-        19px;
-
-    border-radius:
-        50%;
-
-    background:
-        #ffffff;
+    background: #ffffff;
 
     box-shadow:
-        0 2px 5px rgba(0,0,0,.18);
+        0 2px 5px rgba(15,23,42,.18);
 
     transition:
-        transform .2s ease;
+        transform .08s ease;
 }
-
-
-.mn-setting-switch.active {
-
-    background:
-        #3b82f6;
-
-    box-shadow:
-        0 3px 9px rgba(37,99,235,.18);
-}
-
 
 .mn-setting-switch.active span {
-
-    transform:
-        translateX(19px);
+    transform: translateX(19px);
 }
 
 
 /* =========================================================
-   LOADING GRID
-   ========================================================= */
+   LOADING OPTIONS
+========================================================= */
 
 .mn-loading-grid {
-
-    display:
-        grid;
+    display: grid;
 
     grid-template-columns:
-        repeat(3,minmax(0,1fr));
+        repeat(3, minmax(0, 1fr));
 
-    gap:
-        12px;
+    gap: 11px;
 
-    width:
-        100%;
-
-    margin-top:
-        18px;
+    margin-top: 14px;
 }
 
-
-/* =========================================================
-   LOADING OPTION
-   ========================================================= */
-
 .mn-loading-option {
+    min-height: 105px;
 
-    min-width:
-        0;
+    display: flex;
+    align-items: flex-start;
 
-    min-height:
-        96px;
+    gap: 10px;
 
-    display:
-        flex;
+    padding: 13px;
 
-    align-items:
-        flex-start;
+    box-sizing: border-box;
 
-    gap:
-        10px;
+    border: 1px solid #dfe5ec;
+    border-radius: 13px;
 
-    padding:
-        14px;
+    background: #ffffff;
 
-    box-sizing:
-        border-box;
+    text-align: left;
 
-    border:
-        1px solid #dbe2ea;
-
-    border-radius:
-        14px;
-
-    background:
-        #ffffff;
-
-    text-align:
-        left;
-
-    cursor:
-        pointer;
+    cursor: pointer;
 
     transition:
-        border-color .18s ease,
-        background .18s ease,
-        transform .18s ease,
-        box-shadow .18s ease;
+        background .08s ease,
+        border-color .08s ease,
+        transform .08s ease;
 }
-
 
 .mn-loading-option:hover {
+    background: #f8fbff;
 
-    background:
-        #f7f9fb;
+    border-color: #b9d5fa;
 
-    border-color:
-        #b9c2cd;
-
-    transform:
-        translateY(-1px);
-
-    box-shadow:
-        0 6px 16px rgba(15,23,42,.06);
+    transform: translateY(-1px);
 }
-
 
 .mn-loading-option.active {
+    background: #f3f7ff;
 
-    border:
-        2px solid #6b7280;
-
-    background:
-        linear-gradient(
-            145deg,
-            #edf0f3,
-            #e3e7eb
-        );
-
-    box-shadow:
-        0 6px 18px rgba(15,23,42,.10);
+    border-color: #60a5fa;
 }
-
-
-/* =========================================================
-   LOADING ICON
-   ========================================================= */
 
 .mn-loading-icon {
+    width: 32px;
+    height: 32px;
 
-    width:
-        31px;
+    flex-shrink: 0;
 
-    height:
-        31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    flex-shrink:
-        0;
+    border-radius: 9px;
 
-    display:
-        flex;
+    background: #fff1e8;
+    color: #ea580c;
 
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        9px;
-
-    background:
-        #eef2f6;
-
-    color:
-        #526174;
-
-    font-size:
-        16px;
-
-    line-height:
-        1;
+    font-size: 14px;
 }
-
-
-.mn-loading-option:nth-child(1)
-.mn-loading-icon {
-
-    color:
-        #f59e0b;
-}
-
-.mn-loading-option:nth-child(2)
-.mn-loading-icon {
-
-    color:
-        #2563eb;
-}
-
-.mn-loading-option:nth-child(3)
-.mn-loading-icon {
-
-    color:
-        #7c3aed;
-}
-
-
-/* =========================================================
-   LOADING TEXT
-   ========================================================= */
 
 .mn-loading-text {
-
-    min-width:
-        0;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    gap:
-        4px;
+    min-width: 0;
 }
-
 
 .mn-loading-text strong {
+    display: block;
 
-    font-size:
-        12.5px;
+    font-size: 12px;
 
-    line-height:
-        1.3;
-
-    font-weight:
-        650;
-
-    color:
-        #263248;
+    color: #1f2937;
 }
-
 
 .mn-loading-text small {
+    display: block;
 
-    font-size:
-        9.8px;
+    margin-top: 4px;
 
-    line-height:
-        1.4;
+    font-size: 9.5px;
+    line-height: 1.45;
 
-    color:
-        #7e8a9d;
+    color: #8a97aa;
 }
-
 
 .mn-loading-hint {
+    margin-top: 13px;
 
-    margin-top:
-        12px;
+    padding: 10px 12px;
 
-    padding:
-        10px 12px;
+    border: 1px solid #dfe5ec;
+    border-radius: 9px;
 
-    box-sizing:
-        border-box;
+    background: #f8fafc;
 
-    border:
-        1px solid #dfe6ee;
+    color: #7c899d;
 
-    border-radius:
-        10px;
-
-    background:
-        #f7f9fb;
-
-    color:
-        #738196;
-
-    font-size:
-        10.5px;
-
-    line-height:
-        1.45;
+    font-size: 10px;
+    line-height: 1.45;
 }
 
-
-/* =========================================================
-   =========================================================
-   DARK MODE
-   PREMIUM BLACK / CHARCOAL GLASS
-   =========================================================
-   ========================================================= */
-
-
-/* =========================================================
-   DARK BACKDROP
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-#mailnova-settings-overlay {
-
-    background:
-        rgba(0,0,0,.56);
-
-    backdrop-filter:
-        blur(3px);
-
-    -webkit-backdrop-filter:
-        blur(3px);
-}
-
-
-/* =========================================================
-   DARK MODAL
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mailnova-settings-modal {
-
-    background:
-        rgba(17,22,29,.98);
-
-    border-color:
-        #303945;
-
-    box-shadow:
-        0 32px 85px rgba(0,0,0,.70),
-        0 10px 30px rgba(0,0,0,.40);
-}
-
-
-/* =========================================================
-   DARK SIDEBAR
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-sidebar {
-
-    background:
-        linear-gradient(
-            180deg,
-            #11161d 0%,
-            #0c1117 100%
-        );
-
-    border-color:
-        #252e39;
-}
-
-
-/* =========================================================
-   DARK MAIN
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-main {
-
-    background:
-        linear-gradient(
-            145deg,
-            #161c24 0%,
-            #11171f 100%
-        );
-}
-
-
-/* =========================================================
-   DARK BRAND
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-brand-icon {
-
-    background:
-        rgba(59,130,246,.13);
-
-    color:
-        #60a5fa;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-brand-title {
-
-    color:
-        #f1f5f9;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-brand-subtitle {
-
-    color:
-        #8290a3;
-}
-
-
-/* =========================================================
-   DARK NAV
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-nav-item {
-
-    color:
-        #b7c2cf;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-nav-item:hover {
-
-    background:
-        #202731;
-
-    color:
-        #edf2f7;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-nav-item.active {
-
-    background:
-        #2b323b;
-
-    color:
-        #f1f5f9;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.06),
-        0 3px 9px rgba(0,0,0,.20);
-}
-
-
-/* =========================================================
-   DARK NAV ICON
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-nav-item.active
-.mn-nav-icon {
-
-    background:
-        #39424e;
-
-    color:
-        #93c5fd;
-}
-
-
-/* =========================================================
-   DARK FOOTER
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-sidebar-footer {
-
-    border-color:
-        #252e39;
-
-    color:
-        #8290a3;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mailnova-settings-saved {
-
-    background:
-        #173b31;
-
-    color:
-        #6ee7b7;
-}
-
-
-/* =========================================================
-   DARK HEADER
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-main-title {
-
-    color:
-        #f1f5f9;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-main-description {
-
-    color:
-        #8997a9;
-}
-
-
-/* =========================================================
-   DARK CLOSE
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-modal-close {
-
-    background:
-        #222a34;
-
-    border-color:
-        #343e4a;
-
-    color:
-        #aab6c4;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-modal-close:hover {
-
-    background:
-        #303943;
-
-    color:
-        #f1f5f9;
-}
-
-
-/* =========================================================
-   DARK CONTENT
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-content-heading {
-
-    color:
-        #f1f5f9;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-content-heading-icon {
-
-    background:
-        #252e38;
-
-    color:
-        #60a5fa;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-content-subheading {
-
-    color:
-        #8997a9;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-divider {
-
-    background:
-        #29323d;
-}
-
-
-/* =========================================================
-   DARK THEME CARDS
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card {
-
-    background:
-        #1c232c;
-
-    border-color:
-        #343e4b;
-
-    color:
-        #e5e7eb;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card:hover {
-
-    background:
-        #242c36;
-
-    border-color:
-        #4b5563;
-
-    box-shadow:
-        0 9px 22px rgba(0,0,0,.24);
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card.active {
-
-    background:
-        linear-gradient(
-            145deg,
-            #303842,
-            #272f38
-        );
-
-    border-color:
-        #6b7280;
-
-    box-shadow:
-        0 10px 26px rgba(0,0,0,.28),
-        inset 0 1px 0 rgba(255,255,255,.05);
-}
-
-
-/* =========================================================
-   DARK THEME ICONS
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card[data-theme="light"]
-.mn-theme-icon {
-
-    color:
-        #fbbf24;
-
-    background:
-        rgba(245,158,11,.13);
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card[data-theme="dark"]
-.mn-theme-icon {
-
-    color:
-        #94a3b8;
-
-    background:
-        rgba(148,163,184,.12);
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card[data-theme="system"]
-.mn-theme-icon {
-
-    color:
-        #60a5fa;
-
-    background:
-        rgba(59,130,246,.13);
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-card.active
-.mn-theme-icon {
-
-    background:
-        #39434f;
-
-    box-shadow:
-        0 3px 9px rgba(0,0,0,.18);
-}
-
-
-/* =========================================================
-   DARK THEME TEXT
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-name {
-
-    color:
-        #edf2f7;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-description {
-
-    color:
-        #8d9bad;
-}
-
-
-/* =========================================================
-   DARK CHECK
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-theme-check {
-
-    background:
-        #3b82f6;
-
-    box-shadow:
-        0 3px 10px rgba(37,99,235,.25);
-}
-
-
-/* =========================================================
-   DARK SETTING ROW
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-setting-row {
-
-    border-color:
-        #29323d;
-}
-
-
-/* =========================================================
-   DARK SETTING ICON BASE
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-setting-icon {
-
-    background:
-        #242d37;
-
-    color:
-        #9aa8b8;
-}
-
-
-/* =========================================================
-   DARK — APPEARANCE ICONS
-   ========================================================= */
-
-/* Compact Mode — Blue */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="appearance"]
-.mn-setting-row:nth-child(3)
-.mn-setting-icon {
-
-    color:
-        #60a5fa;
-
-    background:
-        rgba(59,130,246,.14);
-}
-
-
-/* Glass Effect — Cyan */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="appearance"]
-.mn-setting-row:nth-child(4)
-.mn-setting-icon {
-
-    color:
-        #67e8f9;
-
-    background:
-        rgba(34,211,238,.13);
-}
-
-
-/* =========================================================
-   DARK — EMAIL PREFERENCES ICONS
-   ========================================================= */
-
-/* Auto Open Workspace — Orange */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="email"]
-.mn-setting-row:nth-child(3)
-.mn-setting-icon {
-
-    color:
-        #fb923c;
-
-    background:
-        rgba(249,115,22,.13);
-}
-
-
-/* Unread Notifications — Blue */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="email"]
-.mn-setting-row:nth-child(4)
-.mn-setting-icon {
-
-    color:
-        #60a5fa;
-
-    background:
-        rgba(59,130,246,.13);
-}
-
-
-/* Category Detection — Teal */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="email"]
-.mn-setting-row:nth-child(5)
-.mn-setting-icon {
-
-    color:
-        #2dd4bf;
-
-    background:
-        rgba(20,184,166,.13);
-}
-
-
-/* Background Sync — Violet */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="email"]
-.mn-setting-row:nth-child(6)
-.mn-setting-icon {
-
-    color:
-        #a78bfa;
-
-    background:
-        rgba(139,92,246,.13);
-}
-
-
-/* =========================================================
-   DARK — AI ICONS
-   ========================================================= */
-
-/* AI Email Summary — Purple */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="ai"]
-.mn-setting-row:nth-child(3)
-.mn-setting-icon {
-
-    color:
-        #c084fc;
-
-    background:
-        rgba(168,85,247,.13);
-}
-
-
-/* Ask AI — Blue */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="ai"]
-.mn-setting-row:nth-child(4)
-.mn-setting-icon {
-
-    color:
-        #60a5fa;
-
-    background:
-        rgba(59,130,246,.13);
-}
-
-
-/* Smart Reply — Green */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="ai"]
-.mn-setting-row:nth-child(5)
-.mn-setting-icon {
-
-    color:
-        #34d399;
-
-    background:
-        rgba(16,185,129,.13);
-}
-
-
-/* =========================================================
-   DARK — NOTIFICATION ICONS
-   ========================================================= */
-
-/* Important Emails — Amber */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="notifications"]
-.mn-setting-row:nth-child(3)
-.mn-setting-icon {
-
-    color:
-        #fbbf24;
-
-    background:
-        rgba(245,158,11,.13);
-}
-
-
-/* Notification Badge — Pink */
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content[data-content="notifications"]
-.mn-setting-row:nth-child(4)
-.mn-setting-icon {
-
-    color:
-        #f472b6;
-
-    background:
-        rgba(236,72,153,.13);
-}
-
-
-/* =========================================================
-   DARK — LOADING ICONS
-   ========================================================= */
-
-/* Fast — Orange */
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-option:nth-child(1)
-.mn-loading-icon {
-
-    color:
-        #fb923c;
-
-    background:
-        rgba(249,115,22,.13);
-}
-
-
-/* Balanced — Blue */
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-option:nth-child(2)
-.mn-loading-icon {
-
-    color:
-        #60a5fa;
-
-    background:
-        rgba(59,130,246,.13);
-}
-
-
-/* Complete — Violet */
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-option:nth-child(3)
-.mn-loading-icon {
-
-    color:
-        #a78bfa;
-
-    background:
-        rgba(139,92,246,.13);
-}
-
-
-/* =========================================================
-   DARK SETTING TEXT
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-setting-title {
-
-    color:
-        #e8edf3;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-setting-description {
-
-    color:
-        #8997a9;
-}
-
-
-/* =========================================================
-   DARK TOGGLE
-   SIMPLE SOLID BLUE
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-setting-switch {
-
-    background:
-        #414b58;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-setting-switch.active {
-
-    background:
-        #3b82f6;
-
-    box-shadow:
-        0 3px 10px rgba(37,99,235,.22);
-}
-
-
-/* =========================================================
-   DARK LOADING OPTIONS
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-option {
-
-    background:
-        #1c232c;
-
-    border-color:
-        #343e4b;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-option:hover {
-
-    background:
-        #242c36;
-
-    border-color:
-        #4b5563;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-option.active {
-
-    background:
-        linear-gradient(
-            145deg,
-            #303842,
-            #272f38
-        );
-
-    border-color:
-        #6b7280;
-
-    box-shadow:
-        0 8px 22px rgba(0,0,0,.25);
-}
-
-
-/* =========================================================
-   DARK LOADING TEXT
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-text strong {
-
-    color:
-        #e8edf3;
-}
-
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-text small {
-
-    color:
-        #8997a9;
-}
-
-
-/* =========================================================
-   DARK LOADING HINT
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-loading-hint {
-
-    background:
-        #1b222b;
-
-    border-color:
-        #333d49;
-
-    color:
-        #8997a9;
-}
-
-
-/* =========================================================
-   DARK SCROLLBAR
-   ========================================================= */
-
-#mailnova-workspace.mailnova-theme-dark
-.mn-settings-section-content::-webkit-scrollbar-thumb {
-
-    background:
-        #46515e;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media (max-width: 850px) {
-
-    .mailnova-settings-modal {
-
-        width:
-            94%;
-
-        height:
-            570px;
-    }
-
-    .mn-settings-sidebar {
-
-        width:
-            205px;
-
-        min-width:
-            205px;
-    }
-
-    .mn-settings-main-header {
-
-        padding-left:
-            24px;
-
-        padding-right:
-            24px;
-    }
-
-    .mn-settings-section-content {
-
-        padding-left:
-            24px;
-
-        padding-right:
-            24px;
-    }
-}
-
-
-@media (max-width: 680px) {
-
-    .mailnova-settings-modal {
-
-        height:
-            90%;
-    }
-
-    .mn-settings-sidebar {
-
-        width:
-            175px;
-
-        min-width:
-            175px;
-
-        padding-left:
-            10px;
-
-        padding-right:
-            10px;
-    }
-
-    .mn-settings-brand {
-
-        padding-left:
-            5px;
-    }
-
-    .mn-settings-brand-subtitle {
-
-        display:
-            none;
-    }
-
-    .mn-settings-nav-item {
-
-        font-size:
-            12px;
-    }
-
-    .mn-theme-grid,
-    .mn-loading-grid {
-
-        grid-template-columns:
-            1fr;
-    }
-}
 
 /* =========================================================
    PRIORITY FOCUS
@@ -2605,28 +919,40 @@
 .mn-priority-focus-grid {
     display: flex;
     flex-direction: column;
+
     gap: 9px;
+
     margin-top: 14px;
 }
 
 .mn-priority-focus-option {
     width: 100%;
     min-height: 58px;
+
     display: flex;
     align-items: center;
+
     gap: 12px;
+
     padding: 10px 13px;
+
+    box-sizing: border-box;
+
     border: 1px solid #e5e7eb;
     border-radius: 12px;
+
     background: #ffffff;
+
     color: #374151;
+
     cursor: pointer;
+
     text-align: left;
+
     transition:
-        background .2s ease,
-        border-color .2s ease,
-        color .2s ease;
-    box-sizing: border-box;
+        background .08s ease,
+        border-color .08s ease,
+        color .08s ease;
 }
 
 .mn-priority-focus-option:hover {
@@ -2636,60 +962,87 @@
 
 .mn-priority-focus-option.active {
     background: #f3f7ff;
+
     border-color: #93c5fd;
+
     color: #1d4ed8;
 }
 
 .mn-priority-focus-icon {
     width: 32px;
     height: 32px;
+
     min-width: 32px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 9px;
-    background: #eef4ff;
-    color: #2563eb;
+
     font-size: 14px;
     font-weight: 700;
+}
+
+.mn-priority-focus-option[data-priority-focus="unread"]
+.mn-priority-focus-icon {
+    background: #ecfdf3;
+    color: #16a34a;
+}
+
+.mn-priority-focus-option[data-priority-focus="all"]
+.mn-priority-focus-icon {
+    background: #eef4ff;
+    color: #2563eb;
+}
+
+.mn-priority-focus-option[data-priority-focus="read"]
+.mn-priority-focus-icon {
+    background: #f3efff;
+    color: #7c3aed;
 }
 
 .mn-priority-focus-text {
     display: flex;
     flex-direction: column;
+
     gap: 3px;
+
     flex: 1;
     min-width: 0;
 }
 
 .mn-priority-focus-text strong {
     font-size: 13px;
-    font-weight: 600;
+    color: #1f2937;
 }
 
 .mn-priority-focus-text small {
-    font-size: 11px;
-    line-height: 1.35;
-    color: #6b7280;
+    font-size: 9.5px;
+    color: #8a97aa;
 }
 
 .mn-priority-focus-check {
     width: 20px;
     height: 20px;
-    display: flex;
+
+    display: none;
+
     align-items: center;
     justify-content: center;
+
     border-radius: 50%;
-    background: transparent;
-    color: transparent;
-    font-size: 12px;
-    font-weight: 700;
+
+    background: #3b82f6;
+
+    color: #ffffff;
+
+    font-size: 10px;
 }
 
 .mn-priority-focus-option.active
 .mn-priority-focus-check {
-    background: #2563eb;
-    color: #ffffff;
+    display: flex;
 }
 
 
@@ -2698,39 +1051,496 @@
 ========================================================= */
 
 #mailnova-workspace.mailnova-theme-dark
+#mailnova-settings-overlay {
+    background: rgba(0,0,0,.58);
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-settings-modal {
+    background: #11161d;
+
+    border-color: #303844;
+
+    box-shadow:
+        0 32px 90px rgba(0,0,0,.72),
+        0 12px 32px rgba(0,0,0,.42);
+}
+
+
+/* Sidebar */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-sidebar {
+    background:
+        linear-gradient(
+            180deg,
+            #11161d,
+            #0c1117
+        );
+
+    border-right-color: #27303b;
+}
+
+
+/* Brand */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-brand-icon {
+    background: #17283d;
+    color: #60a5fa;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-brand-title {
+    color: #f1f5f9;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-brand-subtitle {
+    color: #7f8da0;
+}
+
+
+/* Dark navigation */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item {
+    color: #aeb9c7;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:hover {
+    background: #202731;
+    color: #f1f5f9;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item.active {
+    background: #2a323d;
+    color: #f5f7fa;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.055),
+        0 3px 10px rgba(0,0,0,.22);
+}
+
+
+/* Dark colored nav icons */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(1)
+.mn-nav-icon {
+    color: #60a5fa;
+    background: #17283d;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(2)
+.mn-nav-icon {
+    color: #2dd4bf;
+    background: #15302f;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(3)
+.mn-nav-icon {
+    color: #a78bfa;
+    background: #29233d;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(4)
+.mn-nav-icon {
+    color: #fb923c;
+    background: #352719;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(5)
+.mn-nav-icon {
+    color: #f472b6;
+    background: #382331;
+}
+
+
+/* Main */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-main {
+    background:
+        linear-gradient(
+            145deg,
+            #171d25,
+            #11171e
+        );
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-main-header {
+    border-bottom-color: #29323d;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-main-title {
+    color: #f3f4f6;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-main-description {
+    color: #8996a7;
+}
+
+
+/* Close */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-modal-close {
+    background: #222a33;
+    border-color: #343e4a;
+    color: #aab5c3;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-modal-close:hover {
+    background: #303943;
+    color: #f3f4f6;
+}
+
+
+/* Content */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-content-heading {
+    color: #f1f5f9;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-content-heading-icon {
+    background: #252e38;
+    color: #60a5fa;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-content-subheading {
+    color: #8996a7;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-divider {
+    background: #29323d;
+}
+
+
+/* Dark theme cards */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card {
+    background: #1a2129;
+    border-color: #343e4a;
+    color: #e5e7eb;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card:hover {
+    background: #222a34;
+    border-color: #4b5563;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card.active {
+    background:
+        linear-gradient(
+            145deg,
+            #303842,
+            #272f38
+        );
+
+    border: 2px solid #697482;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.045),
+        0 8px 22px rgba(0,0,0,.28);
+}
+
+
+/* Dark theme icons */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card[data-theme="light"]
+.mn-theme-icon {
+    background: #342b17;
+    color: #fbbf24;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card[data-theme="dark"]
+.mn-theme-icon {
+    background: #29323c;
+    color: #cbd5e1;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card[data-theme="system"]
+.mn-theme-icon {
+    background: #172b43;
+    color: #60a5fa;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-name {
+    color: #edf2f7;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-description {
+    color: #8996a7;
+}
+
+
+/* Dark check */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-check {
+    background: #3b82f6;
+}
+
+
+/* Dark rows */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row {
+    border-bottom-color: #29323d;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-title {
+    color: #e8edf3;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-description {
+    color: #8996a7;
+}
+
+
+/* Dark setting icons */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-icon {
+    border: 1px solid rgba(255,255,255,.045);
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row:nth-child(1)
+.mn-setting-icon {
+    color: #60a5fa;
+    background: #17283d;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row:nth-child(2)
+.mn-setting-icon {
+    color: #67e8f9;
+    background: #143136;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row:nth-child(3)
+.mn-setting-icon {
+    color: #c084fc;
+    background: #2d2140;
+}
+
+
+/* Dark toggle */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-switch {
+    background: #414b58;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-switch.active {
+    background: #3b82f6;
+    box-shadow: none;
+}
+
+
+/* Dark loading */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-option {
+    background: #1a2129;
+    border-color: #343e4a;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-option:hover {
+    background: #222a34;
+    border-color: #4b5563;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-option.active {
+    background:
+        linear-gradient(
+            145deg,
+            #303842,
+            #272f38
+        );
+
+    border-color: #697482;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-icon {
+    background: #252e38;
+    color: #fb923c;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-text strong {
+    color: #e8edf3;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-text small {
+    color: #8996a7;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-hint {
+    background: #1b222b;
+    border-color: #333d49;
+    color: #8996a7;
+}
+
+
+/* Dark priority */
+
+#mailnova-workspace.mailnova-theme-dark
 .mn-priority-focus-option {
-    background: rgba(255,255,255,.035);
-    border-color: rgba(255,255,255,.10);
+    background: #1a2129;
+    border-color: #343e4a;
     color: #e5e7eb;
 }
 
 #mailnova-workspace.mailnova-theme-dark
 .mn-priority-focus-option:hover {
-    background: rgba(255,255,255,.06);
-    border-color: rgba(255,255,255,.16);
+    background: #222a34;
+    border-color: #4b5563;
 }
 
 #mailnova-workspace.mailnova-theme-dark
 .mn-priority-focus-option.active {
-    background: rgba(255,255,255,.08);
-    border-color: rgba(255,255,255,.20);
+    background: #303842;
+    border-color: #697482;
     color: #f3f4f6;
 }
 
 #mailnova-workspace.mailnova-theme-dark
-.mn-priority-focus-icon {
-    background: rgba(255,255,255,.08);
-    color: #60a5fa;
+.mn-priority-focus-text strong {
+    color: #edf2f7;
 }
 
 #mailnova-workspace.mailnova-theme-dark
 .mn-priority-focus-text small {
-    color: #9ca3af;
+    color: #8996a7;
 }
 
 #mailnova-workspace.mailnova-theme-dark
-.mn-priority-focus-option.active
-.mn-priority-focus-check {
-    background: #3b82f6;
-    color: #ffffff;
+.mn-priority-focus-option[data-priority-focus="unread"]
+.mn-priority-focus-icon {
+    background: #173525;
+    color: #4ade80;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-priority-focus-option[data-priority-focus="all"]
+.mn-priority-focus-icon {
+    background: #172b43;
+    color: #60a5fa;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-priority-focus-option[data-priority-focus="read"]
+.mn-priority-focus-icon {
+    background: #29233d;
+    color: #a78bfa;
+}
+
+
+/* Dark footer */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-sidebar-footer {
+    border-color: #252e39;
+    color: #8290a3;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-settings-saved {
+    background: #173b31;
+    color: #6ee7b7;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .mailnova-settings-modal {
+        width: 94%;
+        height: 570px;
+    }
+
+    .mn-settings-sidebar {
+        width: 205px;
+        min-width: 205px;
+    }
+
+    .mn-settings-main-header {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .mn-settings-section-content {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+}
+
+
+@media (max-width: 680px) {
+
+    .mailnova-settings-modal {
+        height: 90%;
+    }
+
+    .mn-settings-sidebar {
+        width: 175px;
+        min-width: 175px;
+
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .mn-settings-brand {
+        padding-left: 5px;
+    }
+
+    .mn-settings-brand-subtitle {
+        display: none;
+    }
+
+    .mn-settings-nav-item {
+        font-size: 12px;
+    }
+
+    .mn-theme-grid,
+    .mn-loading-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from googleapiclient.discovery import build
 from pydantic import BaseModel
 from email.mime.text import MIMEText
+from html.parser import HTMLParser
 import base64
 
 from backend.app.api.gmail_auth import get_gmail_credentials
@@ -27,6 +28,274 @@ def get_gmail_service():
 
 
 # =========================================
+# HTML TO TEXT
+# =========================================
+
+class GmailHTMLTextParser(HTMLParser):
+
+    def __init__(self):
+
+        super().__init__()
+
+        self.parts = []
+
+
+    def handle_data(self, data):
+
+        if data:
+
+            text = data.strip()
+
+            if text:
+
+                self.parts.append(text)
+
+
+    def get_text(self):
+
+        return "\n".join(self.parts)
+
+
+def html_to_text(html):
+
+    try:
+
+        parser = GmailHTMLTextParser()
+
+        parser.feed(html)
+
+        return parser.get_text()
+
+    except Exception as error:
+
+        print(
+            "MailNova: HTML to text conversion failed:",
+            error
+        )
+
+        return html or ""
+
+
+# =========================================
+# DECODE GMAIL BODY
+# =========================================
+
+def decode_gmail_body(data):
+
+    if not data:
+
+        return ""
+
+    try:
+
+        decoded = base64.urlsafe_b64decode(
+            data + "=" * (
+                4 - len(data) % 4
+            ) % 4
+        )
+
+        return decoded.decode(
+            "utf-8",
+            errors="replace"
+        )
+
+    except Exception as error:
+
+        print(
+            "MailNova: Gmail body decode error:",
+            error
+        )
+
+        return ""
+
+
+# =========================================
+# EXTRACT EMAIL BODY
+# =========================================
+
+def extract_gmail_body(payload):
+
+    if not payload:
+
+        return ""
+
+
+    mime_type = payload.get(
+        "mimeType",
+        ""
+    )
+
+
+    body_data = (
+        payload
+        .get("body", {})
+        .get("data")
+    )
+
+
+    # -----------------------------------------
+    # SIMPLE TEXT EMAIL
+    # -----------------------------------------
+
+    if body_data:
+
+        decoded_body = decode_gmail_body(
+            body_data
+        )
+
+
+        if mime_type == "text/html":
+
+            return html_to_text(
+                decoded_body
+            )
+
+
+        return decoded_body
+
+
+    # -----------------------------------------
+    # MULTIPART EMAIL
+    # -----------------------------------------
+
+    parts = payload.get(
+        "parts",
+        []
+    )
+
+
+    plain_text = ""
+
+    html_text = ""
+
+
+    for part in parts:
+
+        part_mime_type = part.get(
+            "mimeType",
+            ""
+        )
+
+
+        part_body_data = (
+            part
+            .get("body", {})
+            .get("data")
+        )
+
+
+        if part_body_data:
+
+            decoded_part = decode_gmail_body(
+                part_body_data
+            )
+
+
+            if (
+                part_mime_type ==
+                "text/plain"
+            ):
+
+                plain_text += (
+                    "\n" +
+                    decoded_part
+                )
+
+
+            elif (
+                part_mime_type ==
+                "text/html"
+            ):
+
+                html_text += (
+                    "\n" +
+                    html_to_text(
+                        decoded_part
+                    )
+                )
+
+
+        # -------------------------------------
+        # RECURSIVE MULTIPART
+        # -------------------------------------
+
+        nested_body = extract_gmail_body(
+            part
+        )
+
+
+        if nested_body:
+
+            if not plain_text:
+
+                plain_text += (
+                    "\n" +
+                    nested_body
+                )
+
+
+    # -----------------------------------------
+    # PREFER PLAIN TEXT
+    # -----------------------------------------
+
+    if plain_text.strip():
+
+        return plain_text.strip()
+
+
+    if html_text.strip():
+
+        return html_text.strip()
+
+
+    return ""
+
+
+# =========================================
+# CLEAN EMAIL BODY
+# =========================================
+
+def clean_email_body(body):
+
+    if not body:
+
+        return ""
+
+
+    lines = []
+
+    previous_empty = False
+
+
+    for line in body.splitlines():
+
+        line = " ".join(
+            line.split()
+        )
+
+
+        if not line:
+
+            if not previous_empty:
+
+                lines.append("")
+
+            previous_empty = True
+
+            continue
+
+
+        lines.append(line)
+
+        previous_empty = False
+
+
+    return "\n".join(
+        lines
+    ).strip()
+
+
+# =========================================
 # PARSE GMAIL MESSAGE
 # =========================================
 
@@ -37,14 +306,23 @@ def parse_gmail_message(message):
         {}
     )
 
+
     headers = payload.get(
         "headers",
         []
     )
 
+
     sender = ""
+
     subject = ""
+
     date = ""
+
+
+    # -----------------------------------------
+    # READ HEADERS
+    # -----------------------------------------
 
     for header in headers:
 
@@ -53,22 +331,45 @@ def parse_gmail_message(message):
             ""
         ).lower()
 
+
         value = header.get(
             "value",
             ""
         )
 
+
         if name == "from":
 
             sender = value
+
 
         elif name == "subject":
 
             subject = value
 
+
         elif name == "date":
 
             date = value
+
+
+    # -----------------------------------------
+    # EXTRACT FULL BODY
+    # -----------------------------------------
+
+    body = extract_gmail_body(
+        payload
+    )
+
+
+    body = clean_email_body(
+        body
+    )
+
+
+    # -----------------------------------------
+    # BUILD EMAIL DATA
+    # -----------------------------------------
 
     return {
 
@@ -98,6 +399,9 @@ def parse_gmail_message(message):
                 "snippet",
                 ""
             ),
+
+        "body":
+            body,
 
         "unread":
             "UNREAD" in message.get(
@@ -195,15 +499,7 @@ def get_gmail_emails(
 
 
     # =========================================
-    # GMAIL API-SPECIFIC BATCH
-    #
-    # IMPORTANT:
-    #
-    # DO NOT USE:
-    #
-    # BatchHttpRequest()
-    #
-    # Use Gmail service's own batch method.
+    # GMAIL API BATCH
     # =========================================
 
     message_data = {}
@@ -231,10 +527,6 @@ def get_gmail_emails(
         ] = response
 
 
-    # =========================================
-    # API-SPECIFIC BATCH
-    # =========================================
-
     batch = (
         service
         .new_batch_http_request(
@@ -253,6 +545,7 @@ def get_gmail_emails(
             "id"
         )
 
+
         if not message_id:
 
             continue
@@ -269,13 +562,11 @@ def get_gmail_emails(
 
                 id=message_id,
 
-                format="metadata",
+                # FULL is required so Gmail
+                   # returns the message payload/body.
+                
 
-                metadataHeaders=[
-                    "From",
-                    "Subject",
-                    "Date"
-                ]
+                format="full"
 
             ),
 
@@ -298,6 +589,7 @@ def get_gmail_emails(
             "MailNova: Gmail batch execution failed:",
             error
         )
+
 
         return {
 
@@ -334,6 +626,7 @@ def get_gmail_emails(
             "id"
         )
 
+
         msg = message_data.get(
             message_id
         )
@@ -348,9 +641,6 @@ def get_gmail_emails(
             msg
         )
 
-
-        # Gmail list response has reliable
-        # threadId, so keep it if available.
 
         if not email_data["threadId"]:
 
@@ -375,10 +665,6 @@ def get_gmail_emails(
     )
 
 
-    # =========================================
-    # RESPONSE
-    # =========================================
-
     return {
 
         "success":
@@ -401,6 +687,259 @@ def get_gmail_emails(
             emails
 
     }
+
+
+# =========================================
+# READ / UNREAD REQUEST
+# =========================================
+
+class MailReadStatusRequest(BaseModel):
+
+    message_id: str
+
+
+# =========================================
+# MARK EMAIL AS READ
+# =========================================
+
+@router.post("/gmail/mark-read")
+def mark_email_as_read(
+    request: MailReadStatusRequest
+):
+
+    message_id = request.message_id.strip()
+
+
+    if not message_id:
+
+        return {
+
+            "success":
+                False,
+
+            "message":
+                "Gmail message ID is required."
+
+        }
+
+
+    try:
+
+        service = get_gmail_service()
+
+
+        updated_message = (
+            service
+            .users()
+            .messages()
+            .modify(
+
+                userId="me",
+
+                id=message_id,
+
+                body={
+
+                    "removeLabelIds": [
+                        "UNREAD"
+                    ]
+
+                }
+
+            )
+            .execute()
+        )
+
+
+        label_ids = updated_message.get(
+            "labelIds",
+            []
+        )
+
+
+        is_unread = (
+            "UNREAD" in label_ids
+        )
+
+
+        if is_unread:
+
+            return {
+
+                "success":
+                    False,
+
+                "message":
+                    "Gmail did not remove the UNREAD label."
+
+            }
+
+
+        print(
+            "MailNova: Email marked as READ:",
+            message_id
+        )
+
+
+        return {
+
+            "success":
+                True,
+
+            "message":
+                "Email marked as read successfully.",
+
+            "message_id":
+                message_id,
+
+            "unread":
+                False
+
+        }
+
+
+    except Exception as error:
+
+        print(
+            "MailNova: Mark as Read failed:",
+            error
+        )
+
+
+        return {
+
+            "success":
+                False,
+
+            "message":
+                "Could not mark email as read.",
+
+            "error":
+                str(error)
+
+        }
+
+
+# =========================================
+# MARK EMAIL AS UNREAD
+# =========================================
+
+@router.post("/gmail/mark-unread")
+def mark_email_as_unread(
+    request: MailReadStatusRequest
+):
+
+    message_id = request.message_id.strip()
+
+
+    if not message_id:
+
+        return {
+
+            "success":
+                False,
+
+            "message":
+                "Gmail message ID is required."
+
+        }
+
+
+    try:
+
+        service = get_gmail_service()
+
+
+        updated_message = (
+            service
+            .users()
+            .messages()
+            .modify(
+
+                userId="me",
+
+                id=message_id,
+
+                body={
+
+                    "addLabelIds": [
+                        "UNREAD"
+                    ]
+
+                }
+
+            )
+            .execute()
+        )
+
+
+        label_ids = updated_message.get(
+            "labelIds",
+            []
+        )
+
+
+        is_unread = (
+            "UNREAD" in label_ids
+        )
+
+
+        if not is_unread:
+
+            return {
+
+                "success":
+                    False,
+
+                "message":
+                    "Gmail did not add the UNREAD label."
+
+            }
+
+
+        print(
+            "MailNova: Email marked as UNREAD:",
+            message_id
+        )
+
+
+        return {
+
+            "success":
+                True,
+
+            "message":
+                "Email marked as unread successfully.",
+
+            "message_id":
+                message_id,
+
+            "unread":
+                True
+
+        }
+
+
+    except Exception as error:
+
+        print(
+            "MailNova: Mark as Unread failed:",
+            error
+        )
+
+
+        return {
+
+            "success":
+                False,
+
+            "message":
+                "Could not mark email as unread.",
+
+            "error":
+                str(error)
+
+        }
 
 
 # =========================================
@@ -514,6 +1053,7 @@ def send_gmail_reply(
             .lower()
         )
 
+
         value = header.get(
             "value",
             ""
@@ -534,20 +1074,14 @@ def send_gmail_reply(
     # CREATE REPLY
     # =========================================
 
-    subject = (
-        request.subject
-        or ""
-    )
+    subject = request.subject or ""
 
 
     if not subject.lower().startswith(
         "re:"
     ):
 
-        subject = (
-            "Re: " +
-            subject
-        )
+        subject = "Re: " + subject
 
 
     message = MIMEText(
@@ -568,9 +1102,7 @@ def send_gmail_reply(
 
     if message_id:
 
-        message["In-Reply-To"] = (
-            message_id
-        )
+        message["In-Reply-To"] = message_id
 
 
         if references:

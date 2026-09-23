@@ -1,8 +1,14 @@
+/* =========================================
+   GMAIL PARSER
+========================================= */
+
 async function getInboxEmails() {
 
     try {
 
-        const data = await fetchGmailEmails();
+        const data =
+            await fetchGmailEmails();
+
 
         if (!data.success) {
 
@@ -11,48 +17,122 @@ async function getInboxEmails() {
             );
 
             return [];
+
         }
 
-        const emails = data.emails.map((email, index) => {
 
-            return {
+        const emails =
+            (data.emails || []).map(
+                (email, index) => {
 
-                id: email.id,
+                    /*
+                       Category Detection is controlled
+                       by MailNova Settings.
 
-                threadId: email.threadId || "",
+                       If disabled:
+                       - Preserve category received from backend
+                       - Do not run detectCategory()
+                    */
 
-                sender: email.sender || "",
+                    let category =
+                        email.category ||
+                        "Personal";
 
-                subject: email.subject || "",
 
-                snippet: email.snippet || "",
+                    const categoryDetectionEnabled =
+                        typeof mailnovaSettings === "undefined" ||
+                        mailnovaSettings.categoryDetection !== false;
 
-                date: email.date || "",
 
-                unread: email.unread || false,
+                    if (
+                        categoryDetectionEnabled &&
+                        typeof detectCategory === "function"
+                    ) {
 
-                starred: email.starred || false,
+                        category =
+                            detectCategory({
 
-                important: email.important || false,
+                                sender:
+                                    email.sender ||
+                                    "",
 
-                category: detectCategory({
+                                subject:
+                                    email.subject ||
+                                    "",
 
-                    sender: email.sender || "",
+                                snippet:
+                                    email.snippet ||
+                                    ""
 
-                    subject: email.subject || "",
+                            });
 
-                    snippet: email.snippet || ""
+                    }
 
-                })
 
-            };
+                    return {
 
-        });
+                        id:
+                            email.id,
+
+                        threadId:
+                            email.threadId ||
+                            "",
+
+                        sender:
+                            email.sender ||
+                            "",
+
+                        subject:
+                            email.subject ||
+                            "",
+
+                        snippet:
+                            email.snippet ||
+                            "",
+
+                        /*
+                           Preserve full body if backend
+                           provides it.
+
+                           Current backend/parser may not
+                           provide body yet, so snippet
+                           remains the fallback.
+                        */
+
+                        body:
+                            email.body ||
+                            "",
+
+                        date:
+                            email.date ||
+                            "",
+
+                        unread:
+                            email.unread ||
+                            false,
+
+                        starred:
+                            email.starred ||
+                            false,
+
+                        important:
+                            email.important ||
+                            false,
+
+                        category:
+                            category
+
+                    };
+
+                }
+            );
+
 
         console.log(
             "MailNova: Gmail API emails loaded:",
             emails.length
         );
+
 
         return emails;
 

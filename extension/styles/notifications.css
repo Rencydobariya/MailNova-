@@ -1,0 +1,651 @@
+/* =========================================================
+   MailNova Notification System
+   ========================================================= */
+
+
+/* =========================================================
+   Notification Button
+   ========================================================= */
+
+#mn-notifications {
+    position: relative;
+}
+
+
+/* =========================================================
+   Notification Badge
+   ========================================================= */
+
+.mailnova-notification-badge {
+    position: absolute;
+
+    top: 2px;
+    right: 1px;
+
+    min-width: 15px;
+    height: 15px;
+
+    padding: 0 4px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 999px;
+
+    background: #ef4444;
+    color: #ffffff;
+
+    border: 2px solid #ffffff;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    box-sizing: border-box;
+
+    pointer-events: none;
+
+    z-index: 10;
+}
+
+
+/* =========================================================
+   Notification Panel
+   ========================================================= */
+
+.mailnova-notification-panel {
+    position: absolute;
+
+    top: 72px;
+    right: 16px;
+
+    width: 340px;
+    max-width: calc(100vw - 32px);
+
+    max-height: 470px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid rgba(15, 23, 42, 0.10);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.16),
+        0 4px 12px rgba(15, 23, 42, 0.08);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    overflow: hidden;
+
+    z-index: 9999;
+
+    animation: mailnovaNotificationOpen 0.14s ease-out;
+}
+
+
+/* =========================================================
+   Open Animation
+   ========================================================= */
+
+@keyframes mailnovaNotificationOpen {
+
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   Panel Header
+   ========================================================= */
+
+.mailnova-notification-header {
+    min-height: 58px;
+
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+
+    box-sizing: border-box;
+}
+
+
+.mailnova-notification-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #172033;
+}
+
+
+.mailnova-notification-count {
+    min-width: 22px;
+    height: 22px;
+
+    padding: 0 6px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 999px;
+
+    background: #e8f1ff;
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   Close Button
+   ========================================================= */
+
+.mailnova-notification-close {
+    width: 28px;
+    height: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.06s ease,
+        color 0.06s ease;
+}
+
+
+.mailnova-notification-close:hover {
+    background: rgba(100, 116, 139, 0.10);
+    color: #334155;
+}
+
+
+/* =========================================================
+   Notification Summary
+   ========================================================= */
+
+.mailnova-notification-summary {
+    padding: 12px 16px;
+
+    display: flex;
+    gap: 8px;
+}
+
+
+.mailnova-notification-stat {
+    flex: 1;
+
+    padding: 9px 10px;
+
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    border: 1px solid rgba(15, 23, 42, 0.06);
+
+    text-align: center;
+}
+
+
+.mailnova-notification-stat-value {
+    display: block;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    color: #1e293b;
+}
+
+
+.mailnova-notification-stat-label {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   Notification List
+   ========================================================= */
+
+.mailnova-notification-list {
+    flex: 1;
+
+    min-height: 0;
+
+    padding: 4px 10px 10px;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+}
+
+
+/* =========================================================
+   Individual Notification
+   ========================================================= */
+
+.mailnova-notification-item {
+    width: 100%;
+
+    padding: 11px 10px;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: transparent;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    transition:
+        background-color 0.06s ease;
+}
+
+
+.mailnova-notification-item:hover {
+    background: #f1f5f9;
+}
+
+
+/* =========================================================
+   Notification Icon
+   ========================================================= */
+
+.mailnova-notification-item-icon {
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 14px;
+}
+
+
+/* Important Notification */
+
+.mailnova-notification-item.is-important
+.mailnova-notification-item-icon {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+
+/* =========================================================
+   Notification Content
+   ========================================================= */
+
+.mailnova-notification-item-content {
+    min-width: 0;
+    flex: 1;
+}
+
+
+.mailnova-notification-item-title {
+    display: block;
+
+    overflow: hidden;
+
+    color: #1e293b;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.mailnova-notification-item-message {
+    display: -webkit-box;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    font-size: 11px;
+    line-height: 1.4;
+
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+
+.mailnova-notification-item-time {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.mailnova-notification-empty {
+    padding: 34px 18px;
+
+    text-align: center;
+}
+
+
+.mailnova-notification-empty-icon {
+    font-size: 28px;
+
+    opacity: 0.75;
+}
+
+
+.mailnova-notification-empty-title {
+    margin-top: 9px;
+
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.mailnova-notification-empty-text {
+    margin-top: 4px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   Footer
+   ========================================================= */
+
+.mailnova-notification-footer {
+    min-height: 48px;
+
+    padding: 8px 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-top: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+
+.mailnova-notification-view-all {
+    width: 100%;
+
+    min-height: 32px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.06s ease,
+        color 0.06s ease;
+}
+
+
+.mailnova-notification-view-all:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+
+/* =========================================================
+   Dark Mode
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-panel {
+
+    background: rgba(18, 24, 32, 0.97);
+
+    border-color: rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 22px 50px rgba(0, 0, 0, 0.45),
+        0 5px 16px rgba(0, 0, 0, 0.30);
+
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-header {
+
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-title {
+
+    color: #f1f5f9;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-count {
+
+    background: rgba(96, 165, 250, 0.12);
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-close {
+
+    color: #94a3b8;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-close:hover {
+
+    background: rgba(255, 255, 255, 0.07);
+    color: #f1f5f9;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-stat {
+
+    background: rgba(255, 255, 255, 0.035);
+
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-stat-value {
+
+    color: #f1f5f9;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-stat-label {
+
+    color: #94a3b8;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-item:hover {
+
+    background: rgba(255, 255, 255, 0.055);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-item-icon {
+
+    background: rgba(96, 165, 250, 0.10);
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-item.is-important
+.mailnova-notification-item-icon {
+
+    background: rgba(251, 146, 60, 0.10);
+    color: #fb923c;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-item-title {
+
+    color: #e2e8f0;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-item-message {
+
+    color: #94a3b8;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-item-time {
+
+    color: #64748b;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-empty-title {
+
+    color: #cbd5e1;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-empty-text {
+
+    color: #64748b;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-footer {
+
+    border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-view-all {
+
+    background: rgba(96, 165, 250, 0.10);
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-view-all:hover {
+
+    background: rgba(96, 165, 250, 0.16);
+    color: #93c5fd;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-badge {
+
+    border-color: #121820;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .mailnova-notification-panel {
+        top: 66px;
+        right: 10px;
+
+        width: 320px;
+
+        max-width: calc(100vw - 20px);
+    }
+
+}

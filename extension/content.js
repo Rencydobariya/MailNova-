@@ -1,5 +1,6 @@
 /* =========================================
    MAILNOVA CONTENT INITIALIZATION
+   SAFE AUTO-OPEN VERSION
 ========================================= */
 
 console.log("MailNova Initialized 🚀");
@@ -8,23 +9,75 @@ console.log("MailNova Initialized 🚀");
 (function initializeMailNova() {
 
     if (window.__mailnovaAutoOpenStarted) {
-
         return;
-
     }
-
 
     window.__mailnovaAutoOpenStarted = true;
 
 
-    let attempts = 0;
-
-    const maxAttempts = 20;
+    let started = false;
 
 
-    function openWorkspaceAutomatically() {
+    /* =========================================
+       CHECK AUTO OPEN SETTING
+    ========================================= */
 
-        attempts++;
+    async function shouldAutoOpenWorkspace() {
+
+        try {
+
+            if (
+                typeof loadMailnovaSettings ===
+                "function"
+            ) {
+
+                await loadMailnovaSettings();
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "MailNova: Settings could not be loaded. Using default behavior.",
+                error
+            );
+
+        }
+
+
+        if (
+            typeof mailnovaSettings !==
+            "undefined" &&
+            mailnovaSettings
+        ) {
+
+            return (
+                mailnovaSettings.autoOpenWorkspace !==
+                false
+            );
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* =========================================
+       SAFE WORKSPACE OPEN
+    ========================================= */
+
+    async function openWorkspaceSafely() {
+
+        if (started) {
+            return;
+        }
+
+
+        started = true;
 
 
         /* =====================================
@@ -47,35 +100,18 @@ console.log("MailNova Initialized 🚀");
 
 
         /* =====================================
-           WORKSPACE FUNCTION NOT READY YET
+           AUTO OPEN SETTING
         ===================================== */
 
-        if (
-            typeof createWorkspace !==
-            "function"
-        ) {
-
-            if (attempts < maxAttempts) {
-
-                console.log(
-                    "MailNova: Waiting for workspace code..."
-                );
+        const shouldOpen =
+            await shouldAutoOpenWorkspace();
 
 
-                setTimeout(
-                    openWorkspaceAutomatically,
-                    300
-                );
+        if (!shouldOpen) {
 
-            }
-
-            else {
-
-                console.error(
-                    "MailNova: createWorkspace() was not available."
-                );
-
-            }
+            console.log(
+                "MailNova: Auto Open Workspace is disabled."
+            );
 
             return;
 
@@ -83,33 +119,108 @@ console.log("MailNova Initialized 🚀");
 
 
         /* =====================================
-           CREATE WORKSPACE
+           CHECK WORKSPACE FUNCTION
         ===================================== */
 
+        if (
+            typeof createWorkspace !==
+            "function"
+        ) {
+
+            console.warn(
+                "MailNova: createWorkspace() is not ready."
+            );
+
+            return;
+
+        }
+
+
         console.log(
-            "MailNova: Automatically opening workspace..."
+            "MailNova: Opening workspace during browser idle time..."
         );
 
 
-        Promise.resolve(
-            createWorkspace()
-        )
-        .catch(
-            (error) => {
+        try {
 
-                console.error(
-                    "MailNova: Automatic workspace error:",
-                    error
-                );
+            await Promise.resolve(
+                createWorkspace()
+            );
 
-            }
+            console.log(
+                "MailNova: Workspace opened successfully."
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "MailNova: Workspace initialization failed:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =========================================
+       WAIT FOR GMAIL TO SETTLE
+    ========================================= */
+
+    function scheduleWorkspaceOpen() {
+
+        /*
+           Give Gmail time to finish its initial
+           rendering before MailNova starts.
+        */
+
+        const delay =
+            1800;
+
+
+        setTimeout(
+            () => {
+
+                /*
+                   Prefer browser idle time so
+                   Gmail gets priority.
+                */
+
+                if (
+                    typeof window.requestIdleCallback ===
+                    "function"
+                ) {
+
+                    window.requestIdleCallback(
+                        () => {
+
+                            openWorkspaceSafely();
+
+                        },
+                        {
+                            timeout: 2500
+                        }
+                    );
+
+                }
+
+                else {
+
+                    openWorkspaceSafely();
+
+                }
+
+            },
+            delay
         );
 
     }
 
 
     /* =========================================
-       START AFTER DOM IS READY
+       INITIALIZE ONCE
     ========================================= */
 
     if (
@@ -119,14 +230,7 @@ console.log("MailNova Initialized 🚀");
 
         document.addEventListener(
             "DOMContentLoaded",
-            () => {
-
-                setTimeout(
-                    openWorkspaceAutomatically,
-                    500
-                );
-
-            },
+            scheduleWorkspaceOpen,
             {
                 once: true
             }
@@ -136,32 +240,8 @@ console.log("MailNova Initialized 🚀");
 
     else {
 
-        setTimeout(
-            openWorkspaceAutomatically,
-            500
-        );
+        scheduleWorkspaceOpen();
 
     }
-
-
-    /* =========================================
-       EXTRA SAFETY FOR GMAIL SPA
-    ========================================= */
-
-    window.addEventListener(
-        "load",
-        () => {
-
-            setTimeout(
-                openWorkspaceAutomatically,
-                800
-            );
-
-        },
-        {
-            once: true
-        }
-    );
-
 
 })();

@@ -1,6 +1,8 @@
-const MAILNOVA_API = "http://127.0.0.1:8000";
+const MAILNOVA_API =
+    "http://127.0.0.1:8000";
 
-const MAILNOVA_PAGE_SIZE = 100;
+const MAILNOVA_PAGE_SIZE =
+    100;
 
 const MAILNOVA_CACHE_KEY =
     "mailnova_email_cache";
@@ -43,7 +45,6 @@ async function fetchGmailEmails(
                 url,
                 {
                     method: "GET",
-
                     cache: "no-store"
                 }
             );
@@ -92,14 +93,265 @@ async function fetchGmailEmails(
 
         return {
 
-            success:
-                false,
+            success: false,
 
-            emails:
-                [],
+            emails: [],
 
-            next_page_token:
-                null
+            next_page_token: null
+
+        };
+
+    }
+
+}
+
+
+/* =========================================
+   MARK EMAIL AS READ
+========================================= */
+
+/*
+   Removes the UNREAD label from the
+   actual Gmail message.
+*/
+
+async function markEmailAsRead(
+    messageId
+) {
+
+    try {
+
+        if (!messageId) {
+
+            throw new Error(
+                "Gmail message ID is required."
+            );
+
+        }
+
+
+        console.log(
+            "MailNova: Marking email as READ:",
+            messageId
+        );
+
+
+        const response =
+            await fetch(
+                `${MAILNOVA_API}/gmail/mark-read`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message_id:
+                                messageId
+
+                        })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Mark as Read API failed: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Email could not be marked as read."
+            );
+
+        }
+
+
+        console.log(
+            "MailNova: Email marked as READ successfully:",
+            messageId
+        );
+
+
+        return {
+
+            success: true,
+
+            message_id:
+                messageId,
+
+            unread: false
+
+        };
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MailNova Mark as Read Error:",
+            error
+        );
+
+
+        return {
+
+            success: false,
+
+            message_id:
+                messageId,
+
+            unread: true,
+
+            error:
+                error.message ||
+                "Could not mark email as read."
+
+        };
+
+    }
+
+}
+
+
+/* =========================================
+   MARK EMAIL AS UNREAD
+========================================= */
+
+/*
+   Adds the UNREAD label to the
+   actual Gmail message.
+*/
+
+async function markEmailAsUnread(
+    messageId
+) {
+
+    try {
+
+        if (!messageId) {
+
+            throw new Error(
+                "Gmail message ID is required."
+            );
+
+        }
+
+
+        console.log(
+            "MailNova: Marking email as UNREAD:",
+            messageId
+        );
+
+
+        const response =
+            await fetch(
+                `${MAILNOVA_API}/gmail/mark-unread`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message_id:
+                                messageId
+
+                        })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Mark as Unread API failed: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Email could not be marked as unread."
+            );
+
+        }
+
+
+        console.log(
+            "MailNova: Email marked as UNREAD successfully:",
+            messageId
+        );
+
+
+        return {
+
+            success: true,
+
+            message_id:
+                messageId,
+
+            unread: true
+
+        };
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MailNova Mark as Unread Error:",
+            error
+        );
+
+
+        return {
+
+            success: false,
+
+            message_id:
+                messageId,
+
+            unread: false,
+
+            error:
+                error.message ||
+                "Could not mark email as unread."
 
         };
 
@@ -303,7 +555,7 @@ async function fetchRemainingGmailPages(
 
         /*
            Send each page to workspace immediately.
-           User does not wait for all 2000.
+           User does not wait for all 2000 emails.
         */
 
         if (
@@ -370,11 +622,9 @@ async function fetchAllGmailEmails(
 
         return {
 
-            success:
-                false,
+            success: false,
 
-            emails:
-                []
+            emails: []
 
         };
 
@@ -390,8 +640,7 @@ async function fetchAllGmailEmails(
 
     return {
 
-        success:
-            true,
+        success: true,
 
         emails:
             allEmails
@@ -456,8 +705,7 @@ async function summarizeEmail(
                 `${MAILNOVA_API}/summarize`,
                 {
 
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
 

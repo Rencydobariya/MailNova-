@@ -1,0 +1,379 @@
+/* =========================================================
+   MailNova Header
+   ========================================================= */
+
+.mailnova-header {
+    height: 64px;
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    position: relative;
+    z-index: 20;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Title
+   ========================================================= */
+
+.mailnova-title {
+    display: flex;
+    align-items: center;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    color: #172033;
+
+    white-space: nowrap;
+    letter-spacing: -0.2px;
+
+    user-select: none;
+}
+
+
+/* =========================================================
+   Header Buttons Container
+   ========================================================= */
+
+.mailnova-header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+/* =========================================================
+   All Header Buttons
+   ========================================================= */
+
+.mailnova-header-buttons button {
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #4b5563;
+
+    font-size: 16px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.06s ease,
+        border-color 0.06s ease,
+        color 0.06s ease,
+        transform 0.06s ease;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   Instant Hover
+   ========================================================= */
+
+.mailnova-header-buttons button:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.18);
+
+    color: #2563eb;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   Click
+   ========================================================= */
+
+.mailnova-header-buttons button:active {
+    transform: scale(0.94);
+}
+
+
+/* =========================================================
+   Focus
+   ========================================================= */
+
+.mailnova-header-buttons button:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   Notification Button
+   ========================================================= */
+
+#mn-notifications {
+    position: relative;
+}
+
+
+/* =========================================================
+   Notification Badge
+   ========================================================= */
+
+.mailnova-notification-badge {
+    position: absolute;
+
+    top: 2px;
+    right: 1px;
+
+    min-width: 15px;
+    height: 15px;
+
+    padding: 0 4px;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 999px;
+
+    background: #ef4444;
+    color: #ffffff;
+
+    border: 2px solid #ffffff;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    box-sizing: border-box;
+
+    pointer-events: none;
+
+    z-index: 5;
+}
+
+
+/* =========================================================
+   Close Button
+   ========================================================= */
+
+#mn-close:hover {
+    background: rgba(239, 68, 68, 0.09);
+    border-color: rgba(239, 68, 68, 0.18);
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   Settings Button
+   ========================================================= */
+
+#mn-settings:hover {
+    background: rgba(100, 116, 139, 0.10);
+    border-color: rgba(100, 116, 139, 0.18);
+    color: #334155;
+}
+
+
+/* =========================================================
+   Refresh Button
+   ========================================================= */
+
+#mn-refresh:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.18);
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   Notification Button
+   ========================================================= */
+
+#mn-notifications:hover {
+    background: rgba(245, 158, 11, 0.10);
+    border-color: rgba(245, 158, 11, 0.18);
+    color: #d97706;
+}
+
+
+/* =========================================================
+   Width Buttons
+   ========================================================= */
+
+#mn-width-plus:hover,
+#mn-width-minus:hover {
+    background: rgba(14, 165, 233, 0.08);
+    border-color: rgba(14, 165, 233, 0.18);
+    color: #0284c7;
+}
+
+
+/* =========================================================
+   Dark Mode
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark .mailnova-header {
+    background: rgba(18, 24, 32, 0.88);
+
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark .mailnova-title {
+    color: #f1f5f9;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-header-buttons button {
+    color: #cbd5e1;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    border-color: rgba(255, 255, 255, 0.055);
+}
+
+
+/* =========================================================
+   Dark Mode - Individual Button Colors
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+#mn-refresh:hover {
+    background: rgba(96, 165, 250, 0.10);
+    border-color: rgba(96, 165, 250, 0.22);
+    color: #60a5fa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mn-notifications:hover {
+    background: rgba(251, 191, 36, 0.10);
+    border-color: rgba(251, 191, 36, 0.22);
+    color: #fbbf24;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mn-width-plus:hover,
+#mailnova-workspace.mailnova-theme-dark
+#mn-width-minus:hover {
+    background: rgba(56, 189, 248, 0.10);
+    border-color: rgba(56, 189, 248, 0.22);
+    color: #38bdf8;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mn-settings:hover {
+    background: rgba(167, 139, 250, 0.10);
+    border-color: rgba(167, 139, 250, 0.22);
+    color: #a78bfa;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+#mn-close:hover {
+    background: rgba(248, 113, 113, 0.10);
+    border-color: rgba(248, 113, 113, 0.22);
+    color: #f87171;
+}
+
+
+/* =========================================================
+   Dark Notification Badge
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-notification-badge {
+    border-color: #121820;
+}
+
+
+/* =========================================================
+   Compact Mode
+   ========================================================= */
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-header {
+    height: 58px;
+    min-height: 58px;
+
+    padding: 0 16px;
+}
+
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-title {
+    font-size: 18px;
+}
+
+
+#mailnova-workspace.mailnova-compact-mode
+.mailnova-header-buttons {
+    gap: 4px;
+}
+
+
+#mailnova-workspace.mailnova-compact-mode
+.mailnova-header-buttons button {
+    width: 31px;
+    height: 31px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   Small Width Safety
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .mailnova-header {
+        padding: 0 12px;
+    }
+
+    .mailnova-title {
+        font-size: 18px;
+    }
+
+    .mailnova-header-buttons {
+        gap: 3px;
+    }
+
+    .mailnova-header-buttons button {
+        width: 31px;
+        height: 31px;
+        font-size: 14px;
+    }
+
+}

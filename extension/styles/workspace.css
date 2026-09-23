@@ -1278,3 +1278,422 @@
     }
 
 }
+
+/* =========================================================
+   MAILNOVA DARK MODE
+   SORT MENU — BODY LEVEL FIX
+   ========================================================= */
+
+/*
+   Sort menu can be moved outside the workspace
+   because it uses position: fixed.
+
+   :has() detects when MailNova workspace
+   is currently using dark theme.
+*/
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-sort-menu {
+
+    background:
+        #171f28;
+
+    border:
+        1px solid #35404d;
+
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, .46);
+
+}
+
+
+/* Dark sort options */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-sort-option {
+
+    color:
+        #b4c0cd;
+
+}
+
+
+/* Dark hover */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-sort-option:hover {
+
+    background:
+        #24303d;
+
+    color:
+        #93c5fd;
+
+}
+
+
+/* Dark active option */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+.mailnova-sort-option.active {
+
+    background:
+        #202d3c;
+
+    color:
+        #60a5fa;
+
+    font-weight:
+        600;
+
+}
+
+
+/* Dark sort button */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-sort-btn {
+
+    background:
+        #1a232e;
+
+    color:
+        #b4c0cd;
+
+    border:
+        1px solid #35404d;
+
+}
+
+
+/* Dark sort button hover */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-sort-btn:hover {
+
+    background:
+        #24303d;
+
+    color:
+        #93c5fd;
+
+    border-color:
+        #526b86;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, .22);
+
+}
+
+
+/* =========================================================
+   DARK CATEGORY BAR
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-categories {
+
+    background:
+        rgba(8, 13, 19, .82);
+
+}
+
+
+/* Category chips */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-chip {
+
+    background:
+        #1a232e;
+
+    color:
+        #aeb9c6;
+
+    border:
+        1px solid #35404d;
+
+}
+
+
+/* Category hover */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-chip:hover {
+
+    background:
+        #24303d;
+
+    color:
+        #93c5fd;
+
+    border-color:
+        #526b86;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, .18);
+
+}
+
+
+/* Active category */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-chip.active {
+
+    background:
+        #202d3c;
+
+    color:
+        #93c5fd;
+
+    border:
+        1px solid #4a6685;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, .16);
+
+}
+
+
+/* =========================================================
+   DARK EMAIL LIST
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-list {
+
+    background:
+        transparent;
+
+}
+
+
+/* =========================================================
+   DARK EMPTY STATE
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-empty h2 {
+
+    color:
+        #e8edf3;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-empty p {
+
+    color:
+        #8290a3;
+
+}
+
+
+/* =========================================================
+   DARK RESIZER
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-resizer:hover {
+
+    background:
+        rgba(96, 165, 250, .22);
+
+}
+
+
+/* =========================================================
+   DARK EMAIL LIST SCROLLBAR
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-list::-webkit-scrollbar {
+
+    width:
+        7px;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-list::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-list::-webkit-scrollbar-thumb {
+
+    background:
+        #35404d;
+
+    border-radius:
+        20px;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-list::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #465465;
+
+}
+
+/* =========================================================
+   MAILNOVA SETTINGS
+   COMPACT MODE
+   ========================================================= */
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-header {
+    height: 58px;
+    padding: 0 16px;
+}
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-title {
+    font-size: 20px;
+}
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-search {
+    padding: 12px 16px;
+}
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-search-box {
+    padding: 9px 13px;
+}
+
+#mailnova-workspace.mailnova-compact-mode
+#mailnova-category-bar {
+    padding: 10px 16px;
+    gap: 8px;
+}
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-chip {
+    padding: 6px 13px;
+    font-size: 13px;
+}
+
+#mailnova-workspace.mailnova-compact-mode .mailnova-email-list {
+    padding: 12px;
+}
+
+
+/* =========================================================
+   MAILNOVA SETTINGS
+   GLASS EFFECT
+   ========================================================= */
+
+/* Glass Effect ON */
+
+#mailnova-workspace.mailnova-glass-effect {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+
+#mailnova-workspace.mailnova-glass-effect .mailnova-header {
+    background: rgba(255, 255, 255, 0.58);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+#mailnova-workspace.mailnova-glass-effect .mailnova-search {
+    background: rgba(255, 255, 255, 0.58);
+}
+
+#mailnova-workspace.mailnova-glass-effect
+#mailnova-category-bar {
+    background: rgba(255, 255, 255, 0.42);
+}
+
+
+/* =========================================================
+   GLASS EFFECT OFF
+   ========================================================= */
+
+#mailnova-workspace:not(.mailnova-glass-effect) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: #ffffff;
+}
+
+#mailnova-workspace:not(.mailnova-glass-effect) .mailnova-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: #ffffff;
+}
+
+#mailnova-workspace:not(.mailnova-glass-effect) .mailnova-search {
+    background: #ffffff;
+}
+
+#mailnova-workspace:not(.mailnova-glass-effect)
+#mailnova-category-bar {
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   DARK MODE + GLASS EFFECT
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark.mailnova-glass-effect {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(7, 11, 17, .90),
+            rgba(12, 17, 24, .84)
+        );
+
+    backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
+}
+
+#mailnova-workspace.mailnova-theme-dark.mailnova-glass-effect
+.mailnova-header {
+    background:
+        rgba(20, 27, 36, .72);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+#mailnova-workspace.mailnova-theme-dark.mailnova-glass-effect
+.mailnova-search {
+    background:
+        rgba(8, 13, 19, .65);
+}
+
+
+/* =========================================================
+   DARK MODE + GLASS OFF
+   ========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark:not(.mailnova-glass-effect) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    background:
+        #0b1016;
+}
+
+#mailnova-workspace.mailnova-theme-dark:not(.mailnova-glass-effect)
+.mailnova-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    background:
+        #141b24;
+}
+
+#mailnova-workspace.mailnova-theme-dark:not(.mailnova-glass-effect)
+.mailnova-search {
+    background:
+        #0b1016;
+}
