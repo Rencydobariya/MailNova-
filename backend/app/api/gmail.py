@@ -89,10 +89,12 @@ def decode_gmail_body(data):
 
     try:
 
+        # Gmail uses URL-safe Base64. Add only the padding
+        # characters required to make the length a multiple of 4.
+        padding = (4 - len(data) % 4) % 4
+
         decoded = base64.urlsafe_b64decode(
-            data + "=" * (
-                4 - len(data) % 4
-            ) % 4
+            data + "=" * padding
         )
 
         return decoded.decode(
