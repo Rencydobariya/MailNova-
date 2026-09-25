@@ -377,3 +377,479 @@
     }
 
 }
+
+/* =========================================
+   MAILNOVA HEADER ICON BUTTONS
+========================================= */
+
+.mn-header-icon-btn {
+
+    width: 36px;
+    height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.72);
+
+    color: #475569;
+
+    cursor: pointer;
+
+    transition:
+        border-radius 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease,
+        color 0.2s ease;
+
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.mn-header-icon-btn:hover {
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    border-color: rgba(99, 102, 241, 0.35);
+
+    color: #4f46e5;
+
+    box-shadow:
+        0 5px 16px rgba(15, 23, 42, 0.10);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   CLICK
+========================================= */
+
+.mn-header-icon-btn:active {
+
+    transform: scale(0.94);
+}
+
+
+/* =========================================
+   FOCUS
+========================================= */
+
+.mn-header-icon-btn:focus-visible {
+
+    outline: none;
+
+    border-radius: 50%;
+
+    border-color: rgba(99, 102, 241, 0.55);
+
+    box-shadow:
+        0 0 0 3px rgba(99, 102, 241, 0.14);
+}
+
+
+/* =========================================
+   DISABLED
+========================================= */
+
+.mn-header-icon-btn:disabled {
+
+    cursor: default;
+
+    opacity: 0.65;
+
+    transform: none;
+}
+
+
+/* =========================================
+   SVG ICONS
+========================================= */
+
+.mn-refresh-icon,
+.mn-settings-icon {
+
+    width: 19px;
+    height: 19px;
+
+    display: block;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   REFRESH ANIMATION
+========================================= */
+
+.mn-refresh-icon {
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.mn-header-icon-btn.mailnova-refreshing {
+
+    cursor: wait;
+
+    border-radius: 50%;
+
+    background: rgba(99, 102, 241, 0.08);
+
+    border-color: rgba(99, 102, 241, 0.35);
+
+    color: #4f46e5;
+}
+
+
+.mn-header-icon-btn.mailnova-refreshing
+.mn-refresh-icon {
+
+    animation:
+        mailnovaRefreshSpin 0.8s linear infinite;
+}
+
+
+@keyframes mailnovaRefreshSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+/* =========================================
+   MAILNOVA REFRESH BUTTON
+========================================= */
+
+.mn-refresh-button {
+
+    width: 36px;
+    height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(99, 102, 241, 0.20);
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.72);
+
+    color: #64748b;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.12s ease,
+        color 0.15s ease;
+
+    flex-shrink: 0;
+
+    /*
+       Prevent browser button defaults
+       from making it feel sticky.
+    */
+    appearance: none;
+    -webkit-appearance: none;
+
+}
+
+
+/* =========================================
+   REFRESH HOVER
+========================================= */
+
+.mn-refresh-button:hover {
+
+    background: rgba(255, 255, 255, 0.95);
+
+    border-color: rgba(99, 102, 241, 0.45);
+
+    color: #4f46e5;
+
+    box-shadow:
+        0 4px 14px rgba(15, 23, 42, 0.10);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================
+   REFRESH CLICK
+========================================= */
+
+.mn-refresh-button:active {
+
+    transform: scale(0.93);
+
+}
+
+
+/* =========================================
+   REFRESH ICON
+========================================= */
+
+.mn-refresh-icon {
+
+    width: 19px;
+    height: 19px;
+
+    display: block;
+
+    flex-shrink: 0;
+
+}
+
+
+/* =========================================
+   REFRESHING STATE
+========================================= */
+
+/* =========================================
+   MAILNOVA REFRESHING STATE
+========================================= */
+
+.mn-refresh-button.mailnova-refreshing {
+
+    border-radius: 50% !important;
+
+    color: #4f46e5;
+
+    background:
+        rgba(99, 102, 241, 0.08);
+
+    border-color:
+        rgba(99, 102, 241, 0.35);
+
+    cursor: pointer !important;
+
+}
+
+
+/* CONTINUOUS SPIN WHILE REFRESH IS RUNNING */
+
+.mn-refresh-button.mailnova-refreshing
+.mn-refresh-icon {
+
+    animation:
+        mailnovaRefreshSpin
+        0.45s
+        linear
+        infinite;
+
+}
+
+
+@keyframes mailnovaRefreshSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   FAST REFRESH ANIMATION
+   4 ROTATIONS
+========================================= */
+
+
+
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mn-refresh-button.mailnova-refreshing
+    .mn-refresh-icon {
+
+        animation:
+            none;
+
+    }
+
+}
+/* =========================================================
+   FINAL ROUND HEADER BUTTONS
+========================================================= */
+
+/* REFRESH */
+#mn-refresh,
+#mn-refresh:hover,
+#mn-refresh:active,
+#mn-refresh:focus,
+#mn-refresh:focus-visible {
+
+    border-radius: 50% !important;
+
+}
+
+
+/* SETTINGS */
+#mn-settings,
+#mn-settings:hover,
+#mn-settings:active,
+#mn-settings:focus,
+#mn-settings:focus-visible {
+
+    border-radius: 50% !important;
+
+}
+
+
+/* REMOVE SQUARE FOCUS OUTLINE */
+#mn-refresh:focus-visible,
+#mn-settings:focus-visible {
+
+    outline: none !important;
+}
+
+
+/* Keep hover completely circular */
+#mn-refresh:hover {
+
+    background:
+        rgba(37, 99, 235, 0.08);
+
+    border-color:
+        rgba(37, 99, 235, 0.28);
+
+    color:
+        #2563eb;
+
+    box-shadow:
+        0 5px 16px rgba(15, 23, 42, 0.10);
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+#mn-settings:hover {
+
+    background:
+        rgba(100, 116, 139, 0.10);
+
+    border-color:
+        rgba(100, 116, 139, 0.28);
+
+    color:
+        #334155;
+
+    box-shadow:
+        0 5px 16px rgba(15, 23, 42, 0.10);
+
+    transform:
+        translateY(-1px);
+
+}
+/* =========================================
+   FINAL ROUND HEADER BUTTONS
+========================================= */
+
+#mn-refresh,
+#mn-refresh:hover,
+#mn-refresh:active,
+#mn-refresh:focus,
+#mn-refresh:focus-visible,
+
+#mn-settings,
+#mn-settings:hover,
+#mn-settings:active,
+#mn-settings:focus,
+#mn-settings:focus-visible {
+
+    border-radius: 50% !important;
+
+}
+
+
+/* Remove browser square focus outline */
+
+#mn-refresh:focus-visible,
+#mn-settings:focus-visible {
+
+    outline: none !important;
+
+}
+
+
+/* SETTINGS HOVER */
+
+#mn-settings:hover {
+
+    background:
+        rgba(100, 116, 139, 0.10) !important;
+
+    border-color:
+        rgba(100, 116, 139, 0.28) !important;
+
+    color:
+        #334155 !important;
+
+    box-shadow:
+        0 5px 16px rgba(15, 23, 42, 0.10);
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* REFRESH HOVER */
+
+#mn-refresh:hover {
+
+    background:
+        rgba(37, 99, 235, 0.08) !important;
+
+    border-color:
+        rgba(37, 99, 235, 0.28) !important;
+
+    color:
+        #2563eb !important;
+
+    box-shadow:
+        0 5px 16px rgba(15, 23, 42, 0.10);
+
+    transform:
+        translateY(-1px);
+
+}

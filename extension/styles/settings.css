@@ -9,7 +9,7 @@
 ========================================================= */
 
 #mailnova-settings-overlay {
-    position: absolute;
+    position: fixed;
     inset: 0;
 
     width: 100%;
@@ -49,8 +49,8 @@
     width: 880px;
     height: 590px;
 
-    max-width: 94%;
-    max-height: 88%;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 32px);
 
     display: flex;
 
@@ -1543,4 +1543,2101 @@
     .mn-loading-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+/* =========================================================
+   MAILNOVA SETTINGS — PROFESSIONAL UI OVERRIDES
+   Gmail / Google Workspace inspired
+========================================================= */
+
+/* ---------- Global typography ---------- */
+
+#mailnova-settings-overlay,
+#mailnova-settings-overlay * {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+#mailnova-settings-overlay button {
+    font-family: inherit;
+}
+
+/* ---------- Sidebar / brand ---------- */
+
+.mn-settings-sidebar {
+    width: 250px;
+    min-width: 250px;
+    padding: 26px 14px 16px;
+    background: #ffffff;
+}
+
+.mn-settings-brand {
+    gap: 12px;
+    padding: 2px 10px 28px;
+}
+
+.mn-settings-brand-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #eef4ff;
+    color: #2563eb;
+}
+
+.mn-settings-brand-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mn-settings-brand-title {
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -.2px;
+}
+
+.mn-settings-brand-subtitle {
+    margin-top: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    color: #7b8798;
+}
+
+/* ---------- Navigation ---------- */
+
+.mn-settings-navigation {
+    gap: 6px;
+}
+
+.mn-settings-nav-item {
+    height: 54px;
+    gap: 12px;
+    padding: 0 10px;
+    border-radius: 14px;
+    color: #4b5563;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.mn-settings-nav-item:hover {
+    background: #f5f6f7;
+    color: #374151;
+}
+
+/* Gmail-like neutral selected state — NO purple background/shadow */
+.mn-settings-nav-item.active {
+    background: #f1f3f4;
+    color: #30343b;
+    box-shadow: none;
+}
+
+.mn-settings-nav-item.active:hover {
+    background: #eceff1;
+    color: #30343b;
+}
+
+.mn-nav-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #f5f7fa;
+    font-size: 0;
+}
+
+.mn-nav-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mn-settings-nav-item.active .mn-nav-icon {
+    background: #ffffff;
+    color: inherit;
+}
+
+/* Individual professional icon colors */
+.mn-settings-nav-item:nth-child(1) .mn-nav-icon {
+    color: #2563eb;
+    background: #edf4ff;
+}
+
+.mn-settings-nav-item:nth-child(2) .mn-nav-icon {
+    color: #00897b;
+    background: #eaf8f6;
+}
+
+.mn-settings-nav-item:nth-child(3) .mn-nav-icon {
+    color: #7c3aed;
+    background: #f2edff;
+}
+
+.mn-settings-nav-item:nth-child(4) .mn-nav-icon {
+    color: #ea580c;
+    background: #fff1e8;
+}
+
+.mn-settings-nav-item:nth-child(5) .mn-nav-icon {
+    color: #db2777;
+    background: #fff0f7;
+}
+
+/* ---------- Main header ---------- */
+
+.mn-settings-main-header {
+    padding: 28px 34px 18px;
+}
+
+.mn-main-title {
+    font-size: 26px;
+    font-weight: 650;
+    letter-spacing: -.35px;
+}
+
+.mn-main-description {
+    margin-top: 7px;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: #7b8798;
+}
+
+/* ---------- Close ---------- */
+
+.mn-settings-modal-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #f5f6f7;
+    border-color: #e1e5e9;
+    color: #68717d;
+    font-size: 19px;
+    font-weight: 400;
+    box-shadow: none;
+}
+
+.mn-settings-modal-close:hover {
+    background: #eceff1;
+    color: #3f4650;
+    transform: none;
+}
+
+/* ---------- Content ---------- */
+
+.mn-settings-section-content {
+    padding: 5px 34px 30px;
+}
+
+.mn-content-heading {
+    gap: 11px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #202124;
+}
+
+.mn-content-heading-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #edf4ff;
+    color: #2563eb;
+    font-size: 0;
+}
+
+.mn-content-heading-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mn-content-subheading {
+    margin-top: 6px;
+    font-size: 11.5px;
+    font-weight: 400;
+    color: #7b8798;
+}
+
+/* Give each section heading its own subtle color */
+[data-content="email"] .mn-content-heading-icon {
+    background: #eaf8f6;
+    color: #00897b;
+}
+
+[data-content="ai"] .mn-content-heading-icon {
+    background: #f2edff;
+    color: #7c3aed;
+}
+
+[data-content="loading"] .mn-content-heading-icon {
+    background: #fff1e8;
+    color: #ea580c;
+}
+
+[data-content="notifications"] .mn-content-heading-icon {
+    background: #fff0f7;
+    color: #db2777;
+}
+
+/* ---------- Theme cards ---------- */
+
+.mn-theme-grid {
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.mn-theme-card {
+    min-height: 132px;
+    border-radius: 15px;
+    border: 1px solid #dfe3e8;
+    box-shadow: none;
+}
+
+.mn-theme-card:hover {
+    background: #f8f9fa;
+    border-color: #c9d0d7;
+    transform: translateY(-1px);
+}
+
+.mn-theme-card.active {
+    background: #f7f9fb;
+    border: 2px solid #8aa4bf;
+    box-shadow: none;
+}
+
+.mn-theme-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 0;
+}
+
+.mn-theme-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mn-theme-name {
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.mn-theme-description {
+    font-size: 10.5px;
+    font-weight: 400;
+}
+
+/* ---------- Setting rows ---------- */
+
+.mn-setting-row {
+    min-height: 76px;
+    padding: 13px 0;
+}
+
+.mn-setting-row-left {
+    gap: 13px;
+}
+
+.mn-setting-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 0;
+    background: #eef4ff;
+    color: #2563eb;
+}
+
+.mn-setting-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Different icon colors within setting lists */
+.mn-setting-row:nth-child(1) .mn-setting-icon {
+    color: #2563eb;
+    background: #edf4ff;
+}
+
+.mn-setting-row:nth-child(2) .mn-setting-icon {
+    color: #00897b;
+    background: #eaf8f6;
+}
+
+.mn-setting-row:nth-child(3) .mn-setting-icon {
+    color: #7c3aed;
+    background: #f2edff;
+}
+
+.mn-setting-row:nth-child(4) .mn-setting-icon {
+    color: #ea580c;
+    background: #fff1e8;
+}
+
+.mn-setting-title {
+    font-size: 13px;
+    font-weight: 550;
+    color: #2f343b;
+}
+
+.mn-setting-description {
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 400;
+    color: #87919f;
+}
+
+/* ---------- Toggle ---------- */
+
+.mn-setting-switch {
+    width: 46px;
+    height: 26px;
+    background: #cbd2da;
+}
+
+.mn-setting-switch.active {
+    background: #3b82f6;
+    box-shadow: none;
+}
+
+.mn-setting-switch span {
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 3px;
+}
+
+.mn-setting-switch.active span {
+    transform: translateX(20px);
+}
+
+/* ---------- Priority ---------- */
+
+.mn-priority-focus-grid {
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.mn-priority-focus-option {
+    min-height: 62px;
+    border-radius: 13px;
+}
+
+.mn-priority-focus-option:hover {
+    background: #f5f6f7;
+    border-color: #d4d9de;
+}
+
+.mn-priority-focus-option.active {
+    background: #f1f3f4;
+    border-color: #c7cdd3;
+    color: #30343b;
+    box-shadow: none;
+}
+
+.mn-priority-focus-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    font-size: 0;
+    border-radius: 11px;
+}
+
+.mn-priority-focus-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mn-priority-focus-text strong {
+    font-size: 13px;
+    font-weight: 550;
+}
+
+.mn-priority-focus-text small {
+    font-size: 10px;
+    font-weight: 400;
+}
+
+/* ---------- Loading ---------- */
+
+.mn-loading-grid {
+    gap: 13px;
+    margin-top: 15px;
+}
+
+.mn-loading-option {
+    min-height: 112px;
+    border-radius: 14px;
+}
+
+.mn-loading-option:hover {
+    background: #f5f6f7;
+    border-color: #d4d9de;
+    transform: none;
+}
+
+.mn-loading-option.active {
+    background: #f1f3f4;
+    border-color: #c7cdd3;
+    box-shadow: none;
+}
+
+.mn-loading-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    font-size: 0;
+}
+
+.mn-loading-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mn-loading-text strong {
+    font-size: 12.5px;
+    font-weight: 550;
+}
+
+.mn-loading-text small {
+    font-size: 10px;
+    font-weight: 400;
+}
+
+.mn-loading-hint {
+    font-size: 10.5px;
+    font-weight: 400;
+    background: #f8f9fa;
+    border-color: #e1e5e9;
+}
+
+/* ---------- Saved indicator ---------- */
+
+.mn-settings-sidebar-footer {
+    font-size: 10px;
+    font-weight: 400;
+}
+
+/* =========================================================
+   DARK MODE — KEEP PROFESSIONAL, REMOVE PURPLE SELECTION
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark .mn-settings-nav-item.active {
+    background: #2b3036;
+    color: #f1f3f4;
+    box-shadow: none;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-settings-nav-item.active:hover {
+    background: #32383f;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-settings-nav-item:hover {
+    background: #252a30;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-settings-main {
+    background: #171a1e;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-content-heading {
+    color: #e8eaed;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-content-subheading,
+#mailnova-workspace.mailnova-theme-dark .mn-main-description,
+#mailnova-workspace.mailnova-theme-dark .mn-setting-description,
+#mailnova-workspace.mailnova-theme-dark .mn-theme-description {
+    color: #9aa0a6;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-theme-card:hover,
+#mailnova-workspace.mailnova-theme-dark .mn-loading-option:hover,
+#mailnova-workspace.mailnova-theme-dark .mn-priority-focus-option:hover {
+    background: #252a30;
+    border-color: #4a5159;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-theme-card.active,
+#mailnova-workspace.mailnova-theme-dark .mn-loading-option.active,
+#mailnova-workspace.mailnova-theme-dark .mn-priority-focus-option.active {
+    background: #2b3036;
+    border-color: #6b737c;
+    box-shadow: none;
+}
+
+/* ---------- Responsive sizing ---------- */
+
+@media (max-width: 850px) {
+    .mn-settings-sidebar {
+        width: 225px;
+        min-width: 225px;
+    }
+
+    .mn-settings-main-header,
+    .mn-settings-section-content {
+        padding-left: 26px;
+        padding-right: 26px;
+    }
+}
+
+
+/* =========================================================
+   FINAL POLISH — SMALLER ICONS / DARKER TEXT / UNIQUE COLORS
+========================================================= */
+
+/* Settings brand icon: smaller, cleaner gear */
+.mn-settings-brand-icon {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 13px !important;
+}
+
+.mn-settings-brand-icon svg {
+    width: 21px !important;
+    height: 21px !important;
+    stroke-width: 1.7 !important;
+}
+
+/* Sidebar navigation icons: slightly smaller */
+.mn-nav-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+}
+
+.mn-nav-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    stroke-width: 1.75 !important;
+}
+
+.mn-settings-nav-item {
+    font-size: 13.5px !important;
+    font-weight: 550 !important;
+    color: #374151 !important;
+}
+
+.mn-settings-nav-item.active {
+    background: #f1f3f4 !important;
+    color: #2f343b !important;
+}
+
+/* Main heading hierarchy */
+.mn-main-title {
+    font-size: 25px !important;
+    font-weight: 650 !important;
+    color: #202124 !important;
+}
+
+.mn-main-description {
+    font-size: 12.5px !important;
+    color: #667085 !important;
+}
+
+/* Section heading icons smaller */
+.mn-content-heading-icon {
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 10px !important;
+}
+
+.mn-content-heading-icon svg {
+    width: 19px !important;
+    height: 19px !important;
+}
+
+.mn-content-heading {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #202124 !important;
+}
+
+/* Setting row icons smaller */
+.mn-setting-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 11px !important;
+}
+
+.mn-setting-icon svg {
+    width: 19px !important;
+    height: 19px !important;
+    stroke-width: 1.75 !important;
+}
+
+/* DARKER + SLIGHTLY LARGER TEXT */
+.mn-setting-title {
+    font-size: 14px !important;
+    font-weight: 550 !important;
+    color: #30343b !important;
+}
+
+.mn-setting-description {
+    font-size: 11.5px !important;
+    color: #738095 !important;
+    line-height: 1.45 !important;
+}
+
+.mn-setting-row {
+    min-height: 78px !important;
+}
+
+/* UNIQUE PROFESSIONAL COLORS — use data-setting, not nth-child */
+.mn-setting-row[data-setting="autoOpenWorkspace"] .mn-setting-icon {
+    color: #7c3aed !important;
+    background: #f1ebff !important;
+}
+
+.mn-setting-row[data-setting="unreadNotifications"] .mn-setting-icon {
+    color: #ea580c !important;
+    background: #fff0e7 !important;
+}
+
+.mn-setting-row[data-setting="categoryDetection"] .mn-setting-icon {
+    color: #0891b2 !important;
+    background: #e8f8fb !important;
+}
+
+.mn-setting-row[data-setting="backgroundSync"] .mn-setting-icon {
+    color: #16a34a !important;
+    background: #eaf8ef !important;
+}
+
+/* AI section */
+.mn-setting-row[data-setting="aiSummary"] .mn-setting-icon {
+    color: #7c3aed !important;
+    background: #f1ebff !important;
+}
+
+.mn-setting-row[data-setting="askAI"] .mn-setting-icon {
+    color: #2563eb !important;
+    background: #edf4ff !important;
+}
+
+.mn-setting-row[data-setting="smartReply"] .mn-setting-icon {
+    color: #0f766e !important;
+    background: #eaf8f6 !important;
+}
+
+/* Notification section */
+.mn-setting-row[data-setting="importantNotifications"] .mn-setting-icon {
+    color: #db2777 !important;
+    background: #fff0f7 !important;
+}
+
+.mn-setting-row[data-setting="notificationBadge"] .mn-setting-icon {
+    color: #2563eb !important;
+    background: #edf4ff !important;
+}
+
+/* Compact + glass */
+.mn-setting-row[data-setting="compactMode"] .mn-setting-icon {
+    color: #2563eb !important;
+    background: #edf4ff !important;
+}
+
+.mn-setting-row[data-setting="glassEffect"] .mn-setting-icon {
+    color: #8b5cf6 !important;
+    background: #f3efff !important;
+}
+
+/* Toggle remains clean */
+.mn-setting-switch {
+    width: 46px !important;
+    height: 26px !important;
+}
+
+.mn-setting-switch span {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Theme icons smaller */
+.mn-theme-icon {
+    width: 38px !important;
+    height: 38px !important;
+}
+
+.mn-theme-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Loading icons smaller */
+.mn-loading-icon {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+.mn-loading-icon svg {
+    width: 19px !important;
+    height: 19px !important;
+}
+
+.mn-loading-text strong {
+    font-size: 13px !important;
+    font-weight: 550 !important;
+    color: #30343b !important;
+}
+
+.mn-loading-text small {
+    font-size: 10.5px !important;
+    color: #738095 !important;
+}
+
+/* Priority icons */
+.mn-priority-focus-icon {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+}
+
+.mn-priority-focus-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.mn-priority-focus-text strong {
+    font-size: 13px !important;
+    font-weight: 550 !important;
+    color: #30343b !important;
+}
+
+.mn-priority-focus-text small {
+    font-size: 10.5px !important;
+    color: #738095 !important;
+}
+
+/* Dark mode text */
+#mailnova-workspace.mailnova-theme-dark .mn-main-title,
+#mailnova-workspace.mailnova-theme-dark .mn-content-heading,
+#mailnova-workspace.mailnova-theme-dark .mn-setting-title,
+#mailnova-workspace.mailnova-theme-dark .mn-loading-text strong,
+#mailnova-workspace.mailnova-theme-dark .mn-priority-focus-text strong {
+    color: #edf0f3 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-setting-description,
+#mailnova-workspace.mailnova-theme-dark .mn-loading-text small,
+#mailnova-workspace.mailnova-theme-dark .mn-priority-focus-text small,
+#mailnova-workspace.mailnova-theme-dark .mn-main-description {
+    color: #a6afb9 !important;
+}
+
+
+/* =========================================================
+   FINAL REQUESTED POLISH — 24 SEP 2026
+   1. Slightly wider left sidebar
+   2. Larger/darker sidebar typography
+   3. Clearly visible professional Settings gear
+   4. Email Behavior row text exactly matches Priority Focus size
+   5. Keep all existing functionality and layout
+========================================================= */
+
+/* LEFT SIDEBAR — a little wider, not oversized */
+.mn-settings-sidebar {
+    width: 265px !important;
+    min-width: 265px !important;
+    padding: 24px 15px 16px !important;
+}
+
+/* SETTINGS BRAND / GEAR — clean, visible, centered */
+.mn-settings-brand {
+    gap: 12px !important;
+    padding: 2px 9px 25px !important;
+}
+
+.mn-settings-brand-icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 14px !important;
+    background: #eaf2ff !important;
+    color: #2563eb !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+.mn-settings-brand-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+    display: block !important;
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 1.9 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+}
+
+.mn-settings-brand-title {
+    font-size: 20px !important;
+    font-weight: 650 !important;
+    color: #202124 !important;
+}
+
+.mn-settings-brand-subtitle {
+    margin-top: 4px !important;
+    font-size: 11.5px !important;
+    color: #6b7788 !important;
+}
+
+/* LEFT NAV — slightly larger and darker */
+.mn-settings-navigation {
+    gap: 5px !important;
+}
+
+.mn-settings-nav-item {
+    height: 50px !important;
+    gap: 12px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    font-weight: 550 !important;
+    color: #343a40 !important;
+}
+
+.mn-settings-nav-item:hover {
+    background: #f5f6f7 !important;
+    color: #202124 !important;
+}
+
+.mn-settings-nav-item.active {
+    background: #f1f3f4 !important;
+    color: #202124 !important;
+    box-shadow: none !important;
+}
+
+.mn-nav-icon {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 10px !important;
+}
+
+.mn-nav-icon svg {
+    width: 19px !important;
+    height: 19px !important;
+    stroke-width: 1.8 !important;
+}
+
+/* Keep every sidebar icon distinct */
+.mn-settings-nav-item:nth-child(1) .mn-nav-icon {
+    color: #2563eb !important;
+    background: #edf4ff !important;
+}
+.mn-settings-nav-item:nth-child(2) .mn-nav-icon {
+    color: #00897b !important;
+    background: #eaf8f6 !important;
+}
+.mn-settings-nav-item:nth-child(3) .mn-nav-icon {
+    color: #7c3aed !important;
+    background: #f2edff !important;
+}
+.mn-settings-nav-item:nth-child(4) .mn-nav-icon {
+    color: #ea580c !important;
+    background: #fff1e8 !important;
+}
+.mn-settings-nav-item:nth-child(5) .mn-nav-icon {
+    color: #db2777 !important;
+    background: #fff0f7 !important;
+}
+
+/* MAIN CONTENT: don't enlarge the row typography */
+.mn-setting-title,
+.mn-loading-text strong,
+.mn-priority-focus-text strong {
+    font-size: 13px !important;
+    font-weight: 550 !important;
+    line-height: 1.35 !important;
+    color: #30343b !important;
+}
+
+.mn-setting-description,
+.mn-loading-text small,
+.mn-priority-focus-text small {
+    font-size: 10.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.45 !important;
+    color: #738095 !important;
+}
+
+/* Email Behavior rows: same visual scale as Priority Focus */
+[data-content="email"] .mn-setting-title {
+    font-size: 13px !important;
+}
+
+[data-content="email"] .mn-setting-description {
+    font-size: 10.5px !important;
+}
+
+/* Keep row height compact and consistent */
+[data-content="email"] .mn-setting-row {
+    min-height: 72px !important;
+    padding-top: 11px !important;
+    padding-bottom: 11px !important;
+}
+
+/* Priority Focus stays exactly at the same text scale */
+.mn-priority-focus-text strong {
+    font-size: 13px !important;
+}
+
+.mn-priority-focus-text small {
+    font-size: 10.5px !important;
+}
+
+/* Setting-row icon stays compact */
+.mn-setting-icon {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+}
+
+.mn-setting-icon svg {
+    width: 19px !important;
+    height: 19px !important;
+}
+
+/* Dark mode sidebar text */
+#mailnova-workspace.mailnova-theme-dark .mn-settings-brand-title,
+#mailnova-workspace.mailnova-theme-dark .mn-settings-nav-item {
+    color: #edf0f3 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-settings-brand-subtitle {
+    color: #9aa4b2 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mn-settings-brand-icon {
+    background: #17283d !important;
+    color: #60a5fa !important;
+}
+
+@media (max-width: 850px) {
+    .mn-settings-sidebar {
+        width: 235px !important;
+        min-width: 235px !important;
+    }
+}
+/* =========================================================
+   MAILNOVA — FINAL DARK MODE SETTINGS UI
+   24 SEP 2026
+   Strong final overrides
+========================================================= */
+
+
+/* =========================================================
+   DARK SETTINGS OVERLAY
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-settings-overlay {
+
+    background:
+        rgba(0, 0, 0, 0.68) !important;
+
+    backdrop-filter:
+        blur(6px) !important;
+
+    -webkit-backdrop-filter:
+        blur(6px) !important;
+
+}
+
+
+/* =========================================================
+   DARK SETTINGS WINDOW
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-settings-modal {
+
+    background:
+        #0d1218 !important;
+
+    border:
+        1px solid #26313d !important;
+
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.78),
+        0 10px 35px rgba(0, 0, 0, 0.45) !important;
+
+    color:
+        #e7edf4 !important;
+
+}
+
+
+/* =========================================================
+   DARK SIDEBAR
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-sidebar {
+
+    background:
+        linear-gradient(
+            180deg,
+            #0e141b 0%,
+            #090e14 100%
+        ) !important;
+
+    border-right:
+        1px solid #202a35 !important;
+
+}
+
+
+/* =========================================================
+   SETTINGS BRAND
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-brand-icon {
+
+    background:
+        #14263b !important;
+
+    color:
+        #60a5fa !important;
+
+    border:
+        1px solid #213c5b !important;
+
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-brand-title {
+
+    color:
+        #f1f5f9 !important;
+
+}
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-brand-subtitle {
+
+    color:
+        #7f8c9d !important;
+
+}
+
+
+/* =========================================================
+   SIDEBAR NAV — BASE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item {
+
+    background:
+        transparent !important;
+
+    color:
+        #aeb9c7 !important;
+
+    border:
+        1px solid transparent !important;
+
+}
+
+
+/* =========================================================
+   SIDEBAR NAV — HOVER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:hover {
+
+    background:
+        #181f27 !important;
+
+    color:
+        #f1f5f9 !important;
+
+    border-color:
+        #27323e !important;
+
+}
+
+
+/* =========================================================
+   SIDEBAR NAV — ACTIVE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item.active {
+
+    background:
+        #202832 !important;
+
+    color:
+        #f5f7fa !important;
+
+    border-color:
+        #303c49 !important;
+
+    box-shadow:
+        inset 3px 0 0 #60a5fa !important;
+
+}
+
+
+/* =========================================================
+   SIDEBAR NAV — ACTIVE HOVER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item.active:hover {
+
+    background:
+        #252f3a !important;
+
+    color:
+        #ffffff !important;
+
+}
+
+
+/* =========================================================
+   SIDEBAR ICONS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item
+.mn-nav-icon {
+
+    background:
+        #171f28 !important;
+
+    border:
+        1px solid #27323d !important;
+
+}
+
+
+/* Appearance */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(1)
+.mn-nav-icon {
+
+    color:
+        #60a5fa !important;
+
+    background:
+        #14263b !important;
+
+}
+
+
+/* Email */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(2)
+.mn-nav-icon {
+
+    color:
+        #2dd4bf !important;
+
+    background:
+        #12302f !important;
+
+}
+
+
+/* AI */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(3)
+.mn-nav-icon {
+
+    color:
+        #a78bfa !important;
+
+    background:
+        #28203b !important;
+
+}
+
+
+/* Loading */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(4)
+.mn-nav-icon {
+
+    color:
+        #fb923c !important;
+
+    background:
+        #352315 !important;
+
+}
+
+
+/* Notifications */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-nav-item:nth-child(5)
+.mn-nav-icon {
+
+    color:
+        #f472b6 !important;
+
+    background:
+        #38202e !important;
+
+}
+
+
+/* SVG inside icons */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-nav-icon svg {
+
+    stroke:
+        currentColor !important;
+
+}
+
+
+/* =========================================================
+   MAIN SETTINGS AREA
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-main {
+
+    background:
+        #11171e !important;
+
+}
+
+
+/* =========================================================
+   MAIN HEADER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-main-header {
+
+    background:
+        #11171e !important;
+
+    border-bottom:
+        1px solid #202a35 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-main-title {
+
+    color:
+        #f1f5f9 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-main-description {
+
+    color:
+        #7f8b9b !important;
+
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-modal-close {
+
+    background:
+        #1a222c !important;
+
+    border:
+        1px solid #303b47 !important;
+
+    color:
+        #9eabb9 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-modal-close:hover {
+
+    background:
+        #27323d !important;
+
+    border-color:
+        #465463 !important;
+
+    color:
+        #f1f5f9 !important;
+
+}
+
+
+/* =========================================================
+   CONTENT HEADINGS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-content-heading {
+
+    color:
+        #edf2f7 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-content-subheading {
+
+    color:
+        #7f8b9b !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-content-heading-icon {
+
+    background:
+        #1b2530 !important;
+
+    border:
+        1px solid #293542 !important;
+
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-divider {
+
+    background:
+        #242e39 !important;
+
+}
+
+
+/* =========================================================
+   THEME CARDS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card {
+
+    background:
+        #151d25 !important;
+
+    border:
+        1px solid #2b3744 !important;
+
+    color:
+        #e5eaf0 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card:hover {
+
+    background:
+        #1c2630 !important;
+
+    border-color:
+        #425161 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-card.active {
+
+    background:
+        linear-gradient(
+            145deg,
+            #222d38,
+            #19222c
+        ) !important;
+
+    border:
+        2px solid #607080 !important;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.28) !important;
+
+}
+
+
+/* Theme card text */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-name {
+
+    color:
+        #edf2f7 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-theme-description {
+
+    color:
+        #7f8b9b !important;
+
+}
+
+
+/* =========================================================
+   SETTING ROWS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row {
+
+    border-bottom:
+        1px solid #222c37 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-title {
+
+    color:
+        #e8edf3 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-description {
+
+    color:
+        #8491a1 !important;
+
+}
+
+
+/* =========================================================
+   SETTING ICONS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-icon {
+
+    border:
+        1px solid #293542 !important;
+
+}
+
+
+/* Appearance-related */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="compactMode"]
+.mn-setting-icon {
+
+    color:
+        #60a5fa !important;
+
+    background:
+        #14263b !important;
+
+}
+
+
+/* Glass */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="glassEffect"]
+.mn-setting-icon {
+
+    color:
+        #a78bfa !important;
+
+    background:
+        #28203b !important;
+
+}
+
+
+/* Auto open */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="autoOpenWorkspace"]
+.mn-setting-icon {
+
+    color:
+        #a78bfa !important;
+
+    background:
+        #28203b !important;
+
+}
+
+
+/* Unread */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="unreadNotifications"]
+.mn-setting-icon {
+
+    color:
+        #fb923c !important;
+
+    background:
+        #352315 !important;
+
+}
+
+
+/* Category */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="categoryDetection"]
+.mn-setting-icon {
+
+    color:
+        #22d3ee !important;
+
+    background:
+        #12313a !important;
+
+}
+
+
+/* Background sync */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="backgroundSync"]
+.mn-setting-icon {
+
+    color:
+        #4ade80 !important;
+
+    background:
+        #143326 !important;
+
+}
+
+
+/* AI summary */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="aiSummary"]
+.mn-setting-icon {
+
+    color:
+        #c4b5fd !important;
+
+    background:
+        #28203b !important;
+
+}
+
+
+/* Ask AI */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="askAI"]
+.mn-setting-icon {
+
+    color:
+        #60a5fa !important;
+
+    background:
+        #14263b !important;
+
+}
+
+
+/* Smart Reply */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="smartReply"]
+.mn-setting-icon {
+
+    color:
+        #5eead4 !important;
+
+    background:
+        #12302f !important;
+
+}
+
+
+/* Notifications */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="importantNotifications"]
+.mn-setting-icon {
+
+    color:
+        #f472b6 !important;
+
+    background:
+        #38202e !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-row[data-setting="notificationBadge"]
+.mn-setting-icon {
+
+    color:
+        #60a5fa !important;
+
+    background:
+        #14263b !important;
+
+}
+
+
+/* SVG */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-icon svg {
+
+    stroke:
+        currentColor !important;
+
+}
+
+
+/* =========================================================
+   TOGGLE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-switch {
+
+    background:
+        #394552 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-switch.active {
+
+    background:
+        #3b82f6 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-setting-switch span {
+
+    background:
+        #f8fafc !important;
+
+    box-shadow:
+        0 2px 7px rgba(0,0,0,.45) !important;
+
+}
+
+
+/* =========================================================
+   LOADING / PRIORITY
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-option,
+#mailnova-workspace.mailnova-theme-dark
+.mn-priority-focus-option {
+
+    background:
+        #151d25 !important;
+
+    border-color:
+        #2b3744 !important;
+
+    color:
+        #e5eaf0 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-option:hover,
+#mailnova-workspace.mailnova-theme-dark
+.mn-priority-focus-option:hover {
+
+    background:
+        #1d2731 !important;
+
+    border-color:
+        #435260 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-loading-option.active,
+#mailnova-workspace.mailnova-theme-dark
+.mn-priority-focus-option.active {
+
+    background:
+        #222d38 !important;
+
+    border-color:
+        #5d6b79 !important;
+
+}
+
+
+/* =========================================================
+   SETTINGS SCROLLBAR
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-section-content::-webkit-scrollbar {
+
+    width:
+        6px !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-section-content::-webkit-scrollbar-thumb {
+
+    background:
+        #34414e !important;
+
+    border-radius:
+        20px !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-section-content::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #4b5b6b !important;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-settings-sidebar-footer {
+
+    border-top:
+        1px solid #202a35 !important;
+
+    color:
+        #7f8b9b !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-settings-saved {
+
+    background:
+        #123528 !important;
+
+    color:
+        #6ee7b7 !important;
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / FOCUS
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-settings-overlay button:focus-visible {
+
+    outline:
+        2px solid #60a5fa !important;
+
+    outline-offset:
+        2px !important;
+
+}
+/* =========================================================
+   ASK AI — DARK MODE SUPPORT
+   Works for MailNova Ask-AI elements outside workspace too
+========================================================= */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[id*="ask-ai"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="askAI"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[id*="askAI"] {
+
+    color:
+        #e8edf3 !important;
+
+}
+
+
+/* Popup / panel */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"][class*="modal"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"][class*="popup"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"][class*="panel"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[id*="ask-ai"][class*="modal"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[id*="ask-ai"][class*="popup"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[id*="ask-ai"][class*="panel"] {
+
+    background:
+        #10161d !important;
+
+    border-color:
+        #2b3744 !important;
+
+    color:
+        #e8edf3 !important;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.65) !important;
+
+}
+
+
+/* Text */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] h1,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] h2,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] h3,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] strong {
+
+    color:
+        #f1f5f9 !important;
+
+}
+
+
+/* Description */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] p,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] small {
+
+    color:
+        #8996a7 !important;
+
+}
+
+
+/* Input / textarea */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] input,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] textarea {
+
+    background:
+        #151d25 !important;
+
+    border:
+        1px solid #303c49 !important;
+
+    color:
+        #edf2f7 !important;
+
+    caret-color:
+        #60a5fa !important;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] input::placeholder,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] textarea::placeholder {
+
+    color:
+        #687587 !important;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] input:focus,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] textarea:focus {
+
+    background:
+        #18212b !important;
+
+    border-color:
+        #4d6b8b !important;
+
+    box-shadow:
+        0 0 0 3px rgba(96,165,250,.08) !important;
+
+}
+
+
+/* Buttons */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] button {
+
+    background:
+        #1a232e !important;
+
+    border:
+        1px solid #303c49 !important;
+
+    color:
+        #cbd5e1 !important;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] button:hover {
+
+    background:
+        #24303d !important;
+
+    border-color:
+        #50647a !important;
+
+    color:
+        #f1f5f9 !important;
+
+}
+
+
+/* Primary Ask button */
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] .primary,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] [class*="send"],
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] [class*="submit"] {
+
+    background:
+        #2563eb !important;
+
+    border-color:
+        #3b82f6 !important;
+
+    color:
+        #ffffff !important;
+
+}
+
+
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] .primary:hover,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] [class*="send"]:hover,
+body:has(#mailnova-workspace.mailnova-theme-dark)
+[class*="ask-ai"] [class*="submit"]:hover {
+
+    background:
+        #3b82f6 !important;
+
+    color:
+        #ffffff !important;
+
+}
+/* =========================================================
+   SETTINGS — FAST THEME TRANSITION
+========================================================= */
+
+#mailnova-settings-overlay,
+#mailnova-settings-overlay .mailnova-settings-modal,
+#mailnova-settings-overlay .mn-settings-sidebar,
+#mailnova-settings-overlay .mn-settings-main,
+#mailnova-settings-overlay .mn-theme-card,
+#mailnova-settings-overlay .mn-setting-row {
+
+    transition:
+        background-color 140ms ease,
+        border-color 140ms ease,
+        color 140ms ease,
+        box-shadow 140ms ease;
+
+}
+
+
+/*
+ * Don't animate expensive blur.
+ */
+
+#mailnova-workspace.mailnova-theme-switching
+#mailnova-settings-overlay {
+
+    backdrop-filter:
+        none !important;
+
+    -webkit-backdrop-filter:
+        none !important;
+
 }

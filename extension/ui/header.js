@@ -12,11 +12,52 @@ function renderHeader() {
 
             <button
                 id="mn-refresh"
+                class="mn-refresh-button"
                 title="Refresh"
                 aria-label="Refresh MailNova"
+                type="button"
             >
-                🔄
+                <svg
+                    class="mn-refresh-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M20 11a8 8 0 0 0-15.3-3"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M4 4v4h4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M4 13a8 8 0 0 0 15.3 3"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M20 20v-4h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
             </button>
+
 
             <button
                 id="mn-notifications"
@@ -31,6 +72,7 @@ function renderHeader() {
                 ></span>
             </button>
 
+
             <button
                 id="mn-width-plus"
                 title="Increase Width"
@@ -38,6 +80,7 @@ function renderHeader() {
             >
                 ➕
             </button>
+
 
             <button
                 id="mn-width-minus"
@@ -47,6 +90,7 @@ function renderHeader() {
                 ➖
             </button>
 
+
             <button
                 id="mn-settings"
                 title="Settings"
@@ -54,6 +98,7 @@ function renderHeader() {
             >
                 ⚙
             </button>
+
 
             <button
                 id="mn-close"

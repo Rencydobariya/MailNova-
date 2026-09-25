@@ -626,26 +626,7 @@
    READ / UNREAD BUTTON HOVER
 ========================================================= */
 
-.mn-mark-read:hover {
 
-    background:
-        linear-gradient(
-            180deg,
-            #f8fbff,
-            #eef5ff
-        );
-
-    border-color: #78a9ff;
-
-    color: #1e40af;
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 6px 16px rgba(30, 64, 175, 0.12);
-
-    transition-delay: 0s !important;
-}
 
 
 .mn-mark-read:active {
@@ -660,10 +641,13 @@
 
 /* Unread email = open envelope / mark as read */
 
-.mn-mark-read[data-unread="true"] {
 
-    color: #2563eb;
-}
+
+
+/* =========================================
+   MARK AS READ — GREEN HOVER
+========================================= */
+
 
 
 /* Read email = closed envelope / mark as unread */
@@ -1260,5 +1244,855 @@
 
         height: 15px !important;
     }
+
+}
+
+/* =========================================================
+   INSTANT READ / UNREAD STATE
+========================================================= */
+
+.mailnova-email-unread
+.mailnova-read-status-dot,
+.mailnova-read-status-dot.unread {
+
+    background: #16a34a;
+
+    box-shadow:
+        0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+
+.mailnova-email-read
+.mailnova-read-status-dot,
+.mailnova-read-status-dot.read {
+
+    background: #9ca3af;
+
+    box-shadow:
+        0 0 0 3px rgba(156, 163, 175, 0.10);
+}
+
+
+/* UNREAD BADGE */
+
+.mailnova-email-unread
+.mailnova-read-status,
+.mailnova-read-status.unread {
+
+    background: #ecfdf3;
+
+    color: #15803d;
+
+    border-color: #bbf7d0;
+}
+
+
+/* READ BADGE */
+
+.mailnova-email-read
+.mailnova-read-status,
+.mailnova-read-status.read {
+
+    background: #f3f4f6;
+
+    color: #6b7280;
+
+    border-color: #e5e7eb;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-unread
+.mailnova-read-status,
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-read-status.unread {
+
+    background: #123524;
+
+    color: #4ade80;
+
+    border-color: #1f5d3a;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-read-status,
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-read-status.read {
+
+    background: #272b33;
+
+    color: #9ca3af;
+
+    border-color: #3b414c;
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-unread
+.mailnova-read-status-dot,
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-read-status-dot.unread {
+
+    background: #22c55e;
+
+    box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-email-read
+.mailnova-read-status-dot,
+#mailnova-workspace.mailnova-theme-dark
+.mailnova-read-status-dot.read {
+
+    background: #6b7280;
+
+    box-shadow:
+        0 0 0 3px rgba(107, 114, 128, 0.12);
+}
+
+
+/* =========================================
+   MAILNOVA READ / UNREAD STATE
+========================================= */
+
+/* UNREAD ICON */
+
+.mailnova-email-card
+.mn-mark-read-unread {
+
+    color: #2563eb;
+
+}
+
+
+/* READ ICON */
+
+.mailnova-email-card
+.mn-mark-read-read {
+
+    color: #9ca3af;
+
+}
+
+
+/* UNREAD DOT */
+
+.mailnova-read-status-dot.unread {
+
+    background: #16a34a;
+
+}
+
+
+/* READ DOT */
+
+.mailnova-read-status-dot.read {
+
+    background: #9ca3af;
+
+}
+
+
+/* UNREAD BADGE */
+
+.mailnova-read-status.unread {
+
+    background: #ecfdf3;
+    color: #15803d;
+    border-color: #bbf7d0;
+
+}
+
+
+/* READ BADGE */
+
+.mailnova-read-status.read {
+
+    background: #f3f4f6;
+    color: #6b7280;
+    border-color: #e5e7eb;
+
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+.mailnova-dark
+.mailnova-email-card
+.mn-mark-read-unread {
+
+    color: #60a5fa;
+
+}
+
+
+.mailnova-dark
+.mailnova-email-card
+.mn-mark-read-read {
+
+    color: #9ca3af;
+
+}
+
+
+.mailnova-dark
+.mailnova-read-status.unread {
+
+    background: rgba(22, 163, 74, 0.14);
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.25);
+
+}
+
+
+.mailnova-dark
+.mailnova-read-status.read {
+
+    background: rgba(156, 163, 175, 0.12);
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.20);
+
+}
+
+
+.mailnova-dark
+.mailnova-read-status-dot.read {
+
+    background: #6b7280;
+
+}
+/* =========================================================
+   MAILNOVA CARD HEADER — FINAL RESPONSIVE LAYOUT
+
+   LEFT:
+   DOT + NAME + UNREAD
+
+   RIGHT:
+   PRIORITY + DATE/TIME
+
+   RULE:
+   1. Normal width -> show everything
+   2. Long name -> name truncates first
+   3. Small window -> date starts truncating
+   4. Very small window -> date truncates more
+========================================================= */
+
+#mailnova-workspace {
+    container-type: inline-size;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.mailnova-card-header {
+    display: grid !important;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        auto
+        max-content;
+
+    align-items: center !important;
+
+    column-gap: 10px !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    overflow: hidden !important;
+}
+
+
+/* =========================================================
+   SENDER / NAME
+   This is the FIRST element allowed to shrink.
+========================================================= */
+
+.mailnova-sender-wrapper {
+    grid-column: 1 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    min-width: 0 !important;
+
+    width: 100% !important;
+
+    gap: 8px !important;
+
+    overflow: hidden !important;
+}
+
+
+.mailnova-sender {
+    min-width: 0 !important;
+
+    overflow: hidden !important;
+
+    white-space: nowrap !important;
+
+    text-overflow: ellipsis !important;
+}
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.mailnova-meta {
+    display: contents !important;
+}
+
+
+/* =========================================================
+   UNREAD / READ BADGE
+   Stays immediately after sender.
+========================================================= */
+
+.mailnova-read-status {
+    grid-column: 2 !important;
+
+    flex: none !important;
+
+    min-width: max-content !important;
+
+    white-space: nowrap !important;
+
+    justify-self: start !important;
+}
+
+
+/* =========================================================
+   PRIORITY
+   Always stays on the RIGHT.
+========================================================= */
+
+.mailnova-priority {
+    grid-column: 3 !important;
+
+    flex: none !important;
+
+    min-width: max-content !important;
+
+    white-space: nowrap !important;
+
+    justify-self: end !important;
+}
+
+
+/* =========================================================
+   DATE / TIME
+   FULL DATE BY DEFAULT.
+
+   Do NOT force a max-width here.
+========================================================= */
+
+.mailnova-date {
+    grid-column: 4 !important;
+
+    min-width: max-content !important;
+
+    width: auto !important;
+
+    max-width: none !important;
+
+    overflow: visible !important;
+
+    white-space: nowrap !important;
+
+    text-overflow: clip !important;
+
+    justify-self: end !important;
+}
+
+
+/* =========================================================
+   NORMAL / COMFORTABLE WIDTH
+   EVERYTHING FULLY VISIBLE
+========================================================= */
+
+@container (min-width: 700px) {
+
+    .mailnova-card-header {
+        column-gap: 12px !important;
+    }
+
+    .mailnova-date {
+        max-width: none !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+
+}
+
+
+/* =========================================================
+   MEDIUM WIDTH
+   STILL KEEP FULL DATE.
+
+   Only sender should naturally lose space.
+========================================================= */
+
+@container (max-width: 699px) {
+
+    .mailnova-card-header {
+        column-gap: 9px !important;
+    }
+
+    .mailnova-date {
+        max-width: none !important;
+
+        overflow: visible !important;
+
+        text-overflow: clip !important;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL WINDOW
+   NOW DATE MAY START SHRINKING.
+
+   This happens ONLY after the workspace becomes genuinely
+   small.
+========================================================= */
+
+@container (max-width: 500px) {
+
+    .mailnova-card-header {
+        column-gap: 7px !important;
+    }
+
+    .mailnova-date {
+        min-width: 0 !important;
+
+        max-width: 130px !important;
+
+        overflow: hidden !important;
+
+        white-space: nowrap !important;
+
+        text-overflow: ellipsis !important;
+    }
+
+    .mailnova-priority {
+        font-size: 12px !important;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL WINDOW
+   Date can now become shorter.
+========================================================= */
+
+@container (max-width: 420px) {
+
+    .mailnova-card-header {
+        column-gap: 6px !important;
+    }
+
+    .mailnova-date {
+        max-width: 90px !important;
+
+        overflow: hidden !important;
+
+        text-overflow: ellipsis !important;
+    }
+
+}
+
+
+/* =========================================================
+   EXTREME SMALL WINDOW
+========================================================= */
+
+@container (max-width: 360px) {
+
+    .mailnova-date {
+        max-width: 65px !important;
+
+        font-size: 11px !important;
+    }
+
+    .mailnova-priority {
+        font-size: 11px !important;
+    }
+
+    .mailnova-read-status {
+        font-size: 8px !important;
+
+        padding: 2px 6px !important;
+    }
+
+}
+/* =========================================================
+   FINAL READ / UNREAD COLORS
+   MailNova
+========================================================= */
+/* =========================================
+   FINAL MAIL READ / UNREAD COLORS
+========================================= */
+
+/* UNREAD = Mark as Read = GREEN */
+.mn-mark-read[data-unread="true"] {
+    color: #16a34a !important;
+}
+
+.mn-mark-read[data-unread="true"]:hover {
+    color: #15803d !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f0fdf4,
+            #dcfce7
+        ) !important;
+
+    border-color: #86efac !important;
+
+    box-shadow:
+        0 6px 16px rgba(22, 163, 74, 0.14) !important;
+}
+
+
+/* READ = Mark as Unread = GREY */
+.mn-mark-read[data-unread="false"] {
+    color: #64748b !important;
+}
+
+.mn-mark-read[data-unread="false"]:hover {
+    color: #475569 !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fafc,
+            #eef2f6
+        ) !important;
+
+    border-color: #cbd5e1 !important;
+
+    box-shadow:
+        0 6px 16px rgba(71, 85, 105, 0.10) !important;
+}
+/* IMPORTANT:
+   Prevent generic blue hover from winning
+*/
+.mailnova-email-card
+.mn-mark-read[data-unread="true"]:hover {
+
+    color: #15803d !important;
+    border-color: #86efac !important;
+}
+
+
+.mailnova-email-card
+.mn-mark-read[data-unread="false"]:hover {
+
+    color: #475569 !important;
+    border-color: #cbd5e1 !important;
+}
+/* =========================================
+   MAILNOVA FINAL READ / UNREAD ICON
+========================================= */
+
+/* -----------------------------------------
+   UNREAD EMAIL
+   Envelope = GREEN
+----------------------------------------- */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="true"] {
+
+    color:
+        #16a34a !important;
+
+}
+
+
+/* -----------------------------------------
+   UNREAD HOVER
+----------------------------------------- */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="true"]:hover {
+
+    color:
+        #15803d !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f0fdf4,
+            #dcfce7
+        ) !important;
+
+    border-color:
+        #86efac !important;
+
+    box-shadow:
+        0 6px 16px
+        rgba(22, 163, 74, 0.14) !important;
+
+}
+
+
+/* -----------------------------------------
+   READ EMAIL
+   Envelope = GREY
+----------------------------------------- */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="false"] {
+
+    color:
+        #64748b !important;
+
+}
+
+
+/* -----------------------------------------
+   READ HOVER
+----------------------------------------- */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="false"]:hover {
+
+    color:
+        #475569 !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fafc,
+            #eef2f6
+        ) !important;
+
+    border-color:
+        #cbd5e1 !important;
+
+    box-shadow:
+        0 6px 16px
+        rgba(71, 85, 105, 0.10) !important;
+
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="true"] {
+
+    color:
+        #4ade80 !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="true"]:hover {
+
+    color:
+        #86efac !important;
+
+    background:
+        rgba(22, 163, 74, 0.14) !important;
+
+    border-color:
+        rgba(74, 222, 128, 0.40) !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="false"] {
+
+    color:
+        #9ca3af !important;
+
+}
+
+
+#mailnova-workspace.mailnova-theme-dark
+.mn-mark-read[data-unread="false"]:hover {
+
+    color:
+        #d1d5db !important;
+
+    background:
+        rgba(156, 163, 175, 0.12) !important;
+
+    border-color:
+        rgba(156, 163, 175, 0.30) !important;
+
+}
+/* =========================================================
+   MAILNOVA FINAL READ / UNREAD STATE
+   DO NOT REMOVE
+========================================================= */
+
+
+/* =========================================================
+   UNREAD
+   Green dot + green badge + green envelope
+========================================================= */
+
+#mailnova-workspace
+.mailnova-email-card.mailnova-email-unread
+.mailnova-read-status-dot,
+#mailnova-workspace
+.mailnova-read-status-dot.unread {
+
+    background: #16a34a !important;
+
+    box-shadow:
+        0 0 0 3px rgba(22, 163, 74, 0.12) !important;
+}
+
+
+#mailnova-workspace
+.mailnova-email-card.mailnova-email-unread
+.mailnova-read-status,
+#mailnova-workspace
+.mailnova-read-status.unread {
+
+    background: #ecfdf3 !important;
+
+    color: #15803d !important;
+
+    border-color: #bbf7d0 !important;
+}
+
+
+/* UNREAD ENVELOPE */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="true"] {
+
+    color: #16a34a !important;
+}
+
+
+/* UNREAD HOVER */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="true"]:hover {
+
+    color: #15803d !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f0fdf4,
+            #dcfce7
+        ) !important;
+
+    border-color: #86efac !important;
+
+}
+
+
+/* =========================================================
+   READ
+   Grey dot + grey badge + grey envelope
+========================================================= */
+
+#mailnova-workspace
+.mailnova-email-card.mailnova-email-read
+.mailnova-read-status-dot,
+#mailnova-workspace
+.mailnova-read-status-dot.read {
+
+    background: #9ca3af !important;
+
+    box-shadow:
+        0 0 0 3px rgba(156, 163, 175, 0.10) !important;
+}
+
+
+#mailnova-workspace
+.mailnova-email-card.mailnova-email-read
+.mailnova-read-status,
+#mailnova-workspace
+.mailnova-read-status.read {
+
+    background: #f3f4f6 !important;
+
+    color: #6b7280 !important;
+
+    border-color: #e5e7eb !important;
+}
+
+
+/* READ ENVELOPE */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="false"] {
+
+    color: #64748b !important;
+}
+
+
+/* READ HOVER */
+
+#mailnova-workspace
+.mn-mark-read[data-unread="false"]:hover {
+
+    color: #475569 !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fafc,
+            #eef2f6
+        ) !important;
+
+    border-color: #cbd5e1 !important;
+
+}
+
+
+/* =========================================================
+   SVG MUST FOLLOW BUTTON COLOR
+========================================================= */
+
+#mailnova-workspace
+.mn-mark-read
+.mn-mark-read-icon {
+
+    color: inherit !important;
+
+}
+
+
+#mailnova-workspace
+.mn-mark-read
+.mn-mark-read-icon
+path,
+#mailnova-workspace
+.mn-mark-read
+.mn-mark-read-icon
+rect {
+
+    stroke: currentColor !important;
 
 }

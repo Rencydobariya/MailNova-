@@ -1,3 +1,8 @@
+/* =========================================================
+   MAILNOVA ASK AI
+   PREMIUM LIGHT + DARK UI
+========================================================= */
+
 #mailnova-ask-ai {
 
     position: fixed;
@@ -8,20 +13,32 @@
     width: 420px;
     height: 600px;
 
-    background: rgba(255, 255, 255, 0.96);
+    background: #ffffff;
 
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #202124;
+
+    border:
+        1px solid rgba(
+            0,
+            0,
+            0,
+            0.08
+        );
 
     border-radius: 20px;
 
     box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.20);
+        0 20px 60px
+        rgba(
+            0,
+            0,
+            0,
+            0.20
+        );
 
     display: flex;
 
-    flex-direction: 
-    
-    column;
+    flex-direction: column;
 
     overflow: hidden;
 
@@ -32,28 +49,62 @@
         Arial,
         sans-serif;
 
+    box-sizing: border-box;
+
+    /* Important for instant theme */
+
+    transition:
+        none !important;
+
 }
 
 
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 
+#mailnova-ask-ai
 .mn-ai-header {
 
     height: 70px;
 
-    padding: 0 18px;
+    min-height: 70px;
+
+    padding:
+        0 18px;
 
     display: flex;
 
     align-items: center;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
 
     border-bottom:
-        1px solid rgba(0, 0, 0, 0.07);
+        1px solid
+        rgba(
+            0,
+            0,
+            0,
+            0.07
+        );
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.96
+        );
+
+    box-sizing: border-box;
 
 }
 
+
+/* =========================================================
+   TITLE
+========================================================= */
 
 .mn-ai-title {
 
@@ -69,13 +120,17 @@
 .mn-ai-icon {
 
     width: 40px;
+
     height: 40px;
+
+    flex-shrink: 0;
 
     border-radius: 12px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     background:
@@ -112,11 +167,16 @@
 }
 
 
+/* =========================================================
+   CLOSE
+========================================================= */
+
 .mn-ai-close {
 
     border: none;
 
-    background: transparent;
+    background:
+        transparent;
 
     font-size: 26px;
 
@@ -125,30 +185,43 @@
     cursor: pointer;
 
     width: 34px;
+
     height: 34px;
 
     border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
 
 }
 
 
 .mn-ai-close:hover {
 
-    background: #f1f3f4;
+    background:
+        #f1f3f4;
 
 }
 
 
-/* EMAIL CONTEXT */
+/* =========================================================
+   EMAIL CONTEXT
+========================================================= */
 
 .mn-ai-email-context {
 
-    padding: 12px 18px;
+    padding:
+        12px 18px;
 
-    background: #f8f9fa;
+    background:
+        #f8f9fa;
 
     border-bottom:
-        1px solid #eeeeee;
+        1px solid
+        #eeeeee;
 
 }
 
@@ -161,7 +234,8 @@
 
     color: #888;
 
-    letter-spacing: 0.7px;
+    letter-spacing:
+        0.7px;
 
 }
 
@@ -196,11 +270,15 @@
 }
 
 
-/* MESSAGES */
+/* =========================================================
+   MESSAGES
+========================================================= */
 
 .mn-ai-messages {
 
     flex: 1;
+
+    min-height: 0;
 
     padding: 18px;
 
@@ -212,10 +290,11 @@
 
     gap: 14px;
 
+    background:
+        #ffffff;
+
 }
 
-
-/* MESSAGE */
 
 .mn-ai-message {
 
@@ -228,23 +307,28 @@
 
 .ai-message {
 
-    justify-content: flex-start;
+    justify-content:
+        flex-start;
 
 }
 
 
 .user-message {
 
-    justify-content: flex-end;
+    justify-content:
+        flex-end;
 
 }
 
 
-/* AI AVATAR */
+/* =========================================================
+   AI AVATAR
+========================================================= */
 
 .mn-ai-avatar {
 
     width: 30px;
+
     height: 30px;
 
     flex-shrink: 0;
@@ -263,6 +347,7 @@
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     font-size: 15px;
@@ -270,35 +355,45 @@
 }
 
 
-/* AI BUBBLE */
+/* =========================================================
+   AI BUBBLE
+========================================================= */
 
 .mn-ai-bubble {
 
     max-width: 75%;
 
-    padding: 11px 14px;
+    padding:
+        11px 14px;
 
     border-radius:
         4px 15px 15px 15px;
 
-    background: #f1f3f4;
+    background:
+        #f1f3f4;
 
-    color: #202124;
+    color:
+        #202124;
 
     font-size: 13px;
 
     line-height: 1.5;
 
+    word-break: break-word;
+
 }
 
 
-/* USER BUBBLE */
+/* =========================================================
+   USER BUBBLE
+========================================================= */
 
 .mn-user-bubble {
 
     max-width: 75%;
 
-    padding: 11px 14px;
+    padding:
+        11px 14px;
 
     border-radius:
         15px 4px 15px 15px;
@@ -310,16 +405,21 @@
             #4f8cff
         );
 
-    color: white;
+    color:
+        #ffffff;
 
     font-size: 13px;
 
     line-height: 1.5;
 
+    word-break: break-word;
+
 }
 
 
-/* SUGGESTIONS */
+/* =========================================================
+   SUGGESTIONS
+========================================================= */
 
 .mn-ai-suggestions {
 
@@ -332,6 +432,9 @@
 
     overflow-x: auto;
 
+    background:
+        #ffffff;
+
 }
 
 
@@ -340,15 +443,20 @@
     flex-shrink: 0;
 
     border:
-        1px solid #dadce0;
+        1px solid
+        #dadce0;
 
-    background: white;
+    background:
+        #ffffff;
 
-    color: #555;
+    color:
+        #555;
 
-    border-radius: 20px;
+    border-radius:
+        20px;
 
-    padding: 7px 11px;
+    padding:
+        7px 11px;
 
     font-size: 10px;
 
@@ -359,14 +467,18 @@
 
 .mn-ai-suggestion:hover {
 
-    background: #f5f7ff;
+    background:
+        #f5f7ff;
 
-    border-color: #8b83ff;
+    border-color:
+        #8b83ff;
 
 }
 
 
-/* INPUT */
+/* =========================================================
+   INPUT AREA
+========================================================= */
 
 .mn-ai-input-area {
 
@@ -374,14 +486,17 @@
 
     display: flex;
 
-    align-items: flex-end;
+    align-items:
+        flex-end;
 
     gap: 8px;
 
     border-top:
-        1px solid #eeeeee;
+        1px solid
+        #eeeeee;
 
-    background: white;
+    background:
+        #ffffff;
 
 }
 
@@ -393,29 +508,46 @@
     resize: none;
 
     border:
-        1px solid #dadce0;
+        1px solid
+        #dadce0;
 
-    border-radius: 14px;
+    border-radius:
+        14px;
 
-    padding: 10px 12px;
+    padding:
+        10px 12px;
 
     font-size: 13px;
 
-    font-family: inherit;
+    font-family:
+        inherit;
 
-    outline: none;
+    color:
+        #202124;
 
-    max-height: 100px;
+    background:
+        #ffffff;
+
+    outline:
+        none;
+
+    max-height:
+        100px;
+
+    box-sizing:
+        border-box;
 
 }
 
 
 #mn-ai-input:focus {
 
-    border-color: #7c73ff;
+    border-color:
+        #7c73ff;
 
     box-shadow:
-        0 0 0 2px rgba(
+        0 0 0 2px
+        rgba(
             108,
             99,
             255,
@@ -425,9 +557,22 @@
 }
 
 
+#mn-ai-input::placeholder {
+
+    color:
+        #9aa0a6;
+
+}
+
+
+/* =========================================================
+   SEND
+========================================================= */
+
 .mn-ai-send {
 
     width: 40px;
+
     height: 40px;
 
     flex-shrink: 0;
@@ -443,7 +588,8 @@
             #4f8cff
         );
 
-    color: white;
+    color:
+        #ffffff;
 
     font-size: 17px;
 
@@ -454,12 +600,15 @@
 
 .mn-ai-send:hover {
 
-    transform: scale(1.05);
+    transform:
+        scale(1.05);
 
 }
 
 
-/* SCROLLBAR */
+/* =========================================================
+   SCROLLBAR
+========================================================= */
 
 .mn-ai-messages::-webkit-scrollbar {
 
@@ -470,8 +619,536 @@
 
 .mn-ai-messages::-webkit-scrollbar-thumb {
 
-    background: #d0d0d0;
+    background:
+        #d0d0d0;
 
-    border-radius: 10px;
+    border-radius:
+        10px;
+
+}
+
+
+.mn-ai-suggestions::-webkit-scrollbar {
+
+    height: 4px;
+
+}
+
+
+.mn-ai-suggestions::-webkit-scrollbar-thumb {
+
+    background:
+        #d0d0d0;
+
+    border-radius:
+        10px;
+
+}
+
+
+/* =========================================================
+   =========================================================
+   DARK MODE
+   =========================================================
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark {
+
+    background:
+        #0b1016;
+
+    color:
+        #e8edf3;
+
+    border:
+        1px solid
+        rgba(
+            148,
+            163,
+            184,
+            0.16
+        );
+
+    box-shadow:
+        0 24px 70px
+        rgba(
+            0,
+            0,
+            0,
+            0.45
+        );
+
+}
+
+
+/* =========================================================
+   DARK HEADER
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-header {
+
+    background:
+        rgba(
+            15,
+            21,
+            29,
+            0.98
+        );
+
+    border-bottom:
+        1px solid
+        rgba(
+            148,
+            163,
+            184,
+            0.12
+        );
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-name {
+
+    color:
+        #f1f5f9;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-status {
+
+    color:
+        #4ade80;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-icon {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(
+                99,
+                102,
+                241,
+                0.22
+            ),
+            rgba(
+                59,
+                130,
+                246,
+                0.18
+            )
+        );
+
+    border:
+        1px solid
+        rgba(
+            129,
+            140,
+            248,
+            0.18
+        );
+
+}
+
+
+/* =========================================================
+   DARK CLOSE
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-close {
+
+    color:
+        #94a3b8;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-close:hover {
+
+    background:
+        rgba(
+            148,
+            163,
+            184,
+            0.10
+        );
+
+    color:
+        #f1f5f9;
+
+}
+
+
+/* =========================================================
+   DARK EMAIL CONTEXT
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-email-context {
+
+    background:
+        #111923;
+
+    border-bottom:
+        1px solid
+        rgba(
+            148,
+            163,
+            184,
+            0.10
+        );
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-context-label {
+
+    color:
+        #718096;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-context-subject {
+
+    color:
+        #e2e8f0;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-context-sender {
+
+    color:
+        #8190a2;
+
+}
+
+
+/* =========================================================
+   DARK MESSAGES
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-messages {
+
+    background:
+        #0b1016;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-avatar {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(
+                99,
+                102,
+                241,
+                0.20
+            ),
+            rgba(
+                59,
+                130,
+                246,
+                0.18
+            )
+        );
+
+    border:
+        1px solid
+        rgba(
+            129,
+            140,
+            248,
+            0.15
+        );
+
+}
+
+
+/* =========================================================
+   DARK AI BUBBLE
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-bubble {
+
+    background:
+        #18212c;
+
+    color:
+        #dbe4ee;
+
+    border:
+        1px solid
+        rgba(
+            148,
+            163,
+            184,
+            0.10
+        );
+
+}
+
+
+/* =========================================================
+   DARK USER BUBBLE
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-user-bubble {
+
+    background:
+        linear-gradient(
+            135deg,
+            #635bdb,
+            #4677d8
+        );
+
+    color:
+        #ffffff;
+
+}
+
+
+/* =========================================================
+   DARK SUGGESTIONS
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-suggestions {
+
+    background:
+        #0b1016;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-suggestion {
+
+    background:
+        #141c26;
+
+    border:
+        1px solid
+        #2d3947;
+
+    color:
+        #aeb9c7;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-suggestion:hover {
+
+    background:
+        #1b2633;
+
+    border-color:
+        #6875d8;
+
+    color:
+        #dce4ee;
+
+}
+
+
+/* =========================================================
+   DARK INPUT AREA
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-input-area {
+
+    background:
+        #0f151d;
+
+    border-top:
+        1px solid
+        rgba(
+            148,
+            163,
+            184,
+            0.11
+        );
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+#mn-ai-input {
+
+    background:
+        #151e28;
+
+    border:
+        1px solid
+        #303c4a;
+
+    color:
+        #e5ebf2;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+#mn-ai-input::placeholder {
+
+    color:
+        #687587;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+#mn-ai-input:focus {
+
+    border-color:
+        #6875d8;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(
+            99,
+            102,
+            241,
+            0.12
+        );
+
+}
+
+
+/* =========================================================
+   DARK SEND
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-send {
+
+    background:
+        linear-gradient(
+            135deg,
+            #6d63df,
+            #4d7fe1
+        );
+
+}
+
+
+/* =========================================================
+   DARK SCROLLBARS
+========================================================= */
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-messages::-webkit-scrollbar-thumb {
+
+    background:
+        #35404d;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-messages::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #536273;
+
+}
+
+
+#mailnova-ask-ai.mn-ai-dark
+.mn-ai-suggestions::-webkit-scrollbar-thumb {
+
+    background:
+        #35404d;
+
+}
+
+
+/* =========================================================
+   DARK MODE — PREVENT UNWANTED TRANSITIONS
+========================================================= */
+
+#mailnova-ask-ai,
+#mailnova-ask-ai * {
+
+    transition:
+        none !important;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (
+    max-width: 900px
+) {
+
+    #mailnova-ask-ai {
+
+        right: 20px;
+
+        bottom: 20px;
+
+        width:
+            min(
+                420px,
+                calc(
+                    100vw - 40px
+                )
+            );
+
+    }
+
+}
+
+
+@media (
+    max-width: 520px
+) {
+
+    #mailnova-ask-ai {
+
+        right: 10px;
+
+        left: 10px;
+
+        bottom: 10px;
+
+        width:
+            calc(
+                100vw - 20px
+            );
+
+        height:
+            min(
+                600px,
+                calc(
+                    100vh - 20px
+                )
+            );
+
+    }
 
 }

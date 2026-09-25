@@ -6,6 +6,104 @@ let workspace = null;
 
 let mailnovaEmails = [];
 
+
+/* =========================================
+   READ / UNREAD LOCAL STATE OVERRIDES
+
+   Keeps user's latest MailNova action stable
+   while background Gmail sync is running.
+========================================= */
+
+const mailnovaReadStateOverrides = new Map();
+
+
+const MAILNOVA_READ_STATE_KEY =
+    "mailnova_read_state_overrides";
+
+
+async function loadMailnovaReadStateOverrides() {
+
+    try {
+
+        const result =
+            await chrome.storage.local.get(
+                MAILNOVA_READ_STATE_KEY
+            );
+
+        const saved =
+            result[MAILNOVA_READ_STATE_KEY] || {};
+
+        mailnovaReadStateOverrides.clear();
+
+        Object.entries(saved).forEach(
+            ([id, unread]) => {
+
+                mailnovaReadStateOverrides.set(
+                    String(id),
+                    Boolean(unread)
+                );
+
+            }
+        );
+
+        console.log(
+            "MailNova: Read/Unread overrides loaded:",
+            mailnovaReadStateOverrides.size
+        );
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "MailNova: Could not load read state overrides:",
+            error
+        );
+
+    }
+
+}
+
+
+async function saveMailnovaReadStateOverride(
+    emailId,
+    unread
+) {
+
+    try {
+
+        const current =
+            await chrome.storage.local.get(
+                MAILNOVA_READ_STATE_KEY
+            );
+
+        const overrides =
+            current[MAILNOVA_READ_STATE_KEY] || {};
+
+        overrides[String(emailId)] =
+            Boolean(unread);
+
+        await chrome.storage.local.set({
+
+            [MAILNOVA_READ_STATE_KEY]:
+                overrides
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "MailNova: Could not save read state override:",
+            error
+        );
+
+    }
+
+}
+
+
 let mailnovaFilterState = {
     search: "",
     month: "all",
@@ -42,7 +140,7 @@ function refreshMailnovaPriorityRanking() {
 ========================================= */
 
 async function createWorkspace() {
-
+  await loadMailnovaReadStateOverrides();
     /* =====================================
        PREVENT DUPLICATE WORKSPACE
     ===================================== */
@@ -221,14 +319,62 @@ async function createWorkspace() {
        REFRESH
     ===================================== */
 
-    if (refreshButton) {
+if (refreshButton) {
 
-        refreshButton.addEventListener(
-            "click",
-            refreshWorkspace
-        );
+    refreshButton.addEventListener(
+        "click",
+        async (event) => {
 
-    }
+            event.preventDefault();
+            event.stopPropagation();
+
+            console.log(
+                "MailNova: Refresh button clicked."
+            );
+
+            if (
+                refreshButton.disabled
+            ) {
+                return;
+            }
+
+            refreshButton.classList.add(
+                "mailnova-refreshing"
+            );
+
+            refreshButton.disabled =
+                true;
+
+            try {
+
+                await refreshWorkspace();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "MailNova: Refresh button error:",
+                    error
+                );
+
+            }
+
+            finally {
+
+                refreshButton.classList.remove(
+                    "mailnova-refreshing"
+                );
+
+                refreshButton.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+}
 
 
     /* =====================================
@@ -609,66 +755,88 @@ function isMailnovaCategoryDetectionEnabled() {
 
 }
 
-
 /* =========================================
    BUILD EMAIL DATA
-========================================= */
+   ========================================= */
 
-function buildMailnovaEmailData(
-    emails
-) {
+function buildMailnovaEmailData(emails) {
 
-    return (
-        emails || []
-    ).map(
-        (
-            email,
-            index
-        ) => {
+    return (emails || []).map(
+        (email, index) => {
 
-            let category =
-                email.category ||
-                "Personal";
-
+            const emailId =
+                String(
+                    email?.id || ""
+                );
 
             /*
-               Only run category detection when
-               the setting is enabled.
-            */
+             * ALWAYS respect the latest local
+             * MailNova read/unread action.
+             *
+             * Gmail background sync can temporarily
+             * return the old state while Gmail finishes
+             * propagating the label change.
+             */
+            let unread =
+                Boolean(
+                    email?.unread
+                );
 
             if (
-                isMailnovaCategoryDetectionEnabled() &&
-                typeof detectCategory ===
-                "function"
+                emailId &&
+                mailnovaReadStateOverrides.has(emailId)
+            ) {
+
+                unread =
+                    Boolean(
+                        mailnovaReadStateOverrides.get(
+                            emailId
+                        )
+                    );
+
+            }
+
+            let category =
+                email?.category ||
+                "Personal";
+
+            if (
+                typeof isMailnovaCategoryDetectionEnabled ===
+                "function" &&
+                isMailnovaCategoryDetectionEnabled()
             ) {
 
                 category =
+                    email?.category ||
                     detectCategory({
 
                         sender:
-                            email.sender ||
+                            email?.sender ||
                             "",
 
                         subject:
-                            email.subject ||
+                            email?.subject ||
                             "",
 
                         snippet:
-                            email.snippet ||
+                            email?.snippet ||
                             ""
 
                     });
 
             }
 
-
             return {
 
                 ...email,
 
+                id:
+                    email?.id || "",
+
+                unread,
+
                 uiId:
-                    email.uiId ??
-                    `${email.id || "email"}-${index}`,
+                    index,
 
                 category
 
@@ -678,7 +846,6 @@ function buildMailnovaEmailData(
     );
 
 }
-
 
 /* =========================================
    RECALCULATE CATEGORIES
@@ -820,40 +987,93 @@ async function syncMailnovaInBackground() {
                 }
 
 
-                const latestEmails =
-                    buildMailnovaEmailData(
-                        firstPage.emails || []
-                    );
+              const latestEmails =
+    buildMailnovaEmailData(
+        firstPage.emails || []
+    );
 
+const latestIds =
+    new Set(
+        latestEmails.map(
+            email =>
+                String(
+                    email.id
+                )
+        )
+    );
 
-                const latestIds =
-                    new Set(
-                        latestEmails.map(
-                            email =>
-                                String(
-                                    email.id
-                                )
-                        )
-                    );
+/*
+ * Preserve the current MailNova state for
+ * emails that are already loaded.
+ *
+ * This prevents a background Gmail response
+ * from temporarily reverting READ → UNREAD
+ * or UNREAD → READ.
+ */
 
+const olderCachedEmails =
+    mailnovaEmails.filter(
+        email =>
+            !latestIds.has(
+                String(
+                    email.id
+                )
+            )
+    );
 
-                const olderCachedEmails =
-                    mailnovaEmails.filter(
-                        email =>
-                            !latestIds.has(
-                                String(
-                                    email.id
-                                )
+/*
+ * Merge everything through the protected
+ * deduplication function.
+ *
+ * mailnovaReadStateOverrides always wins
+ * for a manually changed email.
+ */
+
+mailnovaEmails =
+    deduplicateMailnovaEmails([
+        ...latestEmails,
+        ...olderCachedEmails
+    ]);
+
+/*
+ * Final safety pass:
+ * never allow a local MailNova read/unread
+ * override to be lost during sync.
+ */
+
+mailnovaEmails =
+    mailnovaEmails.map(
+        email => {
+
+            const id =
+                String(
+                    email?.id || ""
+                );
+
+            if (
+                id &&
+                mailnovaReadStateOverrides.has(id)
+            ) {
+
+                return {
+
+                    ...email,
+
+                    unread:
+                        Boolean(
+                            mailnovaReadStateOverrides.get(
+                                id
                             )
-                    );
+                        )
 
+                };
 
-                mailnovaEmails =
-                    deduplicateMailnovaEmails([
-                        ...latestEmails,
-                        ...olderCachedEmails
-                    ]);
+            }
 
+            return email;
+
+        }
+    );
 
                 /*
                    Render only the first-page result.
@@ -886,7 +1106,7 @@ async function syncMailnovaInBackground() {
                     window.__mailnovaManualRefresh
                 ) {
 
-                    await startRemainingMailSync(
+                 startRemainingMailSync(
                         firstPage,
                         0,
                         true
@@ -903,7 +1123,7 @@ async function syncMailnovaInBackground() {
                        Complete mode means all pages.
                     */
 
-                    await startRemainingMailSync(
+                  startRemainingMailSync(
                         firstPage,
                         0,
                         true
@@ -1203,6 +1423,9 @@ async function syncRemainingMailPages(
 /* =========================================
    DEDUPLICATE
 ========================================= */
+/* =========================================
+   DEDUPLICATE EMAILS
+   ========================================= */
 
 function deduplicateMailnovaEmails(
     emails
@@ -1211,42 +1434,175 @@ function deduplicateMailnovaEmails(
     const map =
         new Map();
 
-
     for (
-        const email of
-        emails || []
+        const email of emails || []
     ) {
 
         if (
             !email ||
             !email.id
         ) {
-
             continue;
-
         }
-
 
         const id =
             String(
                 email.id
             );
 
+        /*
+         * IMPORTANT:
+         * If the user has manually changed
+         * Read / Unread state in MailNova,
+         * NEVER allow a Gmail background sync
+         * response to overwrite that state.
+         */
+
+        let finalEmail = {
+            ...email
+        };
+
+        if (
+            mailnovaReadStateOverrides.has(id)
+        ) {
+
+            finalEmail.unread =
+                Boolean(
+                    mailnovaReadStateOverrides.get(id)
+                );
+
+        }
 
         /*
-           Latest email object wins.
-        */
+         * Always store the newest email object,
+         * but preserve the local read state above.
+         */
 
         map.set(
             id,
-            email
+            finalEmail
         );
 
     }
 
-
     return Array.from(
         map.values()
+    );
+
+}
+
+/* =========================================
+   REFRESH WORKSPACE
+========================================= */
+
+/* =========================================
+   REFRESH WORKSPACE
+========================================= */
+/* =========================================
+   REFRESH BUTTON ANIMATION
+========================================= */
+
+function animateMailnovaRefreshButton() {
+
+    const button =
+        document.getElementById(
+            "mn-refresh"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    /*
+       Restart animation even if the button
+       was already animating.
+    */
+    button.classList.remove(
+        "mailnova-refreshing"
+    );
+
+    /*
+       Force browser reflow so the animation
+       starts again immediately.
+    */
+    void button.offsetWidth;
+
+    button.classList.add(
+        "mailnova-refreshing"
+    );
+
+}
+
+
+/* =========================================
+   REFRESH WORKSPACE
+========================================= */
+/* =========================================
+   REFRESH BUTTON ANIMATION
+========================================= */
+
+function animateMailnovaRefreshButton() {
+
+    const button =
+        document.getElementById(
+            "mn-refresh"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    /*
+       Restart animation every time
+       user clicks the button.
+    */
+
+    button.classList.remove(
+        "mailnova-refreshing"
+    );
+
+    void button.offsetWidth;
+
+    button.classList.add(
+        "mailnova-refreshing"
+    );
+
+}
+
+
+/* =========================================
+   REFRESH WORKSPACE
+========================================= */
+/* =========================================
+   MAILNOVA REFRESH VISUAL
+========================================= */
+
+function restartMailnovaRefreshAnimation() {
+
+    const button =
+        document.getElementById(
+            "mn-refresh"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    /*
+       Force animation restart.
+
+       Removing + re-adding the class forces
+       the browser to start the animation again.
+    */
+
+    button.classList.remove(
+        "mailnova-refreshing"
+    );
+
+    void button.offsetWidth;
+
+    button.classList.add(
+        "mailnova-refreshing"
     );
 
 }
@@ -1256,59 +1612,37 @@ function deduplicateMailnovaEmails(
    REFRESH WORKSPACE
 ========================================= */
 
+/* =========================================
+   REFRESH WORKSPACE
+   FINAL FAST VERSION
+========================================= */
+
 async function refreshWorkspace() {
-
-    if (
-        mailnovaIsRefreshing
-    ) {
-
-        return;
-
-    }
-
-
-    mailnovaIsRefreshing =
-        true;
-
 
     const button =
         document.getElementById(
             "mn-refresh"
         );
 
-
-    const emailList =
-        workspace
-            ? workspace.querySelector(
-                ".mailnova-email-list"
-            )
-            : document.querySelector(
-                ".mailnova-email-list"
-            );
-
-
-    /* =====================================
-       START SMOOTH SCROLL IMMEDIATELY
-    ===================================== */
-
-    if (emailList) {
-
-        emailList.scrollTo({
-
-            top: 0,
-
-            behavior: "smooth"
-
-        });
-
-    }
-
-
-    /* =====================================
-       REFRESH BUTTON STATE
-    ===================================== */
+    /*
+       -----------------------------------------
+       VISUAL REFRESH ANIMATION
+       -----------------------------------------
+       Always give the user immediate feedback.
+    */
 
     if (button) {
+
+        /*
+           Restart animation even if the user
+           clicks again after a previous refresh.
+        */
+
+        button.classList.remove(
+            "mailnova-refreshing"
+        );
+
+        void button.offsetWidth;
 
         button.classList.add(
             "mailnova-refreshing"
@@ -1319,28 +1653,132 @@ async function refreshWorkspace() {
             "true"
         );
 
-        button.disabled =
-            true;
+        button.setAttribute(
+            "title",
+            "Refreshing emails..."
+        );
+
+        /*
+           EXACTLY 7 ROTATIONS
+           CSS animation duration:
+           0.28s × 7 = 1.96 seconds
+        */
+
+        clearTimeout(
+            window.__mailnovaRefreshVisualTimer
+        );
+
+        window.__mailnovaRefreshVisualTimer =
+            setTimeout(
+                () => {
+
+                    button.classList.remove(
+                        "mailnova-refreshing"
+                    );
+
+                    /*
+                       Keep aria-busy only while
+                       actual network sync is running.
+                    */
+
+                    if (
+                        !mailnovaIsRefreshing
+                    ) {
+
+                        button.removeAttribute(
+                            "aria-busy"
+                        );
+
+                        button.setAttribute(
+                            "title",
+                            "Refresh emails"
+                        );
+
+                    }
+
+                },
+                2000
+            );
 
     }
 
+    /*
+       -----------------------------------------
+       IF A SYNC IS ALREADY RUNNING
+       -----------------------------------------
+
+       Do NOT start another Gmail sync.
+
+       The animation above still plays so
+       the button feels responsive.
+    */
+
+    if (
+        mailnovaIsRefreshing
+    ) {
+
+        return;
+
+    }
+
+    mailnovaIsRefreshing =
+        true;
+
+    /*
+       -----------------------------------------
+       SCROLL TO TOP
+       -----------------------------------------
+    */
+
+    const emailList =
+        workspace
+            ? workspace.querySelector(
+                ".mailnova-email-list"
+            )
+            : document.querySelector(
+                ".mailnova-email-list"
+            );
+
+    if (emailList) {
+
+        emailList.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+    /*
+       -----------------------------------------
+       MANUAL REFRESH FLAG
+       -----------------------------------------
+    */
 
     window.__mailnovaManualRefresh =
         true;
 
-
     try {
 
+        console.log(
+            "MailNova: Manual refresh started..."
+        );
+
         /*
-           Refresh Gmail immediately.
+           IMPORTANT:
+           syncMailnovaInBackground() now waits
+           ONLY for the first Gmail page.
+
+           Remaining pages continue in background.
         */
 
         await syncMailnovaInBackground();
 
+        console.log(
+            "MailNova: First page refreshed successfully."
+        );
 
         /*
-           Final smooth scroll after
-           refreshed emails are rendered.
+           Scroll latest emails to top.
         */
 
         const refreshedList =
@@ -1352,18 +1790,14 @@ async function refreshWorkspace() {
                     ".mailnova-email-list"
                 );
 
-
         if (refreshedList) {
 
             requestAnimationFrame(
                 () => {
 
                     refreshedList.scrollTo({
-
                         top: 0,
-
                         behavior: "smooth"
-
                     });
 
                 }
@@ -1371,17 +1805,12 @@ async function refreshWorkspace() {
 
         }
 
-
-        console.log(
-            "MailNova: Refresh completed."
-        );
-
     }
 
     catch (error) {
 
         console.error(
-            "MailNova: Refresh failed:",
+            "MailNova: Manual refresh failed:",
             error
         );
 
@@ -1392,12 +1821,21 @@ async function refreshWorkspace() {
         window.__mailnovaManualRefresh =
             false;
 
+        /*
+           -----------------------------------------
+           REAL SYNC FINISHED
+           -----------------------------------------
+        */
+
+        mailnovaIsRefreshing =
+            false;
+
+        /*
+           Do NOT force the animation here.
+           It already stops after exactly 7 spins.
+        */
 
         if (button) {
-
-            button.classList.remove(
-                "mailnova-refreshing"
-            );
 
             button.removeAttribute(
                 "aria-busy"
@@ -1406,15 +1844,17 @@ async function refreshWorkspace() {
             button.disabled =
                 false;
 
+            button.setAttribute(
+                "title",
+                "Refresh emails"
+            );
+
         }
-
-
-        mailnovaIsRefreshing =
-            false;
 
     }
 
 }
+
 
 
 /* =========================================
@@ -1789,6 +2229,9 @@ function applySortToEmailList(
 /* =========================================
    CATEGORY BAR + SORT
 ========================================= */
+/* =========================================
+   CATEGORY BAR + SORT
+========================================= */
 
 function updateCategoryBarWithSort(
     emails
@@ -1811,6 +2254,34 @@ function updateCategoryBarWithSort(
         getCategoryCounts(
             emails
         );
+
+
+    /* =====================================
+       CHECK CATEGORY DETECTION SETTING
+    ===================================== */
+
+    const categoryDetectionEnabled =
+        typeof isMailnovaCategoryDetectionEnabled ===
+        "function"
+            ? isMailnovaCategoryDetectionEnabled()
+            : true;
+
+
+    /* =====================================
+       RESET CATEGORY FILTER WHEN OFF
+    ===================================== */
+
+    if (
+        !categoryDetectionEnabled &&
+        typeof mailnovaFilterState !==
+        "undefined" &&
+        mailnovaFilterState
+    ) {
+
+        mailnovaFilterState.category =
+            "All";
+
+    }
 
 
     /* =====================================
@@ -2009,7 +2480,79 @@ function updateCategoryBarWithSort(
 
 
     /* =====================================
-       UPDATE COUNTS
+       SHOW / HIDE CATEGORY CHIPS
+    ===================================== */
+
+    const categoryChips =
+        bar.querySelectorAll(
+            '.mailnova-chip[data-category]'
+        );
+
+
+    categoryChips.forEach(
+        (chip) => {
+
+            const category =
+                chip.dataset.category;
+
+
+            /*
+             * All is ALWAYS visible.
+             */
+
+            if (
+                category ===
+                "All"
+            ) {
+
+                chip.style.removeProperty(
+                    "display"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Category Detection OFF
+             *
+             * Hide every category chip.
+             */
+
+            if (
+                !categoryDetectionEnabled
+            ) {
+
+                chip.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+            }
+
+
+            /*
+             * Category Detection ON
+             *
+             * Restore every category chip.
+             */
+
+            else {
+
+                chip.style.removeProperty(
+                    "display"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       UPDATE COUNTS + ACTIVE STATE
     ===================================== */
 
     const chips =
@@ -2079,7 +2622,6 @@ function updateCategoryBarWithSort(
     );
 
 }
-
 
 /* =========================================
    CATEGORY FILTER
@@ -2704,12 +3246,14 @@ if (
    EMAIL ACTIONS
 ========================================= */
 
+/* =========================================
+   EMAIL ACTIONS
+========================================= */
+
 function setupEmailActions() {
 
     if (!workspace) {
-
         return;
-
     }
 
 
@@ -2717,9 +3261,7 @@ function setupEmailActions() {
         workspace.dataset.emailActionsListener ===
         "true"
     ) {
-
         return;
-
     }
 
 
@@ -2731,193 +3273,341 @@ function setupEmailActions() {
         "click",
         async (e) => {
 
-            /* =========================
-               MARK READ / UNREAD
-            ========================= */
 
-            const markReadButton =
-                e.target.closest(
-                    ".mn-mark-read"
-                );
+          
+/* =========================
+   MARK READ / UNREAD
+========================= */
 
+const markReadButton =
+    e.target.closest(".mn-mark-read");
 
-            if (markReadButton) {
+if (markReadButton) {
 
-                e.preventDefault();
+    e.preventDefault();
+    e.stopPropagation();
 
-                e.stopPropagation();
+    const emailId =
+        markReadButton.dataset.id;
 
+    console.log(
+        "MailNova: READ/UNREAD CLICK:",
+        emailId
+    );
 
-                const emailId =
-                    markReadButton.dataset.id;
+    if (!emailId) {
+        console.warn(
+            "MailNova: Email ID missing."
+        );
+        return;
+    }
 
+    const email =
+        mailnovaEmails.find(
+            mail =>
+                String(mail.id) ===
+                String(emailId)
+        );
 
-                if (!emailId) {
+    if (!email) {
+        console.warn(
+            "MailNova: Email object not found:",
+            emailId
+        );
+        return;
+    }
 
-                    return;
+    /*
+       ====================================
+       READ/UNREAD CURRENT STATE
+    ====================================
+    */
 
-                }
+    const previousUnread =
+        Boolean(email.unread);
 
+    const newUnread =
+        !previousUnread;
 
-                const email =
-                    mailnovaEmails.find(
-                        mail =>
-                            String(
-                                mail.id
-                            ) ===
-                            String(
-                                emailId
-                            )
-                    );
+    console.log(
+        "MailNova: Toggle:",
+        previousUnread
+            ? "UNREAD -> READ"
+            : "READ -> UNREAD"
+    );
 
+    /*
+       ====================================
+       UPDATE LOCAL STATE FIRST
+    ====================================
+    */
 
-                if (!email) {
+    email.unread =
+        newUnread;
 
-                    return;
+    mailnovaReadStateOverrides.set(
+        String(emailId),
+        newUnread
+    );
 
-                }
+    /*
+       ====================================
+       UPDATE UI IMMEDIATELY
+    ====================================
+    */
 
+    updateMailnovaReadUnreadCard(
+        emailId,
+        newUnread
+    );
+
+    /*
+       ====================================
+       MAKE BUTTON CLICKABLE AGAIN
+       IMMEDIATELY
+
+       IMPORTANT:
+       Do NOT wait for Gmail API.
+    ====================================
+    */
+
+    const currentButton =
+        document.querySelector(
+            `.mn-mark-read[data-id="${CSS.escape(String(emailId))}"]`
+        );
+
+    if (currentButton) {
+
+        currentButton.disabled =
+            false;
+
+        currentButton.dataset.loading =
+            "false";
+
+        currentButton.style.pointerEvents =
+            "auto";
+
+    }
+
+    /*
+       ====================================
+       SAVE LOCAL STATE
+    ====================================
+    */
+
+    saveMailnovaReadStateOverride(
+        emailId,
+        newUnread
+    ).catch(
+        error => {
+            console.warn(
+                "MailNova: Override save failed:",
+                error
+            );
+        }
+    );
+
+    saveMailnovaEmailCache(
+        mailnovaEmails
+    ).catch(
+        error => {
+            console.warn(
+                "MailNova: Cache save failed:",
+                error
+            );
+        }
+    );
+
+    /*
+       ====================================
+       CALL GMAIL API IN BACKGROUND
+
+       IMPORTANT:
+       DO NOT await here.
+    ====================================
+    */
+
+    if (newUnread) {
+
+        console.log(
+            "MailNova: Calling Gmail MARK AS UNREAD:",
+            emailId
+        );
+
+        markEmailAsUnread(
+            emailId
+        )
+        .then(
+            result => {
 
                 if (
-                    markReadButton.dataset.loading ===
-                    "true"
+                    result &&
+                    result.success
                 ) {
 
+                    console.log(
+                        "MailNova: Gmail MARK AS UNREAD SUCCESS:",
+                        emailId
+                    );
+
                     return;
-
                 }
 
+                console.error(
+                    "MailNova: Gmail MARK AS UNREAD FAILED:",
+                    result?.error ||
+                    result?.message ||
+                    "Unknown error"
+                );
 
-                const currentlyUnread =
-                    Boolean(
-                        email.unread
-                    );
+                /*
+                   ROLLBACK
+                */
 
+                email.unread =
+                    previousUnread;
 
-                markReadButton.dataset.loading =
-                    "true";
+                mailnovaReadStateOverrides.set(
+                    String(emailId),
+                    previousUnread
+                );
 
+                updateMailnovaReadUnreadCard(
+                    emailId,
+                    previousUnread
+                );
 
-                markReadButton.disabled =
-                    true;
-
-
-                try {
-
-                    let result;
-
-
-                    if (
-                        currentlyUnread
-                    ) {
-
-                        if (
-                            typeof markEmailAsRead !==
-                            "function"
-                        ) {
-
-                            throw new Error(
-                                "markEmailAsRead() is not available."
-                            );
-
-                        }
-
-
-                        result =
-                            await markEmailAsRead(
-                                emailId
-                            );
-
-                    }
-
-                    else {
-
-                        if (
-                            typeof markEmailAsUnread !==
-                            "function"
-                        ) {
-
-                            throw new Error(
-                                "markEmailAsUnread() is not available."
-                            );
-
-                        }
-
-
-                        result =
-                            await markEmailAsUnread(
-                                emailId
-                            );
-
-                    }
-
-
-                    if (
-                        !result ||
-                        !result.success
-                    ) {
-
-                        console.error(
-                            "MailNova: Read/Unread update failed:",
-                            result?.error ||
-                            result?.message
-                        );
-
-                        return;
-
-                    }
-
-
-                    email.unread =
-                        !currentlyUnread;
-
-
-                    await saveMailnovaEmailCache(
-                        mailnovaEmails
-                    );
-
-
-                    /*
-                       Update only this card.
-                       Do NOT rerender the entire list.
-                    */
-
-                    updateMailnovaReadUnreadCard(
-                        emailId,
-                        email.unread
-                    );
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "MailNova: Read/Unread error:",
-                        error
-                    );
-
-                }
-
-                finally {
-
-                    markReadButton.dataset.loading =
-                        "false";
-
-
-                    markReadButton.disabled =
-                        false;
-
-                }
-
-
-                return;
+                saveMailnovaEmailCache(
+                    mailnovaEmails
+                ).catch(
+                    () => {}
+                );
 
             }
+        )
+        .catch(
+            error => {
 
+                console.error(
+                    "MailNova: MARK AS UNREAD ERROR:",
+                    error
+                );
 
-            /* =========================
+                /*
+                   ROLLBACK
+                */
+
+                email.unread =
+                    previousUnread;
+
+                mailnovaReadStateOverrides.set(
+                    String(emailId),
+                    previousUnread
+                );
+
+                updateMailnovaReadUnreadCard(
+                    emailId,
+                    previousUnread
+                );
+
+            }
+        );
+
+    }
+
+    else {
+
+        console.log(
+            "MailNova: Calling Gmail MARK AS READ:",
+            emailId
+        );
+
+        markEmailAsRead(
+            emailId
+        )
+        .then(
+            result => {
+
+                if (
+                    result &&
+                    result.success
+                ) {
+
+                    console.log(
+                        "MailNova: Gmail MARK AS READ SUCCESS:",
+                        emailId
+                    );
+
+                    return;
+                }
+
+                console.error(
+                    "MailNova: Gmail MARK AS READ FAILED:",
+                    result?.error ||
+                    result?.message ||
+                    "Unknown error"
+                );
+
+                /*
+                   ROLLBACK
+                */
+
+                email.unread =
+                    previousUnread;
+
+                mailnovaReadStateOverrides.set(
+                    String(emailId),
+                    previousUnread
+                );
+
+                updateMailnovaReadUnreadCard(
+                    emailId,
+                    previousUnread
+                );
+
+                saveMailnovaEmailCache(
+                    mailnovaEmails
+                ).catch(
+                    () => {}
+                );
+
+            }
+        )
+        .catch(
+            error => {
+
+                console.error(
+                    "MailNova: MARK AS READ ERROR:",
+                    error
+                );
+
+                /*
+                   ROLLBACK
+                */
+
+                email.unread =
+                    previousUnread;
+
+                mailnovaReadStateOverrides.set(
+                    String(emailId),
+                    previousUnread
+                );
+
+                updateMailnovaReadUnreadCard(
+                    emailId,
+                    previousUnread
+                );
+
+            }
+        );
+
+    }
+
+    return;
+}
+            /* =====================================================
                VIEW
-            ========================= */
+            ===================================================== */
 
             const viewButton =
                 e.target.closest(
@@ -2951,7 +3641,6 @@ function setupEmailActions() {
                 if (!email) {
 
                     return;
-
                 }
 
 
@@ -2962,7 +3651,6 @@ function setupEmailActions() {
                 if (!threadId) {
 
                     return;
-
                 }
 
 
@@ -2990,9 +3678,9 @@ function setupEmailActions() {
             }
 
 
-            /* =========================
+            /* =====================================================
                REPLY
-            ========================= */
+            ===================================================== */
 
             const replyButton =
                 e.target.closest(
@@ -3026,7 +3714,6 @@ function setupEmailActions() {
                 if (!email) {
 
                     return;
-
                 }
 
 
@@ -3047,9 +3734,9 @@ function setupEmailActions() {
             }
 
 
-            /* =========================
+            /* =====================================================
                ASK AI
-            ========================= */
+            ===================================================== */
 
             const askAIButton =
                 e.target.closest(
@@ -3083,7 +3770,6 @@ function setupEmailActions() {
                 if (!email) {
 
                     return;
-
                 }
 
 
@@ -3108,6 +3794,7 @@ function setupEmailActions() {
 
 /* =========================================
    UPDATE READ / UNREAD CARD UI
+   INSTANT UI UPDATE
 ========================================= */
 
 function updateMailnovaReadUnreadCard(
@@ -3120,9 +3807,7 @@ function updateMailnovaReadUnreadCard(
             ".mailnova-email-card"
         );
 
-
     let card = null;
-
 
     cards.forEach(
         (candidate) => {
@@ -3152,20 +3837,32 @@ function updateMailnovaReadUnreadCard(
     }
 
 
+    const unread =
+        Boolean(
+            isUnread
+        );
+
+
     /* =====================================
        CARD STATE
     ===================================== */
 
-    card.classList.toggle(
+    card.classList.remove(
         "mailnova-email-unread",
-        Boolean(isUnread)
+        "mailnova-email-read"
+    );
+
+    card.classList.add(
+        unread
+            ? "mailnova-email-unread"
+            : "mailnova-email-read"
     );
 
 
-    card.classList.toggle(
-        "mailnova-email-read",
-        !Boolean(isUnread)
-    );
+    card.dataset.unread =
+        unread
+            ? "true"
+            : "false";
 
 
     /* =====================================
@@ -3181,20 +3878,29 @@ function updateMailnovaReadUnreadCard(
     if (statusBadge) {
 
         statusBadge.textContent =
-            isUnread
+            unread
                 ? "UNREAD"
                 : "READ";
 
-
         statusBadge.dataset.unread =
-            isUnread
+            unread
                 ? "true"
                 : "false";
 
+        statusBadge.classList.remove(
+            "unread",
+            "read"
+        );
+
+        statusBadge.classList.add(
+            unread
+                ? "unread"
+                : "read"
+        );
 
         statusBadge.setAttribute(
             "aria-label",
-            isUnread
+            unread
                 ? "Mark as read"
                 : "Mark as unread"
         );
@@ -3203,7 +3909,7 @@ function updateMailnovaReadUnreadCard(
 
 
     /* =====================================
-       STATUS DOT
+       GREEN / GREY STATUS DOT
     ===================================== */
 
     const statusDot =
@@ -3214,10 +3920,21 @@ function updateMailnovaReadUnreadCard(
 
     if (statusDot) {
 
-        statusDot.classList.toggle(
+        statusDot.classList.remove(
             "unread",
-            Boolean(isUnread)
+            "read"
         );
+
+        statusDot.classList.add(
+            unread
+                ? "unread"
+                : "read"
+        );
+
+        statusDot.dataset.unread =
+            unread
+                ? "true"
+                : "false";
 
     }
 
@@ -3226,40 +3943,45 @@ function updateMailnovaReadUnreadCard(
        READ / UNREAD BUTTON
     ===================================== */
 
-    const actionButton =
-        card.querySelector(
-            ".mn-mark-read"
-        );
+  const actionButton =
+    card.querySelector(
+        ".mn-mark-read"
+    );
 
+if (!actionButton) {
+    return;
+}
 
-    if (!actionButton) {
+actionButton.disabled =
+    false;
 
-        return;
+actionButton.dataset.loading =
+    "false";
 
-    }
+actionButton.style.pointerEvents =
+    "auto";
 
 
     actionButton.dataset.unread =
-        isUnread
+        unread
             ? "true"
             : "false";
 
 
     actionButton.setAttribute(
         "aria-label",
-        isUnread
+        unread
             ? "Mark as read"
             : "Mark as unread"
     );
 
 
-    /*
-       UNREAD → open envelope
-       READ   → closed envelope
-    */
+    /* =====================================
+       ICON
+    ===================================== */
 
     actionButton.innerHTML =
-        isUnread
+        unread
             ? `
                 <svg
                     class="mn-mark-read-icon"
@@ -3329,7 +4051,6 @@ function updateMailnovaReadUnreadCard(
             `;
 
 }
-
 
 /* =========================================
    CLOSE WORKSPACE
@@ -3552,22 +4273,38 @@ async function forceRefreshMailnova() {
    SETTINGS CHANGE HELPER
 ========================================= */
 
+/* =========================================
+   LIVE WORKSPACE SETTINGS BRIDGE
+========================================= */
+
+/* =========================================
+   SETTINGS CHANGE HELPER
+========================================= */
+
 function handleMailnovaWorkspaceSettingChange(
     key,
     value
 ) {
 
-    /*
-       Category Detection
-    */
+    console.log(
+        "MailNova: Workspace setting changed:",
+        key,
+        value
+    );
+
+
+    /* =========================================
+       CATEGORY DETECTION
+    ========================================= */
 
     if (
-        key ===
-        "categoryDetection"
+        key === "categoryDetection"
     ) {
 
         if (
-            value === true
+            value === true &&
+            typeof refreshMailnovaCategories ===
+            "function"
         ) {
 
             refreshMailnovaCategories();
@@ -3575,69 +4312,315 @@ function handleMailnovaWorkspaceSettingChange(
         }
 
 
-        applyAllMailnovaFilters();
+        if (
+            typeof applyAllMailnovaFilters ===
+            "function"
+        ) {
+
+            applyAllMailnovaFilters();
+
+        }
+
 
         return;
 
     }
 
 
-    /*
-       Loading mode:
-       Apply to future syncs.
-       If the user chooses Complete,
-       start remaining pagination now if
-       one is available through a fresh sync.
-    */
+    /* =========================================
+       AI SETTINGS
+    ========================================= */
 
     if (
-        key ===
-        "emailLoading"
+        key === "aiSummary" ||
+        key === "askAI" ||
+        key === "smartReply"
     ) {
+
+        console.log(
+            "MailNova: AI setting changed:",
+            key,
+            value
+        );
+
+
+        /*
+         * Re-render the currently visible
+         * email cards immediately.
+         */
+
+        if (
+            typeof applyAllMailnovaFilters ===
+            "function"
+        ) {
+
+            applyAllMailnovaFilters();
+
+        }
+
+        else if (
+            typeof renderEmails ===
+            "function" &&
+            typeof mailnovaEmails !==
+            "undefined" &&
+            Array.isArray(mailnovaEmails)
+        ) {
+
+            renderEmails(
+                mailnovaEmails
+            );
+
+        }
+
 
         return;
 
     }
 
 
-    /*
-       Background Sync:
-       If enabled, perform a fresh sync
-       when workspace is already open.
-    */
+    /* =========================================
+       EMAIL LOADING
+    ========================================= */
 
     if (
-        key ===
-        "backgroundSync"
+        key === "emailLoading"
     ) {
+
+        console.log(
+            "MailNova: Email Loading mode changed:",
+            value
+        );
+
+
+        /*
+         * The selected mode is automatically
+         * used by the next sync.
+         *
+         * If COMPLETE is selected,
+         * immediately continue with a fresh
+         * full sync.
+         */
+
+        if (
+            value === "complete" &&
+            workspace
+        ) {
+
+            console.log(
+                "MailNova: Complete loading selected. Starting full sync..."
+            );
+
+
+            try {
+
+                syncMailnovaInBackground();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "MailNova: Complete loading sync failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        return;
+
+    }
+
+
+    /* =========================================
+       BACKGROUND SYNC
+    ========================================= */
+
+    if (
+        key === "backgroundSync"
+    ) {
+
+        console.log(
+            "MailNova: Background Sync changed:",
+            value
+        );
+
+
+        /*
+         * Background Sync ON
+         */
 
         if (
             value === true &&
             workspace
         ) {
 
-            syncMailnovaInBackground();
+            console.log(
+                "MailNova: Background Sync enabled. Starting sync..."
+            );
+
+
+            try {
+
+                syncMailnovaInBackground();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "MailNova: Background Sync could not start:",
+                    error
+                );
+
+            }
 
         }
+
+
+        /*
+         * Background Sync OFF
+         *
+         * Existing running sync is not cancelled.
+         * Future automatic syncs will respect the
+         * disabled setting.
+         */
+
+        if (
+            value === false
+        ) {
+
+            console.log(
+                "MailNova: Background Sync disabled."
+            );
+
+        }
+
 
         return;
 
     }
 
 
-    /*
-       Priority focus changes only require
-       local re-sorting/filtering.
-    */
+    /* =========================================
+       PRIORITY FOCUS
+    ========================================= */
 
     if (
-        key ===
-        "priorityFocus"
+        key === "priorityFocus"
     ) {
 
-        refreshMailnovaPriorityRanking();
+        console.log(
+            "MailNova: Priority Focus changed:",
+            value
+        );
+
+
+        if (
+            typeof refreshMailnovaPriorityRanking ===
+            "function"
+        ) {
+
+            refreshMailnovaPriorityRanking();
+
+        }
+
+
+        return;
 
     }
+
+
+    /* =========================================
+       UNKNOWN / OTHER SETTINGS
+    ========================================= */
+
+    console.log(
+        "MailNova: No workspace action required for:",
+        key
+    );
+
+}
+
+
+/* =========================================
+   SETTINGS EVENT LISTENER
+========================================= */
+
+if (
+    !window.__mailnovaWorkspaceSettingBridge
+) {
+
+    window.__mailnovaWorkspaceSettingBridge =
+        true;
+
+
+    window.addEventListener(
+        "mailnova-setting-changed",
+        event => {
+
+            const detail =
+                event.detail || {};
+
+
+            if (
+                !detail.key
+            ) {
+
+                return;
+
+            }
+
+
+            handleMailnovaWorkspaceSettingChange(
+                detail.key,
+                detail.value
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   SETTINGS EVENT LISTENER
+========================================= */
+
+if (
+    !window.__mailnovaWorkspaceSettingBridge
+) {
+
+    window.__mailnovaWorkspaceSettingBridge =
+        true;
+
+
+    window.addEventListener(
+        "mailnova-setting-changed",
+        event => {
+
+            const detail =
+                event.detail || {};
+
+
+            if (
+                !detail.key
+            ) {
+
+                return;
+
+            }
+
+
+            handleMailnovaWorkspaceSettingChange(
+                detail.key,
+                detail.value
+            );
+
+        }
+    );
 
 }
 

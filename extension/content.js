@@ -1,12 +1,16 @@
 /* =========================================
    MAILNOVA CONTENT INITIALIZATION
-   SAFE AUTO-OPEN VERSION
+   SAFE AUTO-OPEN + LIVE SETTINGS
 ========================================= */
 
 console.log("MailNova Initialized 🚀");
 
 
 (function initializeMailNova() {
+
+    /* =========================================
+       PREVENT DUPLICATE INITIALIZATION
+    ========================================= */
 
     if (window.__mailnovaAutoOpenStarted) {
         return;
@@ -61,6 +65,11 @@ console.log("MailNova Initialized 🚀");
         }
 
 
+        /*
+         * Default behavior:
+         * Auto Open ON
+         */
+
         return true;
 
     }
@@ -72,17 +81,9 @@ console.log("MailNova Initialized 🚀");
 
     async function openWorkspaceSafely() {
 
-        if (started) {
-            return;
-        }
-
-
-        started = true;
-
-
-        /* =====================================
-           ALREADY OPEN
-        ===================================== */
+        /*
+         * Already open
+         */
 
         if (
             document.getElementById(
@@ -99,9 +100,24 @@ console.log("MailNova Initialized 🚀");
         }
 
 
-        /* =====================================
-           AUTO OPEN SETTING
-        ===================================== */
+        /*
+         * Prevent duplicate opening
+         */
+
+        if (started) {
+
+            console.log(
+                "MailNova: Workspace opening already started."
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Check Auto Open setting
+         */
 
         const shouldOpen =
             await shouldAutoOpenWorkspace();
@@ -118,9 +134,9 @@ console.log("MailNova Initialized 🚀");
         }
 
 
-        /* =====================================
-           CHECK WORKSPACE FUNCTION
-        ===================================== */
+        /*
+         * Check workspace function
+         */
 
         if (
             typeof createWorkspace !==
@@ -136,6 +152,9 @@ console.log("MailNova Initialized 🚀");
         }
 
 
+        started = true;
+
+
         console.log(
             "MailNova: Opening workspace during browser idle time..."
         );
@@ -147,6 +166,7 @@ console.log("MailNova Initialized 🚀");
                 createWorkspace()
             );
 
+
             console.log(
                 "MailNova: Workspace opened successfully."
             );
@@ -154,6 +174,13 @@ console.log("MailNova Initialized 🚀");
         }
 
         catch (error) {
+
+            /*
+             * Allow another attempt if creation failed.
+             */
+
+            started = false;
+
 
             console.error(
                 "MailNova: Workspace initialization failed:",
@@ -166,27 +193,26 @@ console.log("MailNova Initialized 🚀");
 
 
     /* =========================================
-       WAIT FOR GMAIL TO SETTLE
+       SCHEDULE WORKSPACE OPEN
     ========================================= */
 
     function scheduleWorkspaceOpen() {
 
         /*
-           Give Gmail time to finish its initial
-           rendering before MailNova starts.
-        */
+         * Give Gmail enough time to finish
+         * its initial rendering.
+         */
 
-        const delay =
-            1800;
+        const delay = 1800;
 
 
         setTimeout(
             () => {
 
                 /*
-                   Prefer browser idle time so
-                   Gmail gets priority.
-                */
+                 * Prefer browser idle time.
+                 * This keeps Gmail responsive.
+                 */
 
                 if (
                     typeof window.requestIdleCallback ===
@@ -214,6 +240,107 @@ console.log("MailNova Initialized 🚀");
 
             },
             delay
+        );
+
+    }
+
+
+    /* =========================================
+       LIVE AUTO OPEN SETTING
+    ========================================= */
+
+    function handleAutoOpenSettingChange(
+        value
+    ) {
+
+        console.log(
+            "MailNova: Auto Open setting changed:",
+            value
+        );
+
+
+        /*
+         * If Auto Open is enabled:
+         * open workspace immediately if it
+         * does not already exist.
+         */
+
+        if (
+            value === true
+        ) {
+
+            /*
+             * Reset the startup guard so that
+             * enabling the setting later can
+             * open the workspace.
+             */
+
+            if (
+                !document.getElementById(
+                    "mailnova-workspace"
+                )
+            ) {
+
+                started = false;
+
+                openWorkspaceSafely();
+
+            }
+
+            return;
+
+        }
+
+
+        /*
+         * If Auto Open is disabled:
+         *
+         * IMPORTANT:
+         * Do NOT close an already-open workspace.
+         *
+         * This setting controls automatic opening,
+         * not manual workspace closing.
+         */
+
+        console.log(
+            "MailNova: Auto Open disabled. Existing workspace will remain open."
+        );
+
+    }
+
+
+    /* =========================================
+       SETTINGS EVENT LISTENER
+    ========================================= */
+
+    if (
+        !window.__mailnovaContentSettingsBridge
+    ) {
+
+        window.__mailnovaContentSettingsBridge =
+            true;
+
+
+        window.addEventListener(
+            "mailnova-setting-changed",
+            (event) => {
+
+                const detail =
+                    event.detail || {};
+
+
+                if (
+                    detail.key ===
+                    "autoOpenWorkspace"
+                ) {
+
+                    handleAutoOpenSettingChange(
+                        detail.value
+                    );
+
+                }
+
+            }
         );
 
     }

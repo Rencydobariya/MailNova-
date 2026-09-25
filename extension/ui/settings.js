@@ -39,6 +39,196 @@ const MAILNOVA_DEFAULT_SETTINGS = {
 };
 
 
+/* =========================================================
+   PROFESSIONAL SETTINGS ICONS
+   Inline SVG keeps the UI sharp and consistent.
+========================================================= */
+
+const MN_SETTINGS_ICONS = {
+
+    settings: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.7 3.7h4.6l.6 2.1c.5.2 1 .4 1.4.8l2.1-.6 2.3 4-1.6 1.5c.1.5.1 1.1 0 1.6l1.6 1.5-2.3 4-2.1-.6c-.4.3-.9.6-1.4.8l-.6 2.1H9.7l-.6-2.1c-.5-.2-1-.4-1.4-.8l-2.1.6-2.3-4 1.6-1.5a6.5 6.5 0 0 1 0-1.6L3.3 10l2.3-4 2.1.6c.4-.3.9-.6 1.4-.8l.6-2.1Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+    `,
+
+    appearance: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3.2"></circle>
+            <path d="M12 2.7v2.1M12 19.2v2.1M21.3 12h-2.1M4.8 12H2.7M18.58 5.42l-1.49 1.49M6.91 17.09l-1.49 1.49M18.58 18.58l-1.49-1.49M6.91 6.91 5.42 5.42"></path>
+        </svg>
+    `,
+
+    email: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.2" y="5.2" width="17.6" height="13.6" rx="2.2"></rect>
+            <path d="m4.2 7 7.8 6 7.8-6"></path>
+        </svg>
+    `,
+
+    ai: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="6.5" width="14" height="12" rx="3"></rect>
+            <path d="M9 6.5V4.5M15 6.5V4.5M12 2.8v1.7"></path>
+            <circle cx="9.5" cy="12" r="1"></circle>
+            <circle cx="14.5" cy="12" r="1"></circle>
+            <path d="M9.5 15.5h5"></path>
+            <path d="M5 11H3.5M20.5 11H19"></path>
+        </svg>
+    `,
+
+    loading: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13.2 2.8 5.4 13h5.1l-.7 8.2L18.6 11h-5.1l-.3-8.2Z"></path>
+        </svg>
+    `,
+
+    notifications: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 9.8a6 6 0 0 0-12 0c0 7-2.5 7-2.5 8.2h17C20.5 16.8 18 16.8 18 9.8Z"></path>
+            <path d="M9.8 21h4.4"></path>
+        </svg>
+    `,
+
+    compact: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <path d="M8 8h2M14 8h2M8 12h2M14 12h2M8 16h2M14 16h2"></path>
+        </svg>
+    `,
+
+    glass: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m12 3 7.5 9L12 21 4.5 12 12 3Z"></path>
+            <path d="m8.3 12 3.7-4.5 3.7 4.5-3.7 4.5L8.3 12Z"></path>
+        </svg>
+    `,
+
+    autoOpen: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13 4h7v7"></path>
+            <path d="m20 4-9 9"></path>
+            <path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"></path>
+        </svg>
+    `,
+
+    unread: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="8"></circle>
+            <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"></circle>
+        </svg>
+    `,
+
+    category: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5.5h6M14 5.5h6M4 12h6M14 12h6M4 18.5h6M14 18.5h6"></path>
+            <circle cx="12" cy="5.5" r="1.5"></circle>
+            <circle cx="12" cy="12" r="1.5"></circle>
+            <circle cx="12" cy="18.5" r="1.5"></circle>
+        </svg>
+    `,
+
+    sync: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 7v4h-4"></path>
+            <path d="M4 17v-4h4"></path>
+            <path d="M18.2 11a6.5 6.5 0 0 0-11.1-3.8L5 9"></path>
+            <path d="M5.8 13a6.5 6.5 0 0 0 11.1 3.8L19 15"></path>
+        </svg>
+    `,
+
+    priority: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m12 3 2.6 5.3 5.9.9-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.9L12 3Z"></path>
+        </svg>
+    `,
+
+    aiSummary: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3Z"></path>
+            <path d="m18.5 15 .7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7.7-2.3Z"></path>
+        </svg>
+    `,
+
+    askAI: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 18.2 4 21l.7-3.8A7.5 7.5 0 0 1 4 13c0-4.1 3.6-7.5 8-7.5s8 3.4 8 7.5-3.6 7.5-8 7.5c-1.5 0-2.9-.4-4-1.1Z"></path>
+            <path d="M9.2 12h.1M12 12h.1M14.8 12h.1"></path>
+        </svg>
+    `,
+
+    reply: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 8 4 12l5 4"></path>
+            <path d="M5 12h7.2c4.4 0 7 2 7.8 6-.1-5.4-2.8-9-8-9H9"></path>
+        </svg>
+    `,
+
+    fast: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13.2 2.8 5.4 13h5.1l-.7 8.2L18.6 11h-5.1l-.3-8.2Z"></path>
+        </svg>
+    `,
+
+    balanced: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 8h16M4 12h16M4 16h16"></path>
+            <circle cx="9" cy="8" r="1.6"></circle>
+            <circle cx="15" cy="12" r="1.6"></circle>
+            <circle cx="10" cy="16" r="1.6"></circle>
+        </svg>
+    `,
+
+    complete: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <path d="M8 8h8M8 12h8M8 16h5"></path>
+        </svg>
+    `,
+
+    important: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m12 3 2.6 5.3 5.9.9-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.9L12 3Z"></path>
+        </svg>
+    `,
+
+    badge: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4.2a6.2 6.2 0 0 1 6.2 6.2v3.2l1.7 2.7H4.1l1.7-2.7v-3.2A6.2 6.2 0 0 1 12 4.2Z"></path>
+            <path d="M10 19h4"></path>
+        </svg>
+    `,
+
+    check: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m5 12 4.2 4.2L19 6.5"></path>
+        </svg>
+    `,
+
+    themeLight: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3.2"></circle>
+            <path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4M18.7 18.7l-1.4-1.4M6.7 6.7 5.3 5.3"></path>
+        </svg>
+    `,
+
+    themeDark: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.2 8.2 0 1 0 10.2 10.2Z"></path>
+        </svg>
+    `,
+
+    themeSystem: `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.5" y="4" width="17" height="12.5" rx="2"></rect>
+            <path d="M8 20h8M12 16.5V20"></path>
+        </svg>
+    `
+};
+
+
+
 let mailnovaSettings = {
     ...MAILNOVA_DEFAULT_SETTINGS
 };
@@ -214,15 +404,18 @@ function refreshMailnovaCurrentCards() {
    UPDATE
 ========================================================= */
 
+/* =========================================================
+   UPDATE SETTING — FAST UI FIRST
+========================================================= */
+
 async function updateMailnovaSetting(
     key,
     value
 ) {
 
-    /*
-       Ignore unknown settings.
-       This prevents accidental storage pollution.
-    */
+    /* =====================================
+       VALIDATE
+    ===================================== */
 
     if (
         !Object.prototype.hasOwnProperty.call(
@@ -241,15 +434,19 @@ async function updateMailnovaSetting(
     }
 
 
+    /* =====================================
+       UPDATE LOCAL STATE IMMEDIATELY
+    ===================================== */
+
     mailnovaSettings[key] =
         value;
 
 
-    await saveMailnovaSettings();
-
-
     /* =====================================
-       APPLY LOCAL SETTING
+       APPLY UI IMMEDIATELY
+       
+       IMPORTANT:
+       UI must NOT wait for storage.
     ===================================== */
 
     applyMailnovaSetting(
@@ -259,7 +456,7 @@ async function updateMailnovaSetting(
 
 
     /* =====================================
-       DISPATCH WORKSPACE EVENT
+       DISPATCH IMMEDIATELY
     ===================================== */
 
     dispatchMailnovaSettingChange(
@@ -292,11 +489,6 @@ async function updateMailnovaSetting(
         "categoryDetection"
     ) {
 
-        /*
-           When enabling category detection,
-           immediately recalculate categories.
-        */
-
         if (
             value === true &&
             typeof refreshMailnovaCategories ===
@@ -319,11 +511,13 @@ async function updateMailnovaSetting(
 
     if (
         key ===
-        "importantNotifications" ||
+            "importantNotifications" ||
+
         key ===
-        "notificationBadge" ||
+            "notificationBadge" ||
+
         key ===
-        "unreadNotifications"
+            "unreadNotifications"
     ) {
 
         applyMailnovaNotificationSettings();
@@ -332,15 +526,36 @@ async function updateMailnovaSetting(
 
 
     /* =====================================
-       UI
+       UPDATE SETTINGS UI
     ===================================== */
 
     updateSettingsUI();
 
     showSettingsSaved();
 
-}
 
+    /* =====================================
+       SAVE IN BACKGROUND
+       
+       DO NOT BLOCK UI
+    ===================================== */
+
+    try {
+
+        await saveMailnovaSettings();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MailNova: Background settings save failed:",
+            error
+        );
+
+    }
+
+}
 
 /* =========================================================
    APPLY SETTING
@@ -613,6 +828,9 @@ function getMailnovaEffectiveTheme() {
 /* =========================================================
    THEME
 ========================================================= */
+/* =========================================================
+   FAST + SMOOTH THEME ENGINE
+========================================================= */
 
 function applyMailnovaTheme(
     theme
@@ -643,21 +861,83 @@ function applyMailnovaTheme(
             : theme;
 
 
-    workspace.classList.remove(
-        "mailnova-theme-light",
-        "mailnova-theme-dark"
+    const newThemeClass =
+        effectiveTheme === "dark"
+            ? "mailnova-theme-dark"
+            : "mailnova-theme-light";
+
+
+    const oldThemeClass =
+        effectiveTheme === "dark"
+            ? "mailnova-theme-light"
+            : "mailnova-theme-dark";
+
+
+    /*
+     * Already on requested theme.
+     * Do nothing.
+     */
+
+    if (
+        workspace.classList.contains(
+            newThemeClass
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * Mark theme switch as active.
+     */
+
+    workspace.classList.add(
+        "mailnova-theme-switching"
     );
 
 
+    /*
+     * Remove old theme.
+     */
+
+    workspace.classList.remove(
+        oldThemeClass
+    );
+
+
+    /*
+     * Add new theme immediately.
+     */
+
     workspace.classList.add(
-        effectiveTheme === "dark"
-            ? "mailnova-theme-dark"
-            : "mailnova-theme-light"
+        newThemeClass
+    );
+
+
+    /*
+     * Let browser paint the new theme first,
+     * then remove transition state.
+     */
+
+    requestAnimationFrame(
+        () => {
+
+            requestAnimationFrame(
+                () => {
+
+                    workspace.classList.remove(
+                        "mailnova-theme-switching"
+                    );
+
+                }
+            );
+
+        }
     );
 
 }
-
-
 /* =========================================================
    APPEARANCE SETTINGS
 ========================================================= */
@@ -977,7 +1257,7 @@ function createMailnovaSettingsModal() {
                 <div class="mn-settings-brand">
 
                     <div class="mn-settings-brand-icon">
-                        ⚙
+                        ${MN_SETTINGS_ICONS.settings}
                     </div>
 
                     <div>
@@ -1002,9 +1282,7 @@ function createMailnovaSettingsModal() {
                         data-section="appearance"
                     >
 
-                        <span class="mn-nav-icon">
-                            ◉
-                        </span>
+                        <span class="mn-nav-icon">${MN_SETTINGS_ICONS.appearance}</span>
 
                         <span>
                             Appearance
@@ -1018,9 +1296,7 @@ function createMailnovaSettingsModal() {
                         data-section="email"
                     >
 
-                        <span class="mn-nav-icon">
-                            ✉
-                        </span>
+                        <span class="mn-nav-icon">${MN_SETTINGS_ICONS.email}</span>
 
                         <span>
                             Email Preferences
@@ -1034,9 +1310,7 @@ function createMailnovaSettingsModal() {
                         data-section="ai"
                     >
 
-                        <span class="mn-nav-icon">
-                            ◈
-                        </span>
+                        <span class="mn-nav-icon">${MN_SETTINGS_ICONS.ai}</span>
 
                         <span>
                             AI Intelligence
@@ -1050,9 +1324,7 @@ function createMailnovaSettingsModal() {
                         data-section="loading"
                     >
 
-                        <span class="mn-nav-icon">
-                            ⚡
-                        </span>
+                        <span class="mn-nav-icon">${MN_SETTINGS_ICONS.loading}</span>
 
                         <span>
                             Email Loading
@@ -1066,9 +1338,7 @@ function createMailnovaSettingsModal() {
                         data-section="notifications"
                     >
 
-                        <span class="mn-nav-icon">
-                            ♢
-                        </span>
+                        <span class="mn-nav-icon">${MN_SETTINGS_ICONS.notifications}</span>
 
                         <span>
                             Notifications
@@ -1142,9 +1412,7 @@ function createMailnovaSettingsModal() {
 
                     <div class="mn-content-heading">
 
-                        <span class="mn-content-heading-icon">
-                            ◉
-                        </span>
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.appearance}</span>
 
                         Theme
 
@@ -1159,21 +1427,21 @@ function createMailnovaSettingsModal() {
 
                         ${createThemeCard(
                             "light",
-                            "☀",
+                            MN_SETTINGS_ICONS.themeLight,
                             "Light",
                             "Clean & bright"
                         )}
 
                         ${createThemeCard(
                             "dark",
-                            "◐",
+                            MN_SETTINGS_ICONS.themeDark,
                             "Dark",
                             "Easy on eyes"
                         )}
 
                         ${createThemeCard(
                             "system",
-                            "▣",
+                            MN_SETTINGS_ICONS.themeSystem,
                             "System",
                             "Follow device"
                         )}
@@ -1186,7 +1454,7 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "compactMode",
-                        "▦",
+                        MN_SETTINGS_ICONS.compact,
                         "Compact Mode",
                         "Reduce spacing for more content."
                     )}
@@ -1194,7 +1462,7 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "glassEffect",
-                        "◇",
+                        MN_SETTINGS_ICONS.glass,
                         "Glass Effect",
                         "Enable blur and transparency."
                     )}
@@ -1211,9 +1479,7 @@ function createMailnovaSettingsModal() {
 
                     <div class="mn-content-heading">
 
-                        <span class="mn-content-heading-icon">
-                            ✉
-                        </span>
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.email}</span>
 
                         Email Behavior
 
@@ -1226,7 +1492,7 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "autoOpenWorkspace",
-                        "↗",
+                        MN_SETTINGS_ICONS.autoOpen,
                         "Auto Open Workspace",
                         "Open MailNova automatically with Gmail."
                     )}
@@ -1234,7 +1500,7 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "unreadNotifications",
-                        "●",
+                        MN_SETTINGS_ICONS.unread,
                         "Unread Notifications",
                         "Show notifications for unread emails."
                     )}
@@ -1242,7 +1508,7 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "categoryDetection",
-                        "◇",
+                        MN_SETTINGS_ICONS.category,
                         "Category Detection",
                         "Automatically classify emails."
                     )}
@@ -1250,7 +1516,7 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "backgroundSync",
-                        "↻",
+                        MN_SETTINGS_ICONS.sync,
                         "Background Sync",
                         "Keep inbox data updated."
                     )}
@@ -1261,9 +1527,7 @@ function createMailnovaSettingsModal() {
 
                     <div class="mn-content-heading">
 
-                        <span class="mn-content-heading-icon">
-                            ★
-                        </span>
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.priority}</span>
 
                         Priority Focus
 
@@ -1278,21 +1542,21 @@ function createMailnovaSettingsModal() {
 
                         ${createPriorityFocusOption(
                             "unread",
-                            "●",
+                            MN_SETTINGS_ICONS.unread,
                             "Unread First",
                             "Give unread emails a priority boost."
                         )}
 
                         ${createPriorityFocusOption(
                             "all",
-                            "✦",
+                            MN_SETTINGS_ICONS.aiSummary,
                             "All Emails",
                             "Rank emails without a read/unread preference."
                         )}
 
                         ${createPriorityFocusOption(
                             "read",
-                            "✓",
+                            MN_SETTINGS_ICONS.check,
                             "Read First",
                             "Give already-read emails a priority boost."
                         )}
@@ -1311,9 +1575,7 @@ function createMailnovaSettingsModal() {
 
                     <div class="mn-content-heading">
 
-                        <span class="mn-content-heading-icon">
-                            ◈
-                        </span>
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.ai}</span>
 
                         AI Features
 
@@ -1326,21 +1588,21 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "aiSummary",
-                        "✦",
+                        MN_SETTINGS_ICONS.aiSummary,
                         "AI Email Summary",
                         "Generate intelligent email summaries."
                     )}
 
                     ${createSettingRow(
                         "askAI",
-                        "◌",
+                        MN_SETTINGS_ICONS.askAI,
                         "Ask AI",
                         "Ask questions about your emails."
                     )}
 
                     ${createSettingRow(
                         "smartReply",
-                        "↩",
+                        MN_SETTINGS_ICONS.reply,
                         "Smart Reply",
                         "Generate intelligent reply suggestions."
                     )}
@@ -1357,9 +1619,7 @@ function createMailnovaSettingsModal() {
 
                     <div class="mn-content-heading">
 
-                        <span class="mn-content-heading-icon">
-                            ⚡
-                        </span>
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.loading}</span>
 
                         Loading Mode
 
@@ -1374,21 +1634,21 @@ function createMailnovaSettingsModal() {
 
                         ${createLoadingOption(
                             "fast",
-                            "⚡",
+                            MN_SETTINGS_ICONS.fast,
                             "Fast",
                             "First emails immediately."
                         )}
 
                         ${createLoadingOption(
                             "balanced",
-                            "≈",
+                            MN_SETTINGS_ICONS.balanced,
                             "Balanced",
                             "Smooth background loading."
                         )}
 
                         ${createLoadingOption(
                             "complete",
-                            "▣",
+                            MN_SETTINGS_ICONS.complete,
                             "Complete",
                             "Load all Gmail pages."
                         )}
@@ -1413,9 +1673,7 @@ function createMailnovaSettingsModal() {
 
                     <div class="mn-content-heading">
 
-                        <span class="mn-content-heading-icon">
-                            ♢
-                        </span>
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.notifications}</span>
 
                         Notification Settings
 
@@ -1428,14 +1686,14 @@ function createMailnovaSettingsModal() {
 
                     ${createSettingRow(
                         "importantNotifications",
-                        "★",
+                        MN_SETTINGS_ICONS.important,
                         "Important Emails",
                         "Notify you about important emails."
                     )}
 
                     ${createSettingRow(
                         "notificationBadge",
-                        "●",
+                        MN_SETTINGS_ICONS.badge,
                         "Notification Badge",
                         "Show unread count on MailNova."
                     )}

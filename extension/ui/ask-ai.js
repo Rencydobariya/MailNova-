@@ -1,14 +1,73 @@
+/* =========================================================
+   MAILNOVA ASK AI
+   FINAL VERSION
+   Dark/Light Theme + Fast + Movable + Cleanup
+========================================================= */
+
 let mailnovaAskAI = null;
+
+
+/* =========================================================
+   ASK AI THEME
+========================================================= */
+
+function applyMailnovaAskAITheme() {
+
+    if (!mailnovaAskAI) {
+        return;
+    }
+
+
+    const workspace =
+        document.getElementById(
+            "mailnova-workspace"
+        );
+
+
+    const isDark =
+        workspace &&
+        workspace.classList.contains(
+            "mailnova-theme-dark"
+        );
+
+
+    mailnovaAskAI.classList.toggle(
+        "mn-ai-dark",
+        Boolean(isDark)
+    );
+
+}
+
+
+/* =========================================================
+   OPEN ASK AI
+========================================================= */
 
 function openAskAI(email) {
 
-    // Already open hai to close
+    /* =====================================
+       CLOSE PREVIOUS WINDOW
+    ===================================== */
+
     if (mailnovaAskAI) {
-        mailnovaAskAI.remove();
+
+        closeAskAI();
+
     }
 
-    mailnovaAskAI = document.createElement("div");
-    mailnovaAskAI.id = "mailnova-ask-ai";
+
+    /* =====================================
+       CREATE WINDOW
+    ===================================== */
+
+    mailnovaAskAI =
+        document.createElement(
+            "div"
+        );
+
+    mailnovaAskAI.id =
+        "mailnova-ask-ai";
+
 
     mailnovaAskAI.innerHTML = `
 
@@ -21,6 +80,7 @@ function openAskAI(email) {
                 </div>
 
                 <div>
+
                     <div class="mn-ai-name">
                         MailNova AI
                     </div>
@@ -28,13 +88,18 @@ function openAskAI(email) {
                     <div class="mn-ai-status">
                         ● Ready
                     </div>
+
                 </div>
 
             </div>
 
+
             <button
+                type="button"
                 class="mn-ai-close"
-                id="mn-ai-close">
+                id="mn-ai-close"
+                aria-label="Close Ask AI"
+            >
                 ×
             </button>
 
@@ -48,11 +113,17 @@ function openAskAI(email) {
             </div>
 
             <div class="mn-ai-context-subject">
-                ${escapeAIText(email.subject || "No subject")}
+                ${escapeAIText(
+                    email.subject ||
+                    "No subject"
+                )}
             </div>
 
             <div class="mn-ai-context-sender">
-                ${escapeAIText(email.sender || "Unknown sender")}
+                ${escapeAIText(
+                    email.sender ||
+                    "Unknown sender"
+                )}
             </div>
 
         </div>
@@ -60,7 +131,8 @@ function openAskAI(email) {
 
         <div
             class="mn-ai-messages"
-            id="mn-ai-messages">
+            id="mn-ai-messages"
+        >
 
             <div class="mn-ai-message ai-message">
 
@@ -79,15 +151,24 @@ function openAskAI(email) {
 
         <div class="mn-ai-suggestions">
 
-            <button class="mn-ai-suggestion">
+            <button
+                type="button"
+                class="mn-ai-suggestion"
+            >
                 What is this email about?
             </button>
 
-            <button class="mn-ai-suggestion">
+            <button
+                type="button"
+                class="mn-ai-suggestion"
+            >
                 What action should I take?
             </button>
 
-            <button class="mn-ai-suggestion">
+            <button
+                type="button"
+                class="mn-ai-suggestion"
+            >
                 Is this email important?
             </button>
 
@@ -99,12 +180,16 @@ function openAskAI(email) {
             <textarea
                 id="mn-ai-input"
                 placeholder="Ask something about this email..."
-                rows="1">
-            </textarea>
+                rows="1"
+            ></textarea>
+
 
             <button
+                type="button"
                 id="mn-ai-send"
-                class="mn-ai-send">
+                class="mn-ai-send"
+                aria-label="Send"
+            >
                 ➤
             </button>
 
@@ -112,138 +197,287 @@ function openAskAI(email) {
 
     `;
 
-    document.body.appendChild(mailnovaAskAI);
-    // Make Ask AI window movable
-    makeAskAIMovable(mailnovaAskAI);
+
+    document.body.appendChild(
+        mailnovaAskAI
+    );
 
 
-    // Close button
-    document
-        .getElementById("mn-ai-close")
-        .addEventListener("click", closeAskAI);
+    /* =====================================
+       APPLY CURRENT THEME IMMEDIATELY
+    ===================================== */
 
+    applyMailnovaAskAITheme();
+
+
+    /* =====================================
+       MAKE MOVABLE
+    ===================================== */
+
+    makeAskAIMovable(
+        mailnovaAskAI
+    );
+
+
+    /* =====================================
+       CLOSE BUTTON
+    ===================================== */
+
+    const closeButton =
+        mailnovaAskAI.querySelector(
+            "#mn-ai-close"
+        );
+
+
+    if (closeButton) {
+
+        closeButton.addEventListener(
+            "click",
+            closeAskAI
+        );
+
+    }
+
+
+    /* =====================================
+       INPUT
+    ===================================== */
 
     const input =
-        document.getElementById("mn-ai-input");
+        mailnovaAskAI.querySelector(
+            "#mn-ai-input"
+        );
+
 
     const sendButton =
-        document.getElementById("mn-ai-send");
+        mailnovaAskAI.querySelector(
+            "#mn-ai-send"
+        );
 
 
-    // Send button
-    sendButton.addEventListener("click", () => {
+    /* =====================================
+       SEND BUTTON
+    ===================================== */
 
-        sendAIMessage(email);
+    if (sendButton) {
 
-    });
+        sendButton.addEventListener(
+            "click",
+            () => {
 
-
-    // Enter = send
-    input.addEventListener("keydown", (event) => {
-
-        if (event.key === "Enter" && !event.shiftKey) {
-
-            event.preventDefault();
-
-            sendAIMessage(email);
-
-        }
-
-    });
-
-
-    // Suggested questions
-    document
-        .querySelectorAll(".mn-ai-suggestion")
-        .forEach(button => {
-
-            button.addEventListener("click", () => {
-
-                input.value = button.innerText;
-
-                sendAIMessage(email);
-
-            });
-
-        });
-
-
-    input.focus();
-
-}
-
-
-
-async function sendAIMessage(email) {
-
-    const input =
-        document.getElementById("mn-ai-input");
-
-    const message =
-        input.value.trim();
-
-    if (!message) return;
-
-    // User ka message screen par show karo
-    addAIMessage(message, "user");
-
-    // Input clear karo
-    input.value = "";
-
-    // Temporary loading message
-    addAIMessage("Thinking... 🤔", "ai");
-
-    try {
-
-        const response = await fetch(
-            "http://127.0.0.1:8000/ask-ai",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-body: JSON.stringify({
-
-    sender: email.sender || "Unknown sender",
-
-    subject: email.subject || "No subject",
-
-    body: email.body || "",
-
-    question: message
-
-})
+                sendAIMessage(
+                    email
+                );
 
             }
         );
 
-        const data = await response.json();
+    }
 
-        // Thinking message remove karo
-        const messages =
-            document.getElementById("mn-ai-messages");
 
-        const aiMessages =
-            messages.querySelectorAll(".ai-message");
+    /* =====================================
+       ENTER = SEND
+    ===================================== */
 
-        const lastAIMessage =
-            aiMessages[aiMessages.length - 1];
+    if (input) {
 
-        if (lastAIMessage) {
-            lastAIMessage.remove();
-        }
+        input.addEventListener(
+            "keydown",
+            (event) => {
 
-        // Backend ka actual Gemini response
-        if (data.success) {
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendAIMessage(
+                        email
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================
+       SUGGESTIONS
+    ===================================== */
+
+    mailnovaAskAI
+        .querySelectorAll(
+            ".mn-ai-suggestion"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        if (!input) {
+                            return;
+                        }
+
+                        input.value =
+                            button.innerText;
+
+                        sendAIMessage(
+                            email
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================
+       FOCUS
+    ===================================== */
+
+    if (input) {
+
+        requestAnimationFrame(
+            () => {
+
+                input.focus();
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SEND AI MESSAGE
+========================================================= */
+
+async function sendAIMessage(
+    email
+) {
+
+    if (!mailnovaAskAI) {
+        return;
+    }
+
+
+    const input =
+        mailnovaAskAI.querySelector(
+            "#mn-ai-input"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    const message =
+        input.value.trim();
+
+
+    if (!message) {
+        return;
+    }
+
+
+    /* =====================================
+       USER MESSAGE
+    ===================================== */
+
+    addAIMessage(
+        message,
+        "user"
+    );
+
+
+    input.value = "";
+
+
+    /* =====================================
+       THINKING
+    ===================================== */
+
+    addAIMessage(
+        "Thinking... 🤔",
+        "ai"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/ask-ai",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            sender:
+                                email.sender ||
+                                "Unknown sender",
+
+                            subject:
+                                email.subject ||
+                                "No subject",
+
+                            body:
+                                email.body ||
+                                "",
+
+                            question:
+                                message
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        /* =====================================
+           REMOVE THINKING MESSAGE
+        ===================================== */
+
+        removeLastAIMessage();
+
+
+        /* =====================================
+           RESPONSE
+        ===================================== */
+
+        if (
+            data &&
+            data.success
+        ) {
 
             addAIMessage(
                 data.response,
                 "ai"
             );
 
-        } else {
+        }
+
+        else {
 
             addAIMessage(
                 "Sorry, I couldn't analyze this email.",
@@ -252,26 +486,18 @@ body: JSON.stringify({
 
         }
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             "MailNova Ask AI Error:",
             error
         );
 
-        // Thinking message remove karo
-        const messages =
-            document.getElementById("mn-ai-messages");
 
-        const aiMessages =
-            messages.querySelectorAll(".ai-message");
+        removeLastAIMessage();
 
-        const lastAIMessage =
-            aiMessages[aiMessages.length - 1];
-
-        if (lastAIMessage) {
-            lastAIMessage.remove();
-        }
 
         addAIMessage(
             "Unable to connect to MailNova AI backend. Please make sure the FastAPI server is running.",
@@ -282,19 +508,81 @@ body: JSON.stringify({
 
 }
 
-function addAIMessage(text, type) {
+
+/* =========================================================
+   REMOVE LAST AI MESSAGE
+========================================================= */
+
+function removeLastAIMessage() {
+
+    if (!mailnovaAskAI) {
+        return;
+    }
+
 
     const messages =
-        document.getElementById("mn-ai-messages");
+        mailnovaAskAI.querySelector(
+            "#mn-ai-messages"
+        );
 
-    if (!messages) return;
+
+    if (!messages) {
+        return;
+    }
 
 
-    if (type === "user") {
+    const aiMessages =
+        messages.querySelectorAll(
+            ".ai-message"
+        );
+
+
+    const lastAIMessage =
+        aiMessages[
+            aiMessages.length - 1
+        ];
+
+
+    if (lastAIMessage) {
+
+        lastAIMessage.remove();
+
+    }
+
+}
+
+
+/* =========================================================
+   ADD AI MESSAGE
+========================================================= */
+
+function addAIMessage(
+    text,
+    type
+) {
+
+    if (!mailnovaAskAI) {
+        return;
+    }
+
+
+    const messages =
+        mailnovaAskAI.querySelector(
+            "#mn-ai-messages"
+        );
+
+
+    if (!messages) {
+        return;
+    }
+
+
+    if (
+        type === "user"
+    ) {
 
         messages.insertAdjacentHTML(
             "beforeend",
-
             `
 
             <div class="mn-ai-message user-message">
@@ -314,7 +602,6 @@ function addAIMessage(text, type) {
 
         messages.insertAdjacentHTML(
             "beforeend",
-
             `
 
             <div class="mn-ai-message ai-message">
@@ -341,123 +628,422 @@ function addAIMessage(text, type) {
 }
 
 
+/* =========================================================
+   CLOSE ASK AI
+========================================================= */
+
 function closeAskAI() {
 
-    if (mailnovaAskAI) {
+    if (!mailnovaAskAI) {
+        return;
+    }
 
-        mailnovaAskAI.remove();
 
-        mailnovaAskAI = null;
+    /* =====================================
+       CLEAN DRAG LISTENERS
+    ===================================== */
+
+    if (
+        mailnovaAskAI.__askAIDragCleanup
+    ) {
+
+        mailnovaAskAI
+            .__askAIDragCleanup();
 
     }
+
+
+    /* =====================================
+       REMOVE WINDOW
+    ===================================== */
+
+    mailnovaAskAI.remove();
+
+    mailnovaAskAI =
+        null;
 
 }
 
 
-function escapeAIText(text) {
+/* =========================================================
+   ESCAPE TEXT
+========================================================= */
+
+function escapeAIText(
+    text
+) {
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    div.textContent = text;
+
+    div.textContent =
+        text;
+
 
     return div.innerHTML;
 
 }
 
 
-function makeAskAIMovable(windowElement) {
+/* =========================================================
+   MAKE ASK AI MOVABLE
+========================================================= */
 
-    const header = windowElement.querySelector(".mn-ai-header");
+function makeAskAIMovable(
+    windowElement
+) {
 
-    if (!header) return;
+    const header =
+        windowElement.querySelector(
+            ".mn-ai-header"
+        );
 
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let startLeft = 0;
-    let startTop = 0;
 
-    header.style.cursor = "grab";
+    if (!header) {
+        return;
+    }
 
-    header.addEventListener("mousedown", (event) => {
 
-        // Close button par click ho to dragging start nahi hogi
-        if (event.target.closest(".mn-ai-close")) {
-            return;
+    let isDragging =
+        false;
+
+    let startX =
+        0;
+
+    let startY =
+        0;
+
+    let startLeft =
+        0;
+
+    let startTop =
+        0;
+
+
+    header.style.cursor =
+        "grab";
+
+
+    /* =====================================
+       MOUSE DOWN
+    ===================================== */
+
+    const handleMouseDown =
+        (event) => {
+
+            if (
+                event.target.closest(
+                    ".mn-ai-close"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            isDragging =
+                true;
+
+
+            header.style.cursor =
+                "grabbing";
+
+
+            const rect =
+                windowElement.getBoundingClientRect();
+
+
+            startX =
+                event.clientX;
+
+            startY =
+                event.clientY;
+
+
+            startLeft =
+                rect.left;
+
+            startTop =
+                rect.top;
+
+
+            windowElement.style.position =
+                "fixed";
+
+            windowElement.style.left =
+                startLeft + "px";
+
+            windowElement.style.top =
+                startTop + "px";
+
+            windowElement.style.right =
+                "auto";
+
+            windowElement.style.bottom =
+                "auto";
+
+
+            event.preventDefault();
+
+        };
+
+
+    /* =====================================
+       MOUSE MOVE
+    ===================================== */
+
+    const handleMouseMove =
+        (event) => {
+
+            if (!isDragging) {
+                return;
+            }
+
+
+            let newLeft =
+                startLeft +
+                (
+                    event.clientX -
+                    startX
+                );
+
+
+            let newTop =
+                startTop +
+                (
+                    event.clientY -
+                    startY
+                );
+
+
+            const maxLeft =
+                Math.max(
+                    0,
+                    window.innerWidth -
+                    windowElement.offsetWidth
+                );
+
+
+            const maxTop =
+                Math.max(
+                    0,
+                    window.innerHeight -
+                    windowElement.offsetHeight
+                );
+
+
+            newLeft =
+                Math.max(
+                    0,
+                    Math.min(
+                        newLeft,
+                        maxLeft
+                    )
+                );
+
+
+            newTop =
+                Math.max(
+                    0,
+                    Math.min(
+                        newTop,
+                        maxTop
+                    )
+                );
+
+
+            windowElement.style.left =
+                newLeft + "px";
+
+
+            windowElement.style.top =
+                newTop + "px";
+
+        };
+
+
+    /* =====================================
+       MOUSE UP
+    ===================================== */
+
+    const handleMouseUp =
+        () => {
+
+            if (!isDragging) {
+                return;
+            }
+
+
+            isDragging =
+                false;
+
+
+            header.style.cursor =
+                "grab";
+
+        };
+
+
+    header.addEventListener(
+        "mousedown",
+        handleMouseDown
+    );
+
+
+    document.addEventListener(
+        "mousemove",
+        handleMouseMove
+    );
+
+
+    document.addEventListener(
+        "mouseup",
+        handleMouseUp
+    );
+
+
+    /* =====================================
+       CLEANUP FUNCTION
+       
+       IMPORTANT:
+       Prevents listeners accumulating
+       every time Ask AI is opened.
+    ===================================== */
+
+    windowElement.__askAIDragCleanup =
+        () => {
+
+            header.removeEventListener(
+                "mousedown",
+                handleMouseDown
+            );
+
+
+            document.removeEventListener(
+                "mousemove",
+                handleMouseMove
+            );
+
+
+            document.removeEventListener(
+                "mouseup",
+                handleMouseUp
+            );
+
+        };
+
+}
+
+
+/* =========================================================
+   LIVE THEME CHANGE
+========================================================= */
+
+if (
+    !window.__mailnovaAskAIThemeListener
+) {
+
+    window.__mailnovaAskAIThemeListener =
+        true;
+
+
+    window.addEventListener(
+        "mailnova-setting-changed",
+        (event) => {
+
+            const detail =
+                event.detail || {};
+
+
+            if (
+                detail.key === "theme"
+            ) {
+
+                /*
+                 * Wait one frame so workspace
+                 * theme class is already updated.
+                 */
+
+                requestAnimationFrame(
+                    () => {
+
+                        applyMailnovaAskAITheme();
+
+                    }
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SYSTEM THEME CHANGE
+========================================================= */
+
+if (
+    !window.__mailnovaAskAISystemThemeListener
+) {
+
+    window.__mailnovaAskAISystemThemeListener =
+        true;
+
+
+    try {
+
+        const mediaQuery =
+            window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            );
+
+
+        const handleSystemTheme =
+            () => {
+
+                applyMailnovaAskAITheme();
+
+            };
+
+
+        if (
+            typeof mediaQuery.addEventListener ===
+            "function"
+        ) {
+
+            mediaQuery.addEventListener(
+                "change",
+                handleSystemTheme
+            );
+
         }
 
-        isDragging = true;
+        else if (
+            typeof mediaQuery.addListener ===
+            "function"
+        ) {
 
-        header.style.cursor = "grabbing";
+            mediaQuery.addListener(
+                handleSystemTheme
+            );
 
-        const rect = windowElement.getBoundingClientRect();
+        }
 
-        startX = event.clientX;
-        startY = event.clientY;
+    }
 
-        startLeft = rect.left;
-        startTop = rect.top;
+    catch (error) {
 
-        // Fixed positioning ensure karo
-        windowElement.style.position = "fixed";
-        windowElement.style.left = startLeft + "px";
-        windowElement.style.top = startTop + "px";
-        windowElement.style.right = "auto";
-        windowElement.style.bottom = "auto";
-
-        event.preventDefault();
-
-    });
-
-
-    document.addEventListener("mousemove", (event) => {
-
-        if (!isDragging) return;
-
-        let newLeft =
-            startLeft + (event.clientX - startX);
-
-        let newTop =
-            startTop + (event.clientY - startY);
-
-
-        // Screen ke bahar completely na jaaye
-        const maxLeft =
-            window.innerWidth - windowElement.offsetWidth;
-
-        const maxTop =
-            window.innerHeight - windowElement.offsetHeight;
-
-
-        newLeft = Math.max(
-            0,
-            Math.min(newLeft, maxLeft)
+        console.warn(
+            "MailNova: Ask AI system theme listener failed:",
+            error
         );
 
-        newTop = Math.max(
-            0,
-            Math.min(newTop, maxTop)
-        );
-
-
-        windowElement.style.left =
-            newLeft + "px";
-
-        windowElement.style.top =
-            newTop + "px";
-
-    });
-
-
-    document.addEventListener("mouseup", () => {
-
-        if (!isDragging) return;
-
-        isDragging = false;
-
-        header.style.cursor = "grab";
-
-    });
+    }
 
 }
