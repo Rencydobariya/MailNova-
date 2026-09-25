@@ -1,23 +1,78 @@
 const MAILNOVA_API =
     "https://mailnova-9tzz.onrender.com";
 
+
+/* =========================================
+   GMAIL PAGINATION SETTINGS
+========================================= */
+
 const MAILNOVA_PAGE_SIZE =
     25;
 
-const MAILNOVA_PAGE_DELAY_MS =
-    700;
 
+/*
+   Gmail quota protection.
+
+   25 full Gmail messages can consume a
+   significant amount of Gmail API quota.
+
+   We therefore wait between pages instead
+   of hammering Gmail continuously.
+*/
+const MAILNOVA_PAGE_DELAY_MS =
+    6000;
+
+
+/*
+   Retry delays for Gmail 403 / 429 errors.
+*/
+const MAILNOVA_RETRY_DELAYS = [
+    10000,
+    20000,
+    40000
+];
+
+
+/*
+   Prevent duplicate full Gmail syncs.
+*/
 let mailnovaFetchAllPromise =
     null;
+
+
+/* =========================================
+   EMAIL CACHE
+========================================= */
 
 const MAILNOVA_CACHE_KEY =
     "mailnova_email_cache";
 
+
 const MAILNOVA_CACHE_TIME_KEY =
     "mailnova_email_cache_time";
 
+
 const MAILNOVA_CACHE_VERSION =
     2;
+
+
+/* =========================================
+   SMALL DELAY HELPER
+========================================= */
+
+function mailnovaDelay(
+    milliseconds
+) {
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                milliseconds
+            )
+    );
+
+}
 
 
 /* =========================================
@@ -58,9 +113,17 @@ async function fetchGmailEmails(
 
         if (!response.ok) {
 
-            throw new Error(
-                `Gmail API failed: ${response.status}`
-            );
+            const error =
+                new Error(
+                    `Gmail API failed: ${response.status}`
+                );
+
+
+            error.status =
+                response.status;
+
+
+            throw error;
 
         }
 
@@ -103,9 +166,109 @@ async function fetchGmailEmails(
 
             emails: [],
 
-            next_page_token: null
+            next_page_token: null,
+
+            error:
+                error.message ||
+                "Gmail request failed",
+
+            status:
+                error.status || 0
 
         };
+
+    }
+
+}
+
+
+/* =========================================
+   FETCH PAGE WITH RETRY
+========================================= */
+
+async function fetchGmailPageWithRetry(
+    pageToken = null,
+    maxResults = MAILNOVA_PAGE_SIZE
+) {
+
+    let attempt = 0;
+
+
+    while (
+        true
+    ) {
+
+        const page =
+            await fetchGmailEmails(
+                pageToken,
+                maxResults
+            );
+
+
+        if (
+            page.success
+        ) {
+
+            return page;
+
+        }
+
+
+        const status =
+            Number(
+                page.status || 0
+            );
+
+
+        /*
+           Retry only for rate limiting /
+           temporary server failures.
+        */
+
+        const retryable =
+            status === 403 ||
+            status === 429 ||
+            status === 500 ||
+            status === 502 ||
+            status === 503 ||
+            status === 504;
+
+
+        if (
+            !retryable ||
+            attempt >=
+                MAILNOVA_RETRY_DELAYS.length
+        ) {
+
+            console.error(
+                "MailNova: Gmail page failed permanently:",
+                page.error
+            );
+
+
+            return page;
+
+        }
+
+
+        const delay =
+            MAILNOVA_RETRY_DELAYS[
+                attempt
+            ];
+
+
+        attempt++;
+
+
+        console.warn(
+            `MailNova: Gmail rate limit/server error ${status}. ` +
+            `Retrying in ${delay / 1000}s...`
+        );
+
+
+        await mailnovaDelay(
+            delay
+        );
 
     }
 
@@ -489,81 +652,77 @@ async function saveMailnovaEmailCache(
 
 
 /* =========================================
-   FETCH REMAINING GMAIL PAGES
+   MERGE EMAILS WITHOUT DUPLICATES
 ========================================= */
 
-/* =========================================
-   FETCH REMAINING GMAIL PAGES
-========================================= */
-
-function mailnovaWait(ms) {
-
-    return new Promise(
-        resolve => setTimeout(
-            resolve,
-            ms
-        )
-    );
-
-}
-
-
-function mailnovaMergeEmails(
-    currentEmails,
+function mergeMailnovaEmails(
+    existingEmails,
     newEmails
 ) {
 
-    const merged = [
-        ...(currentEmails || [])
-    ];
-
-
-    const existingIds =
-        new Set(
-            merged
-                .map(
-                    email =>
-                        email?.id ||
-                        email?.threadId
-                )
-                .filter(Boolean)
-        );
+    const map =
+        new Map();
 
 
     for (
-        const email
-        of (newEmails || [])
+        const email of
+        Array.isArray(existingEmails)
+            ? existingEmails
+            : []
     ) {
 
-        const emailId =
+        const id =
             email?.id ||
             email?.threadId;
 
 
         if (
-            !emailId ||
-            !existingIds.has(emailId)
+            id
         ) {
 
-            merged.push(
+            map.set(
+                id,
                 email
             );
-
-
-            if (emailId) {
-
-                existingIds.add(
-                    emailId
-                );
-
-            }
 
         }
 
     }
 
 
-    return merged;
+    for (
+        const email of
+        Array.isArray(newEmails)
+            ? newEmails
+            : []
+    ) {
+
+        const id =
+            email?.id ||
+            email?.threadId;
+
+
+        if (
+            id
+        ) {
+
+            /*
+               New Gmail data wins.
+            */
+
+            map.set(
+                id,
+                email
+            );
+
+        }
+
+    }
+
+
+    return Array.from(
+        map.values()
+    );
 
 }
 
@@ -574,41 +733,72 @@ function mailnovaMergeEmails(
 
 async function fetchRemainingGmailPages(
     firstPage,
-    onPage = null,
-    startingEmails = []
+    onPage = null
 ) {
 
     let allEmails =
-        mailnovaMergeEmails(
-            startingEmails,
-            firstPage.emails || []
-        );
+        [
+            ...(firstPage.emails || [])
+        ];
 
 
     let nextPageToken =
         firstPage.next_page_token;
 
 
-    let pageNumber = 1;
+    let pageNumber =
+        1;
+
+
+    /*
+       Prevent a broken Gmail pagination token
+       from causing an infinite loop.
+    */
+
+    const usedPageTokens =
+        new Set();
 
 
     while (
         nextPageToken
     ) {
 
-        /*
-           Small controlled delay between pages.
+        if (
+            usedPageTokens.has(
+                nextPageToken
+            )
+        ) {
 
-           This prevents Gmail API request bursts
-           while keeping loading automatic.
-        */
+            console.warn(
+                "MailNova: Duplicate Gmail page token detected. Stopping pagination."
+            );
 
-        await mailnovaWait(
-            MAILNOVA_PAGE_DELAY_MS
+            break;
+
+        }
+
+
+        usedPageTokens.add(
+            nextPageToken
         );
 
 
         pageNumber++;
+
+
+        console.log(
+            `MailNova: Waiting before Gmail page ${pageNumber}...`
+        );
+
+
+        /*
+           IMPORTANT:
+           Do not hammer Gmail API.
+        */
+
+        await mailnovaDelay(
+            MAILNOVA_PAGE_DELAY_MS
+        );
 
 
         console.log(
@@ -617,7 +807,7 @@ async function fetchRemainingGmailPages(
 
 
         const page =
-            await fetchGmailEmails(
+            await fetchGmailPageWithRetry(
                 nextPageToken,
                 MAILNOVA_PAGE_SIZE
             );
@@ -627,10 +817,12 @@ async function fetchRemainingGmailPages(
             !page.success
         ) {
 
-            console.warn(
+            console.error(
                 "MailNova: Background Gmail page failed. " +
-                "Already loaded emails will remain visible."
+                "Stopping this sync safely.",
+                page.error
             );
+
 
             break;
 
@@ -645,23 +837,28 @@ async function fetchRemainingGmailPages(
             pageEmails.length === 0
         ) {
 
+            console.log(
+                "MailNova: Gmail returned an empty page. Sync complete."
+            );
+
+
             break;
 
         }
 
 
         allEmails =
-            mailnovaMergeEmails(
+            mergeMailnovaEmails(
                 allEmails,
                 pageEmails
             );
 
 
         /*
-           IMPORTANT:
+           Send each page to workspace immediately.
 
-           Send every page to workspace immediately.
-           User does NOT need to click Load More.
+           This means the user does NOT need to
+           wait for all Gmail messages.
         */
 
         if (
@@ -669,17 +866,33 @@ async function fetchRemainingGmailPages(
             "function"
         ) {
 
-            await onPage(
-                pageEmails,
-                allEmails,
-                page
-            );
+            try {
+
+                await onPage(
+                    pageEmails,
+                    allEmails,
+                    page
+                );
+
+            }
+
+            catch (callbackError) {
+
+                console.error(
+                    "MailNova: Page callback error:",
+                    callbackError
+                );
+
+            }
 
         }
 
 
         /*
-           Save cache after every page.
+           Save progressively.
+
+           If the browser/extension is closed,
+           already downloaded pages remain cached.
         */
 
         await saveMailnovaEmailCache(
@@ -692,11 +905,14 @@ async function fetchRemainingGmailPages(
 
 
         /*
-           Safety guard.
+           Gmail normally has far fewer than
+           200 pages for normal inbox usage.
+
+           This is only a safety guard.
         */
 
         if (
-            pageNumber > 200
+            pageNumber >= 200
         ) {
 
             console.warn(
@@ -708,6 +924,12 @@ async function fetchRemainingGmailPages(
         }
 
     }
+
+
+    console.log(
+        "MailNova: Background Gmail pagination completed:",
+        allEmails.length
+    );
 
 
     return allEmails;
@@ -724,11 +946,8 @@ async function fetchAllGmailEmails(
 ) {
 
     /*
-       Prevent duplicate Gmail loading.
-
-       If MailNova accidentally calls this function
-       twice at the same time, both calls reuse the
-       same request.
+       Prevent multiple parts of MailNova
+       from starting the same huge Gmail sync.
     */
 
     if (
@@ -736,7 +955,7 @@ async function fetchAllGmailEmails(
     ) {
 
         console.log(
-            "MailNova: Gmail fetch already running. Reusing it."
+            "MailNova: Gmail full sync already running."
         );
 
 
@@ -748,220 +967,144 @@ async function fetchAllGmailEmails(
     mailnovaFetchAllPromise =
         (async () => {
 
-            /*
-               STEP 1
-               SHOW CACHE FIRST
-
-               Existing emails appear immediately.
-            */
-
-            const cached =
-                await loadMailnovaEmailCache();
-
-
-            const cachedEmails =
-                cached.emails || [];
-
-
-            if (
-                cachedEmails.length > 0 &&
-                typeof onPage ===
-                "function"
-            ) {
-
-                console.log(
-                    "MailNova: Showing cached emails immediately:",
-                    cachedEmails.length
-                );
-
-
-                await onPage(
-                    cachedEmails,
-                    cachedEmails,
-                    {
-                        success: true,
-                        emails: cachedEmails,
-                        next_page_token: null,
-                        fromCache: true
-                    }
-                );
-
-            }
-
-
-            /*
-               STEP 2
-               FETCH FIRST 25 FRESH EMAILS
-
-               This makes the first screen fast.
-            */
-
-            const firstPage =
-                await fetchGmailEmails(
-                    null,
-                    MAILNOVA_PAGE_SIZE
-                );
-
-
-            if (
-                !firstPage.success
-            ) {
+            try {
 
                 /*
-                   If Gmail is temporarily rate limited,
-                   keep cached emails visible.
+                   First page is intentionally small
+                   so UI can receive emails quickly.
                 */
 
+                const firstPage =
+                    await fetchGmailPageWithRetry(
+                        null,
+                        MAILNOVA_PAGE_SIZE
+                    );
+
+
                 if (
-                    cachedEmails.length > 0
+                    !firstPage.success
                 ) {
 
-                    console.warn(
-                        "MailNova: Gmail refresh failed. " +
-                        "Keeping cached emails visible."
+                    console.error(
+                        "MailNova: First Gmail page failed."
                     );
 
 
                     return {
-                        success: true,
-                        emails: cachedEmails,
-                        fromCache: true
+
+                        success: false,
+
+                        emails: [],
+
+                        next_page_token:
+                            null
+
                     };
 
                 }
 
 
+                const firstEmails =
+                    firstPage.emails || [];
+
+
+                /*
+                   Give the first page to the workspace
+                   immediately.
+                */
+
+                if (
+                    typeof onPage ===
+                    "function"
+                ) {
+
+                    try {
+
+                        await onPage(
+                            firstEmails,
+                            firstEmails,
+                            firstPage
+                        );
+
+                    }
+
+                    catch (callbackError) {
+
+                        console.error(
+                            "MailNova: First page callback error:",
+                            callbackError
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                   Save first page immediately.
+                */
+
+                await saveMailnovaEmailCache(
+                    firstEmails
+                );
+
+
+                /*
+                   Continue automatically in the
+                   background.
+                */
+
+                const allEmails =
+                    await fetchRemainingGmailPages(
+                        firstPage,
+                        onPage
+                    );
+
+
                 return {
-                    success: false,
-                    emails: []
+
+                    success: true,
+
+                    emails:
+                        allEmails
+
                 };
 
             }
 
+            catch (error) {
 
-            const freshEmails =
-                firstPage.emails || [];
-
-
-            /*
-               Fresh emails first.
-               Cached emails are added without duplicates.
-            */
-
-            const mergedFirstPage =
-                mailnovaMergeEmails(
-                    freshEmails,
-                    cachedEmails
+                console.error(
+                    "MailNova: Gmail full sync error:",
+                    error
                 );
 
 
-            if (
-                typeof onPage ===
-                "function"
-            ) {
+                return {
 
-                await onPage(
-                    freshEmails,
-                    mergedFirstPage,
-                    firstPage
-                );
+                    success: false,
+
+                    emails: [],
+
+                    error:
+                        error.message ||
+                        "Gmail sync failed"
+
+                };
 
             }
 
+            finally {
 
-            await saveMailnovaEmailCache(
-                mergedFirstPage
-            );
+                mailnovaFetchAllPromise =
+                    null;
 
-
-            /*
-               STEP 3
-               AUTOMATIC BACKGROUND PAGINATION
-
-               No Load More button.
-               Pages arrive automatically.
-            */
-
-            const allEmails =
-                await fetchRemainingGmailPages(
-                    firstPage,
-                    onPage,
-                    mergedFirstPage
-                );
-
-
-            await saveMailnovaEmailCache(
-                allEmails
-            );
-
-
-            return {
-                success: true,
-                emails: allEmails
-            };
+            }
 
         })();
 
 
-    try {
-
-        return await mailnovaFetchAllPromise;
-
-    }
-
-    finally {
-
-        mailnovaFetchAllPromise =
-            null;
-
-    }
-
-}
-/* =========================================
-   FETCH ALL GMAIL EMAILS
-========================================= */
-
-async function fetchAllGmailEmails(
-    onPage = null
-) {
-
-    const firstPage =
-        await fetchGmailEmails(
-            null,
-            MAILNOVA_PAGE_SIZE
-        );
-
-
-    if (
-        !firstPage.success
-    ) {
-
-        return {
-
-            success: false,
-
-            emails: []
-
-        };
-
-    }
-
-
-    const allEmails =
-        await fetchRemainingGmailPages(
-            firstPage,
-            onPage
-        );
-
-
-    return {
-
-        success: true,
-
-        emails:
-            allEmails
-
-    };
+    return mailnovaFetchAllPromise;
 
 }
 
@@ -1112,6 +1255,7 @@ async function summarizeEmail(
             "MailNova Summary Error:",
             error
         );
+
 
         return "";
 

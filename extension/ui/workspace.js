@@ -605,7 +605,7 @@ if (refreshButton) {
     const result =
         await fetchGmailEmails(
             null,
-            100
+            25
         );
 
 
@@ -1343,7 +1343,7 @@ async function syncRemainingMailPages(
             const page =
                 await fetchGmailEmails(
                     nextPageToken,
-                    100
+                    25
                 );
 
 
