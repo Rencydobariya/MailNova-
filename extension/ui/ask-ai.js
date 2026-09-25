@@ -416,7 +416,7 @@ async function sendAIMessage(
 
         const response =
             await fetch(
-                "http://127.0.0.1:8000/ask-ai",
+                "https://mailnova-9tzz.onrender.com/ask-ai",
                 {
 
                     method: "POST",
