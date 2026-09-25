@@ -634,7 +634,7 @@ if (refreshButton) {
 
 
     /* =====================================
-       RENDER FIRST 100 IMMEDIATELY
+       RENDER FIRST 25 IMMEDIATELY
     ===================================== */
 
     applyAllMailnovaFilters();
@@ -1008,7 +1008,7 @@ async function syncMailnovaInBackground() {
                 const firstPage =
                     await fetchGmailEmails(
                         null,
-                        100
+                        25
                     );
 
 
@@ -3733,7 +3733,7 @@ if (markReadButton) {
                             `all/${threadId}`;
 
                     },
-                    100
+                    25
                 );
 
 
