@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from email.mime.text import MIMEText
 from html.parser import HTMLParser
 import base64
+import time
 
 from backend.app.api.gmail_auth import get_gmail_credentials
 from backend.app.ai.spam_detector import is_probable_spam
@@ -89,8 +90,6 @@ def decode_gmail_body(data):
 
     try:
 
-        # Gmail uses URL-safe Base64. Add only the padding
-        # characters required to make the length a multiple of 4.
         padding = (4 - len(data) % 4) % 4
 
         decoded = base64.urlsafe_b64decode(
@@ -460,12 +459,14 @@ def get_gmail_emails(
     # -----------------------------------------
     # SAFE PAGE SIZE
     # -----------------------------------------
-
+    # Gmail API allows larger list pages, but MailNova fetches
+    # every message with format="full". Keeping the page at 50
+    # reduces burst quota usage and follows Google's batch guidance.
     max_results = max(
         1,
         min(
             int(max_results),
-            100
+            50
         )
     )
 
@@ -480,11 +481,8 @@ def get_gmail_emails(
         .messages()
         .list(
             userId="me",
-
             maxResults=max_results,
-
             pageToken=page_token,
-
             includeSpamTrash=True
         )
     )
@@ -502,135 +500,172 @@ def get_gmail_emails(
     if not messages:
 
         return {
-
-            "success":
-                True,
-
-            "count":
-                0,
-
-            "next_page_token":
-                None,
-
-            "emails":
-                []
-
+            "success": True,
+            "count": 0,
+            "next_page_token": None,
+            "emails": []
         }
 
 
     # =========================================
-    # GMAIL API BATCH
+    # GMAIL API BATCH HELPERS
     # =========================================
 
     message_data = {}
 
 
-    def batch_callback(
-        request_id,
-        response,
-        exception
-    ):
+    def is_rate_limit_error(exception):
+        """Return True when Gmail reports a temporary quota/rate limit error."""
 
-        if exception:
+        error_text = str(exception).lower()
 
-            print(
-                "MailNova: Gmail batch error:",
-                request_id,
-                exception
+        return any(
+            marker in error_text
+            for marker in (
+                "ratelimitexceeded",
+                "userratelimitexceeded",
+                "quota exceeded",
+                "too many requests",
+                "http error 429",
+                "status code: 429"
             )
-
-            return
-
-
-        message_data[
-            request_id
-        ] = response
-
-
-    batch = (
-        service
-        .new_batch_http_request(
-            callback=batch_callback
         )
+
+
+    def fetch_message_batch(message_ids, max_retries=3):
+        """Fetch full Gmail messages in batches of <= 50 with limited backoff."""
+
+        pending_ids = list(message_ids)
+
+        retry_delays = (2, 5, 10)
+
+
+        for attempt in range(max_retries + 1):
+
+            if not pending_ids:
+                break
+
+
+            failed_retryable = []
+
+
+            def batch_callback(
+                request_id,
+                response,
+                exception
+            ):
+
+                if exception:
+
+                    print(
+                        "MailNova: Gmail batch error:",
+                        request_id,
+                        exception
+                    )
+
+                    if is_rate_limit_error(exception):
+                        failed_retryable.append(request_id)
+
+                    return
+
+
+                message_data[request_id] = response
+
+
+            # Google recommends keeping Gmail batch requests at 50 or fewer.
+            for batch_start in range(0, len(pending_ids), 50):
+
+                batch_ids = pending_ids[
+                    batch_start:batch_start + 50
+                ]
+
+                batch = (
+                    service
+                    .new_batch_http_request(
+                        callback=batch_callback
+                    )
+                )
+
+
+                for message_id in batch_ids:
+
+                    batch.add(
+                        service
+                        .users()
+                        .messages()
+                        .get(
+                            userId="me",
+                            id=message_id,
+                            format="full"
+                        ),
+                        request_id=message_id
+                    )
+
+
+                try:
+
+                    batch.execute()
+
+                except Exception as error:
+
+                    print(
+                        "MailNova: Gmail batch execution failed:",
+                        error
+                    )
+
+                    if is_rate_limit_error(error):
+
+                        for message_id in batch_ids:
+
+                            if message_id not in message_data:
+                                failed_retryable.append(message_id)
+
+                    else:
+
+                        # A non-rate-limit batch failure should not cause
+                        # the whole Gmail endpoint to crash.
+                        continue
+
+
+            pending_ids = [
+                message_id
+                for message_id in failed_retryable
+                if message_id not in message_data
+            ]
+
+
+            if pending_ids and attempt < max_retries:
+
+                delay = retry_delays[
+                    min(attempt, len(retry_delays) - 1)
+                ]
+
+                print(
+                    f"MailNova: Gmail quota/rate limit detected. "
+                    f"Retrying {len(pending_ids)} messages "
+                    f"after {delay}s (attempt {attempt + 1}/{max_retries})."
+                )
+
+                time.sleep(delay)
+
+
+        return len(message_data)
+
+
+    # =========================================
+    # FETCH FULL MESSAGE DATA
+    # =========================================
+
+    message_ids = [
+        message.get("id")
+        for message in messages
+        if message.get("id")
+    ]
+
+
+    fetch_message_batch(
+        message_ids
     )
-
-
-    # =========================================
-    # ADD MESSAGE REQUESTS
-    # =========================================
-
-    for message in messages:
-
-        message_id = message.get(
-            "id"
-        )
-
-
-        if not message_id:
-
-            continue
-
-
-        batch.add(
-
-            service
-            .users()
-            .messages()
-            .get(
-
-                userId="me",
-
-                id=message_id,
-
-                # FULL is required so Gmail
-                   # returns the message payload/body.
-                
-
-                format="full"
-
-            ),
-
-            request_id=message_id
-
-        )
-
-
-    # =========================================
-    # EXECUTE BATCH
-    # =========================================
-
-    try:
-
-        batch.execute()
-
-    except Exception as error:
-
-        print(
-            "MailNova: Gmail batch execution failed:",
-            error
-        )
-
-
-        return {
-
-            "success":
-                False,
-
-            "count":
-                0,
-
-            "next_page_token":
-                results.get(
-                    "nextPageToken"
-                ),
-
-            "emails":
-                [],
-
-            "error":
-                str(error)
-
-        }
 
 
     # =========================================
@@ -653,7 +688,6 @@ def get_gmail_emails(
 
 
         if not msg:
-
             continue
 
 
@@ -683,6 +717,7 @@ def get_gmail_emails(
         if email.get("spam") is True
     )
 
+
     print(
         f"MailNova: Gmail page loaded: "
         f"{len(emails)} emails | "
@@ -693,26 +728,11 @@ def get_gmail_emails(
 
 
     return {
-
-        "success":
-            True,
-
-        "count":
-            len(emails),
-
-        "next_page_token":
-            results.get(
-                "nextPageToken"
-            ),
-
-        "result_size_estimate":
-            results.get(
-                "resultSizeEstimate"
-            ),
-
-        "emails":
-            emails
-
+        "success": True,
+        "count": len(emails),
+        "next_page_token": results.get("nextPageToken"),
+        "result_size_estimate": results.get("resultSizeEstimate"),
+        "emails": emails
     }
 
 
