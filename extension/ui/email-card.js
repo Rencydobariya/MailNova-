@@ -19,7 +19,8 @@ function detectMailnovaSpam(email) {
 
     if (
         email.spam === true ||
-        email.spam === "true"
+        email.spam === "true" ||
+        email.aiSpam === true
     ) {
         return true;
     }

@@ -32,6 +32,7 @@
       "utils/drag.js",
       "utils/resize.js",
       "utils/api.js",
+      "utils/ai-intelligence.js",
       "utils/priority.js",
       "utils/category-engine.js",
       "utils/filter.js",

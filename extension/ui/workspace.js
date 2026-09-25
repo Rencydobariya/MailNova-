@@ -507,6 +507,23 @@ if (refreshButton) {
 
 
         /* =================================
+           RESTORE CACHED AI INTELLIGENCE
+           Non-blocking for initial render.
+        ================================= */
+
+        if (
+            typeof restoreMailnovaAIResults ===
+            "function"
+        ) {
+            restoreMailnovaAIResults(
+                mailnovaEmails
+            ).then(() => {
+                applyAllMailnovaFilters();
+            }).catch(() => {});
+        }
+
+
+        /* =================================
            SHOW CACHE IMMEDIATELY
         ================================= */
 
@@ -637,6 +654,23 @@ if (refreshButton) {
     await saveMailnovaEmailCache(
         mailnovaEmails
     );
+
+
+    /* =====================================
+       BACKGROUND AI INTELLIGENCE
+       Never blocks the first render.
+    ===================================== */
+
+    if (
+        typeof startMailnovaAIAnalysis ===
+        "function"
+    ) {
+        setTimeout(() => {
+            startMailnovaAIAnalysis(
+                mailnovaEmails
+            );
+        }, 1200);
+    }
 
 
     /* =====================================
@@ -891,6 +925,7 @@ function refreshMailnovaCategories() {
                     ...email,
 
                     category:
+                        email.aiCategory ||
                         detectCategory({
 
                             sender:
@@ -1081,6 +1116,18 @@ mailnovaEmails =
                 */
 
                 applyAllMailnovaFilters();
+
+
+                if (
+                    typeof startMailnovaAIAnalysis ===
+                    "function"
+                ) {
+                    setTimeout(() => {
+                        startMailnovaAIAnalysis(
+                            latestEmails
+                        );
+                    }, 300);
+                }
 
 
                 await saveMailnovaEmailCache(

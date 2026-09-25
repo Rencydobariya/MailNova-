@@ -9,6 +9,7 @@ from backend.app.api.summary import router as summary_router
 from backend.app.api.gmail_routes import router as gmail_router
 from backend.app.api.gmail import router as gmail_emails_router
 from backend.app.api.reply1 import router as reply_router
+from backend.app.api.ai_intelligence import router as ai_intelligence_router
 
 load_dotenv()
 app = FastAPI(title="MailNova AI Backend")
@@ -24,6 +25,7 @@ app.include_router(summary_router)
 app.include_router(gmail_router)
 app.include_router(gmail_emails_router)
 app.include_router(reply_router)
+app.include_router(ai_intelligence_router)
 
 
 

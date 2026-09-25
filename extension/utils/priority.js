@@ -662,6 +662,29 @@ function calculatePriority(email) {
     }
 
 
+    /* =====================================
+       AI PRIORITY BLEND
+
+       When AI has analyzed this email, its
+       contextual priority carries more weight
+       while the existing deterministic score
+       remains a safety/fallback signal.
+    ===================================== */
+
+    const aiPriorityScore =
+        Number(email?.aiPriorityScore);
+
+    if (Number.isFinite(aiPriorityScore)) {
+        return Math.max(
+            0,
+            Math.round(
+                (score * 0.35) +
+                (aiPriorityScore * 0.65)
+            )
+        );
+    }
+
+
     return Math.max(
         0,
         Math.round(score)
