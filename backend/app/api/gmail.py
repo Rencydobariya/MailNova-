@@ -6,6 +6,7 @@ from html.parser import HTMLParser
 import base64
 
 from backend.app.api.gmail_auth import get_gmail_credentials
+from backend.app.ai.spam_detector import is_probable_spam
 
 
 router = APIRouter()
@@ -419,6 +420,23 @@ def parse_gmail_message(message):
             "IMPORTANT" in message.get(
                 "labelIds",
                 []
+            ),
+
+        "spam":
+            is_probable_spam(
+                sender=sender,
+                subject=subject,
+                snippet=message.get(
+                    "snippet",
+                    ""
+                ),
+                body=body,
+                gmail_spam=(
+                    "SPAM" in message.get(
+                        "labelIds",
+                        []
+                    )
+                )
             )
 
     }
@@ -657,9 +675,16 @@ def get_gmail_emails(
         )
 
 
+    spam_count = sum(
+        1
+        for email in emails
+        if email.get("spam") is True
+    )
+
     print(
         f"MailNova: Gmail page loaded: "
         f"{len(emails)} emails | "
+        f"Spam detected: {spam_count} | "
         f"Next page: "
         f"{bool(results.get('nextPageToken'))}"
     )

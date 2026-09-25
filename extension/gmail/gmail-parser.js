@@ -119,6 +119,11 @@ async function getInboxEmails() {
                             email.important ||
                             false,
 
+                        spam:
+                            Boolean(
+                                email.spam
+                            ),
+
                         category:
                             category
 
@@ -128,9 +133,17 @@ async function getInboxEmails() {
             );
 
 
+        const spamCount =
+            emails.filter(
+                email =>
+                    Boolean(email.spam)
+            ).length;
+
         console.log(
             "MailNova: Gmail API emails loaded:",
-            emails.length
+            emails.length,
+            "| Spam detected:",
+            spamCount
         );
 
 

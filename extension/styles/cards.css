@@ -2096,3 +2096,50 @@ rect {
     stroke: currentColor !important;
 
 }
+/* =========================================================
+   SPAM BADGE
+   Lightweight visual indicator; no extra DOM work beyond
+   cards that are actually detected as spam.
+========================================================= */
+
+.mailnova-spam-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 20px;
+
+    padding: 2px 7px;
+
+    border-radius: 6px;
+
+    background: #fff1f2;
+
+    color: #be123c;
+
+    border: 1px solid #fecdd3;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.45px;
+
+    line-height: 1;
+
+    box-sizing: border-box;
+
+    flex: none;
+}
+
+#mailnova-workspace.mailnova-theme-dark .mailnova-spam-badge {
+
+    background: rgba(190, 18, 60, 0.16);
+
+    color: #fda4af;
+
+    border-color: rgba(251, 113, 133, 0.35);
+}

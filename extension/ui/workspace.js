@@ -1913,45 +1913,62 @@ function applyAllMailnovaFilters() {
         searchQuery
     ) {
 
-        filtered =
-            filtered.filter(
-                (email) => {
+        if (
+            typeof searchMailnovaEmails ===
+            "function"
+        ) {
 
-                    const sender =
-                        (
-                            email.sender ||
-                            ""
-                        ).toLowerCase();
+            filtered =
+                searchMailnovaEmails(
+                    filtered,
+                    searchQuery
+                );
+
+        }
+
+        else {
+
+            filtered =
+                filtered.filter(
+                    (email) => {
+
+                        const sender =
+                            (
+                                email.sender ||
+                                ""
+                            ).toLowerCase();
 
 
-                    const subject =
-                        (
-                            email.subject ||
-                            ""
-                        ).toLowerCase();
+                        const subject =
+                            (
+                                email.subject ||
+                                ""
+                            ).toLowerCase();
 
 
-                    const snippet =
-                        (
-                            email.snippet ||
-                            ""
-                        ).toLowerCase();
+                        const snippet =
+                            (
+                                email.snippet ||
+                                ""
+                            ).toLowerCase();
 
 
-                    return (
-                        sender.includes(
-                            searchQuery
-                        ) ||
-                        subject.includes(
-                            searchQuery
-                        ) ||
-                        snippet.includes(
-                            searchQuery
-                        )
-                    );
+                        return (
+                            sender.includes(
+                                searchQuery
+                            ) ||
+                            subject.includes(
+                                searchQuery
+                            ) ||
+                            snippet.includes(
+                                searchQuery
+                            )
+                        );
 
-                }
-            );
+                    }
+                );
+
+        }
 
     }
 

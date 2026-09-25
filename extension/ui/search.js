@@ -111,6 +111,447 @@ function decreaseWidth() {
 
 
 /* =========================================
+   FAST ADVANCED SEARCH ENGINE
+
+   Supported operators:
+   from:       sender contains value
+   subject:    subject contains value
+   is:unread
+   is:read
+   is:important
+   is:starred
+   is:spam
+   category:work
+   after:YYYY-MM-DD
+   before:YYYY-MM-DD
+
+   Quoted phrases are supported:
+   "meeting tomorrow"
+
+   The search is local-only. No Gmail/API request is made.
+========================================= */
+
+const mailnovaSearchIndexCache =
+    new WeakMap();
+
+
+function tokenizeMailnovaSearchQuery(
+    query
+) {
+
+    return String(query || "")
+        .match(/"[^"]*"|[^\s]+/g)
+        ?.map(
+            token =>
+                token.length >= 2 &&
+                token.startsWith('"') &&
+                token.endsWith('"')
+                    ? token.slice(1, -1)
+                    : token
+        ) || [];
+
+}
+
+
+function normalizeMailnovaSearchValue(
+    value
+) {
+
+    return String(value || "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+function getMailnovaSearchIndex(
+    email
+) {
+
+    if (!email || typeof email !== "object") {
+
+        return {
+            all: "",
+            sender: "",
+            subject: "",
+            snippet: "",
+            category: "",
+            date: ""
+        };
+
+    }
+
+
+    const cached =
+        mailnovaSearchIndexCache.get(
+            email
+        );
+
+
+    if (cached) {
+
+        return cached;
+
+    }
+
+
+    const index = {
+
+        sender:
+            normalizeMailnovaSearchValue(
+                email.sender
+            ),
+
+        subject:
+            normalizeMailnovaSearchValue(
+                email.subject
+            ),
+
+        snippet:
+            normalizeMailnovaSearchValue(
+                email.snippet
+            ),
+
+        category:
+            normalizeMailnovaSearchValue(
+                email.category
+            ),
+
+        date:
+            normalizeMailnovaSearchValue(
+                email.date
+            )
+
+    };
+
+
+    index.all = [
+        index.sender,
+        index.subject,
+        index.snippet,
+        index.category
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+
+    mailnovaSearchIndexCache.set(
+        email,
+        index
+    );
+
+
+    return index;
+
+}
+
+
+function parseMailnovaAdvancedSearch(
+    query
+) {
+
+    const tokens =
+        tokenizeMailnovaSearchQuery(
+            query
+        );
+
+
+    const parsed = {
+        free: [],
+        from: [],
+        subject: [],
+        category: [],
+        after: [],
+        before: [],
+        unread: false,
+        read: false,
+        important: false,
+        starred: false,
+        spam: false
+    };
+
+
+    tokens.forEach(
+        token => {
+
+            const value =
+                normalizeMailnovaSearchValue(
+                    token
+                );
+
+            if (!value) return;
+
+
+            const colonIndex =
+                value.indexOf(":");
+
+
+            if (colonIndex > 0) {
+
+                const operator =
+                    value.slice(
+                        0,
+                        colonIndex
+                    );
+
+                const operand =
+                    value.slice(
+                        colonIndex + 1
+                    );
+
+
+                if (!operand) {
+                    return;
+                }
+
+
+                if (operator === "from") {
+                    parsed.from.push(operand);
+                    return;
+                }
+
+
+                if (operator === "subject") {
+                    parsed.subject.push(operand);
+                    return;
+                }
+
+
+                if (operator === "category") {
+                    parsed.category.push(operand);
+                    return;
+                }
+
+
+                if (operator === "after") {
+                    parsed.after.push(operand);
+                    return;
+                }
+
+
+                if (operator === "before") {
+                    parsed.before.push(operand);
+                    return;
+                }
+
+
+                if (operator === "is") {
+
+                    if (operand === "unread") {
+                        parsed.unread = true;
+                        return;
+                    }
+
+                    if (operand === "read") {
+                        parsed.read = true;
+                        return;
+                    }
+
+                    if (operand === "important") {
+                        parsed.important = true;
+                        return;
+                    }
+
+                    if (operand === "starred") {
+                        parsed.starred = true;
+                        return;
+                    }
+
+                    if (operand === "spam") {
+                        parsed.spam = true;
+                        return;
+                    }
+
+                }
+
+            }
+
+
+            parsed.free.push(value);
+
+        }
+    );
+
+
+    return parsed;
+
+}
+
+
+function mailnovaSearchEmailMatches(
+    email,
+    parsed
+) {
+
+    const index =
+        getMailnovaSearchIndex(
+            email
+        );
+
+
+    if (
+        parsed.unread &&
+        !Boolean(email.unread)
+    ) {
+        return false;
+    }
+
+
+    if (
+        parsed.read &&
+        Boolean(email.unread)
+    ) {
+        return false;
+    }
+
+
+    if (
+        parsed.important &&
+        !Boolean(email.important)
+    ) {
+        return false;
+    }
+
+
+    if (
+        parsed.starred &&
+        !Boolean(email.starred)
+    ) {
+        return false;
+    }
+
+
+    if (
+        parsed.spam &&
+        !Boolean(email.spam)
+    ) {
+        return false;
+    }
+
+
+    for (const value of parsed.from) {
+        if (!index.sender.includes(value)) {
+            return false;
+        }
+    }
+
+
+    for (const value of parsed.subject) {
+        if (!index.subject.includes(value)) {
+            return false;
+        }
+    }
+
+
+    for (const value of parsed.category) {
+        if (!index.category.includes(value)) {
+            return false;
+        }
+    }
+
+
+    if (parsed.after.length || parsed.before.length) {
+
+        const timestamp =
+            email.date
+                ? Date.parse(email.date)
+                : NaN;
+
+
+        if (Number.isNaN(timestamp)) {
+            return false;
+        }
+
+
+        for (const value of parsed.after) {
+
+            const boundary =
+                Date.parse(
+                    `${value}T00:00:00`
+                );
+
+            if (
+                Number.isNaN(boundary) ||
+                timestamp <= boundary
+            ) {
+                return false;
+            }
+
+        }
+
+
+        for (const value of parsed.before) {
+
+            const boundary =
+                Date.parse(
+                    `${value}T00:00:00`
+                );
+
+            if (
+                Number.isNaN(boundary) ||
+                timestamp >= boundary
+            ) {
+                return false;
+            }
+
+        }
+
+    }
+
+
+    for (const value of parsed.free) {
+
+        if (!index.all.includes(value)) {
+            return false;
+        }
+
+    }
+
+
+    return true;
+
+}
+
+
+function searchMailnovaEmails(
+    emails,
+    query
+) {
+
+    if (!Array.isArray(emails)) {
+        return [];
+    }
+
+
+    const normalizedQuery =
+        normalizeMailnovaSearchValue(
+            query
+        );
+
+
+    if (!normalizedQuery) {
+        return emails;
+    }
+
+
+    const parsed =
+        parseMailnovaAdvancedSearch(
+            normalizedQuery
+        );
+
+
+    return emails.filter(
+        email =>
+            mailnovaSearchEmailMatches(
+                email,
+                parsed
+            )
+    );
+
+}
+
+
+/* =========================================
    EMAIL SEARCH
 ========================================= */
 
@@ -136,12 +577,26 @@ function setupEmailSearch() {
         "input",
         () => {
 
+            clearTimeout(
+                window.__mailnovaSearchTimer
+            );
+
+
             mailnovaFilterState.search =
                 input.value
                     .trim()
                     .toLowerCase();
 
-            applyAllMailnovaFilters();
+
+            window.__mailnovaSearchTimer =
+                setTimeout(
+                    () => {
+
+                        applyAllMailnovaFilters();
+
+                    },
+                    140
+                );
 
         }
     );
@@ -154,6 +609,11 @@ function setupEmailSearch() {
             if (e.key === "Enter") {
 
                 e.preventDefault();
+
+                clearTimeout(
+                    window.__mailnovaSearchTimer
+                );
+
 
                 mailnovaFilterState.search =
                     input.value
