@@ -1,5 +1,5 @@
 const MAILNOVA_API =
-    "http://127.0.0.1:8000";
+    "https://mailnova-9tzz.onrender.com";
 
 const MAILNOVA_PAGE_SIZE =
     100;
