@@ -27,10 +27,10 @@ if (
 
             <img
                 src="${chrome.runtime.getURL(
-                    "assets/icons/logo_1.png"
+                    "assets/icons/mailnova-mascot.png"
                 )}"
                 class="mailnova-logo"
-                alt="MailNova"
+                alt="MailNova email assistant"
                 draggable="false"
             >
 
@@ -302,6 +302,12 @@ setInterval(
     let animationFrame =
         null;
 
+    let activePointerId =
+        null;
+
+    let previousUserSelect =
+        "";
+
 
     /* =========================================
        PREVENT IMAGE DRAG
@@ -334,7 +340,7 @@ setInterval(
     ========================================= */
 
     button.addEventListener(
-        "mousedown",
+        "pointerdown",
         function (event) {
 
             /*
@@ -342,7 +348,9 @@ setInterval(
              */
 
             if (
-                event.button !== 0
+                (event.pointerType === "mouse" &&
+                    event.button !== 0) ||
+                isDragging
             ) {
 
                 return;
@@ -393,6 +401,9 @@ setInterval(
             dragStarted =
                 false;
 
+            activePointerId =
+                event.pointerId;
+
 
             /*
              * Convert position to left/top.
@@ -410,6 +421,13 @@ setInterval(
             button.style.bottom =
                 "auto";
 
+            button.style.transform =
+                "none";
+
+            button.classList.add(
+                "is-dragging"
+            );
+
 
             /*
              * No transition during drag.
@@ -423,8 +441,21 @@ setInterval(
              * Prevent text selection.
              */
 
+            previousUserSelect =
+                document.body.style.userSelect;
+
             document.body.style.userSelect =
                 "none";
+
+
+            if (
+                typeof button.setPointerCapture ===
+                    "function"
+            ) {
+                button.setPointerCapture(
+                    event.pointerId
+                );
+            }
 
 
             event.preventDefault();
@@ -440,12 +471,13 @@ setInterval(
        DRAG MOVE
     ========================================= */
 
-    document.addEventListener(
-        "mousemove",
+    button.addEventListener(
+        "pointermove",
         function (event) {
 
             if (
-                !isDragging
+                !isDragging ||
+                event.pointerId !== activePointerId
             ) {
 
                 return;
@@ -465,23 +497,11 @@ setInterval(
              * tiny movement.
              */
 
-            const distanceX =
-                Math.abs(
-                    currentX -
-                    startX
-                );
-
-
-            const distanceY =
-                Math.abs(
-                    currentY -
-                    startY
-                );
-
-
             if (
-                distanceX > 2 ||
-                distanceY > 2
+                Math.hypot(
+                    currentX - startX,
+                    currentY - startY
+                ) > 4
             ) {
 
                 dragStarted =
@@ -490,6 +510,11 @@ setInterval(
                 button.dataset.dragging =
                     "true";
 
+            }
+
+
+            if (!dragStarted) {
+                return;
             }
 
 
@@ -647,16 +672,38 @@ setInterval(
        END DRAG
     ========================================= */
 
-    document.addEventListener(
-        "mouseup",
-        function () {
+    function finishFloatingDrag(event) {
 
             if (
-                !isDragging
+                !isDragging ||
+                (
+                    event &&
+                    event.pointerId !== undefined &&
+                    event.pointerId !== activePointerId
+                )
             ) {
 
                 return;
 
+            }
+
+
+            if (
+                event &&
+                typeof event.clientX === "number" &&
+                typeof event.clientY === "number"
+            ) {
+                currentX = event.clientX;
+                currentY = event.clientY;
+
+                if (
+                    Math.hypot(
+                        currentX - startX,
+                        currentY - startY
+                    ) > 4
+                ) {
+                    dragStarted = true;
+                }
             }
 
 
@@ -694,13 +741,16 @@ setInterval(
             isDragging =
                 false;
 
+            activePointerId =
+                null;
+
 
             /*
              * Restore normal page behavior.
              */
 
             document.body.style.userSelect =
-                "";
+                previousUserSelect;
 
 
             /*
@@ -710,10 +760,17 @@ setInterval(
             button.style.transition =
                 "";
 
+            button.style.transform =
+                "";
+
+            button.classList.remove(
+                "is-dragging"
+            );
+
 
             /*
-             * Save position ONLY after
-             * dragging has finished.
+             * Suppress the click event that follows
+             * a completed drag.
              */
 
             if (
@@ -723,7 +780,7 @@ setInterval(
 
                 /*
                  * Prevent the click event that
-                 * follows mouseup from opening
+                 * follows pointerup from opening
                  * MailNova.
                  */
 
@@ -738,7 +795,7 @@ setInterval(
                             "false";
 
                     },
-                    100
+                    180
                 );
 
             }
@@ -750,6 +807,26 @@ setInterval(
             }
 
         }
+
+
+    button.addEventListener(
+        "pointerup",
+        finishFloatingDrag
+    );
+
+    button.addEventListener(
+        "pointercancel",
+        finishFloatingDrag
+    );
+
+    button.addEventListener(
+        "lostpointercapture",
+        finishFloatingDrag
+    );
+
+    window.addEventListener(
+        "blur",
+        finishFloatingDrag
     );
 
 

@@ -95,8 +95,21 @@ function renderHeader() {
                 id="mn-settings"
                 title="Settings"
                 aria-label="MailNova Settings"
+                type="button"
             >
-                ⚙
+                <svg
+                    class="mn-settings-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M9.7 3.7h4.6l.6 2.1c.5.2 1 .4 1.4.8l2.1-.6 2.3 4-1.6 1.5c.1.5.1 1.1 0 1.6l1.6 1.5-2.3 4-2.1-.6c-.4.3-.9.6-1.4.8l-.6 2.1H9.7l-.6-2.1c-.5-.2-1-.4-1.4-.8l-2.1.6-2.3-4 1.6-1.5a6.5 6.5 0 0 1 0-1.6L3.3 10l2.3-4 2.1.6c.4-.3.9-.6 1.4-.8l.6-2.1Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
             </button>
 
 

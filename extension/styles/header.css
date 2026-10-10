@@ -976,6 +976,20 @@
     stroke-linejoin: round;
 }
 
+#mn-settings .mn-settings-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    flex-shrink: 0;
+}
+
+#mn-settings {
+    width: 36px;
+    height: 36px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
 #mailnova-workspace.mailnova-theme-dark #mn-refresh,
 #mailnova-workspace.mailnova-theme-dark #mn-theme-toggle {
     background: transparent !important;
