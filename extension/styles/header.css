@@ -894,3 +894,110 @@
         translateY(-1px);
 
 }
+
+
+/* Neutral Refresh and quick theme controls. */
+#mn-refresh,
+#mn-refresh:hover,
+#mn-refresh:active,
+#mn-refresh:focus,
+#mn-refresh:focus-visible,
+#mn-refresh.mailnova-refreshing,
+#mn-refresh.mailnova-refreshing:hover,
+#mn-refresh.mailnova-refreshing:active {
+    border: 1px solid transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+#mn-refresh {
+    background: transparent !important;
+    color: #4b5563 !important;
+}
+
+#mn-refresh:hover {
+    background: rgba(31, 41, 55, 0.07) !important;
+    color: #1f2937 !important;
+    transform: translateY(-1px);
+}
+
+#mn-refresh:active {
+    background: rgba(31, 41, 55, 0.13) !important;
+    color: #111827 !important;
+    transform: scale(0.94);
+}
+
+#mn-refresh.mailnova-refreshing {
+    background: rgba(31, 41, 55, 0.06) !important;
+    color: #374151 !important;
+    cursor: wait !important;
+}
+
+#mn-refresh:focus-visible,
+#mn-theme-toggle:focus-visible {
+    outline: 2px solid rgba(71, 85, 105, 0.28) !important;
+    outline-offset: 2px !important;
+}
+
+#mn-theme-toggle,
+#mn-theme-toggle:hover,
+#mn-theme-toggle:active,
+#mn-theme-toggle:focus {
+    border: 1px solid transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+#mn-theme-toggle {
+    background: transparent !important;
+    color: #4b5563 !important;
+}
+
+#mn-theme-toggle:hover {
+    background: rgba(31, 41, 55, 0.07) !important;
+    color: #1f2937 !important;
+    transform: translateY(-1px);
+}
+
+#mn-theme-toggle:active {
+    background: rgba(31, 41, 55, 0.13) !important;
+    color: #111827 !important;
+    transform: scale(0.94);
+}
+
+.mn-theme-toggle-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mn-refresh,
+#mailnova-workspace.mailnova-theme-dark #mn-theme-toggle {
+    background: transparent !important;
+    color: #cbd5e1 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mn-refresh:hover,
+#mailnova-workspace.mailnova-theme-dark #mn-theme-toggle:hover {
+    background: rgba(226, 232, 240, 0.09) !important;
+    color: #f1f5f9 !important;
+    border-color: transparent !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mn-refresh:active,
+#mailnova-workspace.mailnova-theme-dark #mn-theme-toggle:active {
+    background: rgba(226, 232, 240, 0.15) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mn-refresh.mailnova-refreshing {
+    background: rgba(226, 232, 240, 0.07) !important;
+    color: #e2e8f0 !important;
+    border-color: transparent !important;
+}

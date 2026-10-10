@@ -3875,3 +3875,9 @@ body:has(#mailnova-workspace.mailnova-theme-dark)
     color: #c0c8d2 !important;
     border-color: #3b4652 !important;
 }
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="balanced"]
+.mn-loading-icon svg {
+    stroke-width: 2.55 !important;
+}

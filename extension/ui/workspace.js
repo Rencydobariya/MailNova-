@@ -315,6 +315,12 @@ async function createWorkspace() {
         );
 
 
+    const themeToggleButton =
+        document.getElementById(
+            "mn-theme-toggle"
+        );
+
+
     /* =====================================
        REFRESH
     ===================================== */
@@ -416,6 +422,50 @@ if (refreshButton) {
                     );
 
                 }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================
+       QUICK THEME TOGGLE
+    ===================================== */
+
+    if (themeToggleButton) {
+
+        themeToggleButton.addEventListener(
+            "click",
+            async (event) => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                if (
+                    typeof loadMailnovaSettings !==
+                        "function" ||
+                    typeof updateMailnovaSetting !==
+                        "function"
+                ) {
+                    return;
+                }
+
+
+                await loadMailnovaSettings();
+
+
+                const isDark =
+                    workspace?.classList.contains(
+                        "mailnova-theme-dark"
+                    );
+
+
+                await updateMailnovaSetting(
+                    "theme",
+                    isDark ? "light" : "dark"
+                );
 
             }
         );

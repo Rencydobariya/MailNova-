@@ -825,6 +825,58 @@ function getMailnovaEffectiveTheme() {
 }
 
 
+function updateMailnovaThemeToggle(effectiveTheme) {
+
+    const button =
+        document.getElementById(
+            "mn-theme-toggle"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    const isDark =
+        effectiveTheme === "dark";
+
+
+    const targetTheme =
+        isDark ? "light" : "dark";
+
+
+    button.innerHTML = isDark
+        ? `
+            <svg class="mn-theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3.5"></circle>
+                <path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.72 5.28l-1.42 1.42M6.7 17.3l-1.42 1.42M18.72 18.72 17.3 17.3M6.7 6.7 5.28 5.28"></path>
+            </svg>
+        `
+        : `
+            <svg class="mn-theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.7 8.7 0 1 0 20.2 15.1Z"></path>
+            </svg>
+        `;
+
+
+    const label =
+        `Switch to ${targetTheme} theme`;
+
+
+    button.setAttribute(
+        "title",
+        label
+    );
+
+    button.setAttribute(
+        "aria-label",
+        label
+    );
+
+}
+
+
 /* =========================================================
    THEME
 ========================================================= */
@@ -859,6 +911,11 @@ function applyMailnovaTheme(
                     : "light"
             )
             : theme;
+
+
+    updateMailnovaThemeToggle(
+        effectiveTheme
+    );
 
 
     const newThemeClass =
