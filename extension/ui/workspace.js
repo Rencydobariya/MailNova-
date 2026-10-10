@@ -4257,6 +4257,27 @@ function minimizeWorkspace() {
 
 
 /* =========================================
+   TOGGLE WORKSPACE FROM FLOATING BUTTON
+========================================= */
+
+function toggleWorkspace() {
+
+    if (!workspace) {
+
+        return;
+
+    }
+
+
+    workspace.style.display =
+        workspace.style.display === "none"
+            ? "flex"
+            : "none";
+
+}
+
+
+/* =========================================
    RESTORE
 ========================================= */
 
@@ -4269,22 +4290,8 @@ function restoreWorkspace() {
     }
 
 
-    if (
-        workspace.style.display ===
-        "none"
-    ) {
-
-        workspace.style.display =
-            "flex";
-
-    }
-
-    else {
-
-        workspace.style.display =
-            "none";
-
-    }
+    workspace.style.display =
+        "flex";
 
 }
 

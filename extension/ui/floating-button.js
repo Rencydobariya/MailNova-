@@ -264,6 +264,9 @@ setInterval(
     let workspaceOpening =
         false;
 
+    let queuedWorkspaceToggle =
+        false;
+
 
     /* =========================================
        DRAG STATE
@@ -870,8 +873,21 @@ setInterval(
                 workspaceOpening
             ) {
 
+                if (workspace) {
+
+                    toggleWorkspace();
+
+                }
+
+                else {
+
+                    queuedWorkspaceToggle =
+                        !queuedWorkspaceToggle;
+
+                }
+
                 console.log(
-                    "MailNova: Workspace is already opening..."
+                    "MailNova: Workspace toggle queued while opening."
                 );
 
                 return;
@@ -900,6 +916,15 @@ setInterval(
 
                     await createWorkspace();
 
+                    if (
+                        queuedWorkspaceToggle &&
+                        workspace
+                    ) {
+
+                        toggleWorkspace();
+
+                    }
+
                 }
 
                 catch (error) {
@@ -916,6 +941,9 @@ setInterval(
                     workspaceOpening =
                         false;
 
+                    queuedWorkspaceToggle =
+                        false;
+
                 }
 
             }
@@ -927,14 +955,7 @@ setInterval(
 
             else {
 
-                if (
-                    typeof restoreWorkspace ===
-                    "function"
-                ) {
-
-                    restoreWorkspace();
-
-                }
+                toggleWorkspace();
 
             }
 
