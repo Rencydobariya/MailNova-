@@ -10,7 +10,7 @@
             border-radius:50%;
             
             box-sizing:border-box;
-            background:linear-gradient(145deg,#e5f0ff,#c5ddff);
+            background:linear-gradient(145deg,#f1f7ff,#e3efff);
             display:flex;
             justify-content:center;
             align-items:center;
@@ -20,16 +20,16 @@
 
             color:white;
             box-shadow:
-            0 8px 24px rgba(37,99,235,.32);
+            0 8px 24px rgba(37,99,235,.24);
 
-            transition:box-shadow .18s ease, filter .18s ease;
+            transition:box-shadow .18s ease;
 
             user-select:none;
             -webkit-user-select:none;
             touch-action:none;
             overflow: visible;
             padding: 0;
-            border:1px solid rgba(59,130,246,.3);
+            border:1px solid rgba(59,130,246,.22);
             cursor:grab;
 }
 .mailnova-logo-wrapper {
@@ -61,6 +61,8 @@
 
     pointer-events: none;
     flex-shrink: 0;
+    filter: none !important;
+    opacity: 1 !important;
 }
 
 #mailnova-ai-button:hover
@@ -68,7 +70,6 @@
     box-shadow:
     0 10px 28px rgba(37,99,235,.36);
 
-    filter:brightness(1.015);
 }
 
 #mailnova-ai-button.is-dragging {
@@ -80,8 +81,6 @@
 }
 
 body:has(#mailnova-workspace.mailnova-theme-dark) #mailnova-ai-button {
-    background:linear-gradient(145deg,#101a2e,#1b3558);
-    border-color:rgba(147,197,253,.26);
     box-shadow:0 8px 24px rgba(4,12,28,.5);
 }
 
