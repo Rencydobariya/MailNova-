@@ -5,9 +5,9 @@
   "version": "1.0",
 
   "icons": {
-    "16": "assets/icons/mailnova-mascot-16.png",
-    "48": "assets/icons/mailnova-mascot-48.png",
-    "128": "assets/icons/mailnova-mascot-128.png"
+    "16": "assets/icons/mailnova-mascot-spark-16.png",
+    "48": "assets/icons/mailnova-mascot-spark-48.png",
+    "128": "assets/icons/mailnova-mascot-spark-128.png"
   },
 
   "permissions": [
@@ -80,7 +80,8 @@
   {
     "resources": [
       "assets/icons/logo_1.png",
-      "assets/icons/mailnova-mascot.png"
+      "assets/icons/mailnova-mascot.png",
+      "assets/icons/mailnova-mascot-spark.png"
       
     ],
     "matches": [

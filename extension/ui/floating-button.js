@@ -27,7 +27,7 @@ if (
 
             <img
                 src="${chrome.runtime.getURL(
-                    "assets/icons/mailnova-mascot.png"
+                    "assets/icons/mailnova-mascot-spark.png"
                 )}"
                 class="mailnova-logo"
                 alt="MailNova email assistant"
