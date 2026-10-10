@@ -16,7 +16,9 @@ const MAILNOVA_AI_CACHE_KEY =
     "mailnova_ai_intelligence_cache";
 
 const MAILNOVA_AI_BATCH_SIZE = 20;
-const MAILNOVA_AI_MAX_PER_RUN = 100;
+// Keep automatic AI enrichment to one small batch per run.
+// Additional emails still use the local fallback until explicitly requested.
+const MAILNOVA_AI_MAX_PER_RUN = 20;
 
 let mailnovaAIAnalysisRunning = false;
 

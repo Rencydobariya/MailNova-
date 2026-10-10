@@ -1183,16 +1183,17 @@ function createLoadingOption(
             data-loading="${value}"
         >
 
-            <span class="mn-loading-icon">
-                ${icon}
-            </span>
-
-            <span class="mn-loading-text">
+            <span class="mn-loading-option-heading">
+                <span class="mn-loading-icon">
+                    ${icon}
+                </span>
 
                 <strong>
                     ${title}
                 </strong>
+            </span>
 
+            <span class="mn-loading-text">
                 <small>
                     ${description}
                 </small>
@@ -1379,14 +1380,14 @@ function createMailnovaSettingsModal() {
                             id="mn-settings-section-title"
                             class="mn-main-title"
                         >
-                            Appearance
+                            Look & Feel
                         </div>
 
                         <div
                             id="mn-settings-section-description"
                             class="mn-main-description"
                         >
-                            Choose how MailNova looks and feels.
+                            Personalize how MailNova looks and feels.
                         </div>
 
                     </div>
@@ -1477,19 +1478,6 @@ function createMailnovaSettingsModal() {
                     data-content="email"
                 >
 
-                    <div class="mn-content-heading">
-
-                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.email}</span>
-
-                        Email Behavior
-
-                    </div>
-
-                    <div class="mn-content-subheading">
-                        Control how MailNova handles your inbox.
-                    </div>
-
-
                     ${createSettingRow(
                         "autoOpenWorkspace",
                         MN_SETTINGS_ICONS.autoOpen,
@@ -1573,19 +1561,6 @@ function createMailnovaSettingsModal() {
                     data-content="ai"
                 >
 
-                    <div class="mn-content-heading">
-
-                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.ai}</span>
-
-                        AI Features
-
-                    </div>
-
-                    <div class="mn-content-subheading">
-                        Manage MailNova AI features.
-                    </div>
-
-
                     ${createSettingRow(
                         "aiSummary",
                         MN_SETTINGS_ICONS.aiSummary,
@@ -1617,40 +1592,27 @@ function createMailnovaSettingsModal() {
                     data-content="loading"
                 >
 
-                    <div class="mn-content-heading">
-
-                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.loading}</span>
-
-                        Loading Mode
-
-                    </div>
-
-                    <div class="mn-content-subheading">
-                        Choose how MailNova loads your inbox.
-                    </div>
-
-
                     <div class="mn-loading-grid">
 
                         ${createLoadingOption(
                             "fast",
                             MN_SETTINGS_ICONS.fast,
                             "Fast",
-                            "First emails immediately."
+                            "Newest 25 emails first."
                         )}
 
                         ${createLoadingOption(
                             "balanced",
                             MN_SETTINGS_ICONS.balanced,
                             "Balanced",
-                            "Smooth background loading."
+                            "Up to 100 recent emails."
                         )}
 
                         ${createLoadingOption(
                             "complete",
                             MN_SETTINGS_ICONS.complete,
                             "Complete",
-                            "Load all Gmail pages."
+                            "All available Gmail pages."
                         )}
 
                     </div>
@@ -1670,19 +1632,6 @@ function createMailnovaSettingsModal() {
                     class="mn-settings-section-content"
                     data-content="notifications"
                 >
-
-                    <div class="mn-content-heading">
-
-                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.notifications}</span>
-
-                        Notification Settings
-
-                    </div>
-
-                    <div class="mn-content-subheading">
-                        Control MailNova notifications.
-                    </div>
-
 
                     ${createSettingRow(
                         "importantNotifications",
@@ -2199,28 +2148,28 @@ function switchSettingsSection(
     const titles = {
 
         appearance: [
-            "Appearance",
-            "Choose how MailNova looks and feels."
+            "Look & Feel",
+            "Personalize how MailNova looks and feels."
         ],
 
         email: [
-            "Email Preferences",
-            "Control how MailNova handles your inbox."
+            "Email Behavior",
+            "Choose how MailNova handles your inbox."
         ],
 
         ai: [
-            "AI Intelligence",
-            "Manage MailNova AI features."
+            "AI Features",
+            "Choose the AI tools available for your emails."
         ],
 
         loading: [
-            "Email Loading",
-            "Choose how MailNova loads your inbox."
+            "Loading Mode",
+            "Choose how quickly emails load into MailNova."
         ],
 
         notifications: [
-            "Notifications",
-            "Control MailNova notifications."
+            "Notification Settings",
+            "Choose which alerts and unread badges MailNova shows."
         ]
 
     };
@@ -2261,6 +2210,9 @@ function switchSettingsSection(
 
         description.textContent =
             data[1];
+
+        description.hidden =
+            !data[1];
 
     }
 
@@ -2428,13 +2380,13 @@ function updateLoadingHint(
     const messages = {
 
         fast:
-            "First emails appear immediately. Older emails continue loading in the background.",
+            "Shows the newest 25 emails first. Choose Balanced or Complete to load older messages.",
 
         balanced:
-            "Emails load smoothly while keeping Gmail responsive.",
+            "Loads up to 100 recent emails.",
 
         complete:
-            "MailNova continues loading all available Gmail pages."
+            "Loads all available Gmail pages; this may take longer."
 
     };
 

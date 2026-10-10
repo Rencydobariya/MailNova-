@@ -16,8 +16,20 @@ function renderSearch() {
                 placeholder="Search emails, sender, subject or ask MailNova..."
             >
 
-            <button id="mailnova-voice-btn">
-                🎤
+            <button
+                id="mailnova-voice-btn"
+                type="button"
+                aria-label="Search by voice; Chrome may process audio online"
+                aria-pressed="false"
+                title="Voice search; Chrome may process audio online"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <rect x="9" y="3" width="6" height="12" rx="3"></rect>
+                    <path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"></path>
+                </svg>
             </button>
 
         </div>
@@ -555,6 +567,252 @@ function searchMailnovaEmails(
    EMAIL SEARCH
 ========================================= */
 
+let mailnovaVoiceRecognition = null;
+
+
+function setMailnovaVoiceSearchMessage(
+    input,
+    button,
+    message,
+    duration = 3500
+) {
+
+    clearTimeout(
+        window.__mailnovaVoiceMessageTimer
+    );
+
+    input.placeholder = message;
+    button.title = message;
+
+    window.__mailnovaVoiceMessageTimer =
+        setTimeout(
+            () => {
+
+                input.placeholder =
+                    "Search emails, sender, subject or ask MailNova...";
+
+                button.title =
+                    "Voice search; Chrome may process audio online";
+
+                window.__mailnovaVoiceMessageTimer =
+                    null;
+
+            },
+            duration
+        );
+
+}
+
+
+function setupMailnovaVoiceSearch(
+    input,
+    button
+) {
+
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            if (mailnovaVoiceRecognition) {
+
+                mailnovaVoiceRecognition.stop();
+                return;
+
+            }
+
+            const SpeechRecognitionAPI =
+                window.SpeechRecognition ||
+                window.webkitSpeechRecognition ||
+                globalThis.SpeechRecognition ||
+                globalThis.webkitSpeechRecognition;
+
+
+            if (!SpeechRecognitionAPI) {
+
+                setMailnovaVoiceSearchMessage(
+                    input,
+                    button,
+                    "Voice search is not supported in this browser."
+                );
+
+                return;
+
+            }
+
+
+            const recognition =
+                new SpeechRecognitionAPI();
+
+            mailnovaVoiceRecognition =
+                recognition;
+
+            recognition.lang =
+                navigator.language || "en-US";
+
+            recognition.continuous =
+                false;
+
+            recognition.interimResults =
+                true;
+
+            recognition.maxAlternatives =
+                1;
+
+
+            recognition.onstart =
+                () => {
+
+                    clearTimeout(
+                        window.__mailnovaVoiceMessageTimer
+                    );
+
+                    window.__mailnovaVoiceMessageTimer =
+                        null;
+
+                    button.classList.add(
+                        "is-listening"
+                    );
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        "true"
+                    );
+
+                    button.title =
+                        "Listening… click to stop";
+
+                    input.placeholder =
+                        "Listening… speak your search";
+
+                };
+
+
+            recognition.onresult =
+                event => {
+
+                    let transcript = "";
+
+                    for (
+                        let index = 0;
+                        index < event.results.length;
+                        index += 1
+                    ) {
+
+                        transcript +=
+                            event.results[index][0].transcript;
+
+                    }
+
+                    input.value =
+                        transcript.trim();
+
+                    input.dispatchEvent(
+                        new Event(
+                            "input",
+                            { bubbles: true }
+                        )
+                    );
+
+                };
+
+
+            recognition.onerror =
+                event => {
+
+                    const messages = {
+                        "not-allowed": "Allow microphone access in Chrome to use voice search.",
+                        "service-not-allowed": "Chrome blocked the voice search service.",
+                        "audio-capture": "No microphone was found. Check your microphone connection.",
+                        "network": "Voice search needs an internet connection.",
+                        "no-speech": "No speech detected. Click the microphone and try again."
+                    };
+
+                    const message =
+                        messages[event.error];
+
+                    if (message) {
+
+                        setMailnovaVoiceSearchMessage(
+                            input,
+                            button,
+                            message
+                        );
+
+                    }
+
+                };
+
+
+            recognition.onend =
+                () => {
+
+                    if (
+                        mailnovaVoiceRecognition !==
+                        recognition
+                    ) {
+                        return;
+                    }
+
+                    mailnovaVoiceRecognition =
+                        null;
+
+                    button.classList.remove(
+                        "is-listening"
+                    );
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        "false"
+                    );
+
+                    if (
+                        !window.__mailnovaVoiceMessageTimer
+                    ) {
+
+                        input.placeholder =
+                            "Search emails, sender, subject or ask MailNova...";
+
+                        button.title =
+                            "Voice search; Chrome may process audio online";
+
+                    }
+
+                };
+
+
+            try {
+
+                recognition.start();
+
+            }
+
+            catch (error) {
+
+                mailnovaVoiceRecognition =
+                    null;
+
+                setMailnovaVoiceSearchMessage(
+                    input,
+                    button,
+                    "Could not start the microphone. Please try again."
+                );
+
+                console.warn(
+                    "MailNova: Voice search could not start.",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
+
 function setupEmailSearch() {
 
     const input =
@@ -571,6 +829,14 @@ function setupEmailSearch() {
         return;
 
     }
+
+
+    setupMailnovaVoiceSearch(
+        input,
+        document.getElementById(
+            "mailnova-voice-btn"
+        )
+    );
 
 
     input.addEventListener(

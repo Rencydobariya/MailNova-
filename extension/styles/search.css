@@ -531,6 +531,79 @@
 }
 
 
+/* Accessible microphone control and active listening state */
+#mailnova-voice-btn {
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px;
+    border: 1px solid transparent !important;
+    border-radius: 50% !important;
+    color: #64748b !important;
+    font-size: 0 !important;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+#mailnova-voice-btn svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#mailnova-voice-btn:hover {
+    background: #eef4ff !important;
+    border-color: #dce8ff !important;
+    color: #2563eb !important;
+    transform: translateY(-1px);
+}
+
+#mailnova-voice-btn:focus-visible {
+    outline: 2px solid #93b4fd;
+    outline-offset: 2px;
+}
+
+#mailnova-voice-btn.is-listening {
+    background: #fff1f2 !important;
+    border-color: #fecdd3 !important;
+    color: #e11d48 !important;
+    animation: mailnovaVoicePulse 1.4s ease-in-out infinite;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-voice-btn {
+    color: #b6c2d1 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-voice-btn:hover {
+    background: #26313e !important;
+    border-color: #344256 !important;
+    color: #93bbff !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-voice-btn.is-listening {
+    background: #3a2028 !important;
+    border-color: #71303e !important;
+    color: #fda4af !important;
+}
+
+@keyframes mailnovaVoicePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.16); }
+    50% { box-shadow: 0 0 0 5px rgba(225, 29, 72, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #mailnova-voice-btn.is-listening {
+        animation: none;
+    }
+}
+
+
 /* =========================================
    DARK MONTH BUTTON
 ========================================= */

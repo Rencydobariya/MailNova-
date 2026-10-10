@@ -505,6 +505,10 @@ if (refreshButton) {
                 cache.emails
             );
 
+        await restoreMailnovaSummaryCache(
+            mailnovaEmails
+        );
+
 
         /* =================================
            RESTORE CACHED AI INTELLIGENCE
@@ -528,6 +532,8 @@ if (refreshButton) {
         ================================= */
 
         applyAllMailnovaFilters();
+
+        scheduleMailnovaAutoSummaries(1200);
 
 
         /* =================================
@@ -632,6 +638,10 @@ if (refreshButton) {
             result.emails || []
         );
 
+    await restoreMailnovaSummaryCache(
+        mailnovaEmails
+    );
+
 
     /* =====================================
        RENDER FIRST 25 IMMEDIATELY
@@ -672,6 +682,8 @@ if (refreshButton) {
         }, 1200);
     }
 
+    scheduleMailnovaAutoSummaries(5000);
+
 
     /* =====================================
        LOADING MODE
@@ -683,16 +695,16 @@ if (refreshButton) {
 
     /* =====================================
        FAST
+       Keep first load to the newest 25 emails.
+       This avoids silently walking the whole inbox.
     ===================================== */
 
     if (
         loadingMode === "fast"
     ) {
 
-        startRemainingMailSync(
-            result,
-            0,
-            false
+        console.log(
+            "MailNova: Fast mode loaded the newest page; older pages were not fetched."
         );
 
     }
@@ -709,7 +721,8 @@ if (refreshButton) {
         startRemainingMailSync(
             result,
             500,
-            false
+            false,
+            MAILNOVA_BALANCED_EXTRA_PAGES
         );
 
     }
@@ -735,6 +748,9 @@ if (refreshButton) {
 /* =========================================
    GET LOADING MODE
 ========================================= */
+
+const MAILNOVA_BALANCED_EXTRA_PAGES = 3;
+
 
 function getMailnovaLoadingMode() {
 
@@ -879,6 +895,38 @@ function buildMailnovaEmailData(emails) {
         }
     );
 
+}
+
+
+function scheduleMailnovaAutoSummaries(delay = 2000) {
+    if (
+        typeof startMailnovaSummaryGeneration !== "function" ||
+        !Array.isArray(mailnovaEmails) ||
+        !mailnovaEmails.length ||
+        (typeof mailnovaSettings !== "undefined" &&
+            mailnovaSettings.aiSummary === false)
+    ) {
+        return;
+    }
+
+    setTimeout(() => {
+        startMailnovaSummaryGeneration(
+            mailnovaEmails,
+            async (email, summary) => {
+                const currentEmail = mailnovaEmails.find(
+                    item => String(item.id || item.threadId) ===
+                        String(email.id || email.threadId)
+                );
+
+                if (currentEmail) {
+                    currentEmail.summary = summary;
+                }
+
+                await saveMailnovaEmailCache(mailnovaEmails);
+                applyAllMailnovaFilters();
+            }
+        );
+    }, delay);
 }
 
 /* =========================================
@@ -1134,15 +1182,13 @@ mailnovaEmails =
                     mailnovaEmails
                 );
 
+                scheduleMailnovaAutoSummaries(2500);
+
 
                 /*
-                   Manual Refresh:
-                   fully synchronize according to
-                   the user's loading preference.
-
-                   Automatic Sync:
-                   respect emailLoading setting
-                   and never block the workspace.
+                   Keep Gmail refreshes within the selected loading mode.
+                   Fast refreshes only the newest page; Balanced adds a few
+                   pages; Complete intentionally walks the whole mailbox.
                 */
 
                 const loadingMode =
@@ -1150,30 +1196,17 @@ mailnovaEmails =
 
 
                 if (
-                    window.__mailnovaManualRefresh
-                ) {
-
-                 startRemainingMailSync(
-                        firstPage,
-                        0,
-                        true
-                    );
-
-                }
-
-                else if (
-                    loadingMode ===
-                    "complete"
+                    loadingMode === "complete"
                 ) {
 
                     /*
                        Complete mode means all pages.
                     */
 
-                  startRemainingMailSync(
+                    startRemainingMailSync(
                         firstPage,
                         0,
-                        true
+                        Boolean(window.__mailnovaManualRefresh)
                     );
 
                 }
@@ -1185,18 +1218,17 @@ mailnovaEmails =
 
                     startRemainingMailSync(
                         firstPage,
-                        500,
-                        false
+                        window.__mailnovaManualRefresh ? 0 : 500,
+                        false,
+                        MAILNOVA_BALANCED_EXTRA_PAGES
                     );
 
                 }
 
                 else {
 
-                    startRemainingMailSync(
-                        firstPage,
-                        0,
-                        false
+                    console.log(
+                        "MailNova: Fast refresh checked only the newest Gmail page."
                     );
 
                 }
@@ -1234,7 +1266,8 @@ mailnovaEmails =
 function startRemainingMailSync(
     firstPage,
     delay = 0,
-    waitForCompletion = false
+    waitForCompletion = false,
+    maxAdditionalPages = Infinity
 ) {
 
     /*
@@ -1278,7 +1311,8 @@ function startRemainingMailSync(
 
 
             await syncRemainingMailPages(
-                firstPage
+                firstPage,
+                maxAdditionalPages
             );
 
         };
@@ -1307,7 +1341,8 @@ function startRemainingMailSync(
 ========================================= */
 
 async function syncRemainingMailPages(
-    firstPage
+    firstPage,
+    maxAdditionalPages = Infinity
 ) {
 
     try {
@@ -1320,6 +1355,10 @@ async function syncRemainingMailPages(
             1;
 
 
+        let additionalPagesLoaded =
+            0;
+
+
         let pagesSinceRender =
             0;
 
@@ -1329,7 +1368,8 @@ async function syncRemainingMailPages(
 
 
         while (
-            nextPageToken
+            nextPageToken &&
+            additionalPagesLoaded < maxAdditionalPages
         ) {
 
             pageNumber++;
@@ -1377,6 +1417,9 @@ async function syncRemainingMailPages(
                     ...mailnovaEmails,
                     ...newEmails
                 ]);
+
+
+            additionalPagesLoaded++;
 
 
             changedSinceSave =
@@ -1448,10 +1491,23 @@ async function syncRemainingMailPages(
         }
 
 
-        console.log(
-            "MailNova: Gmail pagination completed:",
-            mailnovaEmails.length
-        );
+        if (nextPageToken) {
+
+            console.log(
+                `MailNova: Loaded ${additionalPagesLoaded} older pages; more remain for a later Complete sync.`
+            );
+
+        }
+        else {
+
+            console.log(
+                "MailNova: Gmail pagination completed:",
+                mailnovaEmails.length
+            );
+
+        }
+
+        scheduleMailnovaAutoSummaries(1000);
 
     }
 
@@ -1705,47 +1761,12 @@ async function refreshWorkspace() {
             "Refreshing emails..."
         );
 
-        /*
-           EXACTLY 7 ROTATIONS
-           CSS animation duration:
-           0.28s × 7 = 1.96 seconds
-        */
-
         clearTimeout(
             window.__mailnovaRefreshVisualTimer
         );
 
         window.__mailnovaRefreshVisualTimer =
-            setTimeout(
-                () => {
-
-                    button.classList.remove(
-                        "mailnova-refreshing"
-                    );
-
-                    /*
-                       Keep aria-busy only while
-                       actual network sync is running.
-                    */
-
-                    if (
-                        !mailnovaIsRefreshing
-                    ) {
-
-                        button.removeAttribute(
-                            "aria-busy"
-                        );
-
-                        button.setAttribute(
-                            "title",
-                            "Refresh emails"
-                        );
-
-                    }
-
-                },
-                2000
-            );
+            null;
 
     }
 
@@ -1818,6 +1839,22 @@ async function refreshWorkspace() {
            Remaining pages continue in background.
         */
 
+        /*
+           If an automatic Gmail request was already underway when the
+           user clicked Refresh, wait for it and then make a fresh request.
+           This prevents a click from only reusing an older in-flight fetch.
+        */
+
+        const inFlightSync =
+            mailnovaSyncPromise;
+
+        if (inFlightSync) {
+
+            await inFlightSync;
+
+        }
+
+
         await syncMailnovaInBackground();
 
         console.log(
@@ -1883,6 +1920,10 @@ async function refreshWorkspace() {
         */
 
         if (button) {
+
+            button.classList.remove(
+                "mailnova-refreshing"
+            );
 
             button.removeAttribute(
                 "aria-busy"
@@ -4434,6 +4475,13 @@ function handleMailnovaWorkspaceSettingChange(
                 mailnovaEmails
             );
 
+        }
+
+        if (
+            key === "aiSummary" &&
+            value === true
+        ) {
+            scheduleMailnovaAutoSummaries(1000);
         }
 
 

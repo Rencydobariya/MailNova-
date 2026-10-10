@@ -223,6 +223,17 @@ function detectMailnovaSpam(email) {
    MAILNOVA EMAIL CARD
 ========================================= */
 
+function escapeMailnovaCardHTML(value) {
+
+    const element = document.createElement("span");
+
+    element.textContent = String(value ?? "");
+
+    return element.innerHTML;
+
+}
+
+
 function createEmailCard(email) {
 
     const priority =
@@ -378,18 +389,18 @@ if (isSpam) {
     ========================================= */
 
     const summaryText =
-        showAISummary
-
-            ? (
-                email.summary ||
-                email.snippet ||
-                "No preview available."
-            )
-
-            : (
-                email.snippet ||
-                "No preview available."
-            );
+        escapeMailnovaCardHTML(
+            showAISummary
+                ? (
+                    email.summary ||
+                    email.snippet ||
+                    "No preview available."
+                )
+                : (
+                    email.snippet ||
+                    "No preview available."
+                )
+        );
 
 
     /* =========================================
@@ -571,7 +582,7 @@ ${
 
         <div class="mailnova-summary">
 
-            ${summaryText}
+            <span class="mailnova-summary-text">${summaryText}</span>
 
         </div>
 

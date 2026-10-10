@@ -3641,3 +3641,242 @@ body:has(#mailnova-workspace.mailnova-theme-dark)
         none !important;
 
 }
+
+
+/* =========================================================
+   SETTINGS — CLEAN SECTION HEADINGS AND LOADING MODES
+========================================================= */
+
+#mailnova-settings-overlay .mn-main-description[hidden] {
+    display: none !important;
+}
+
+#mailnova-settings-overlay .mn-settings-main-header {
+    padding: 28px 34px 18px;
+}
+
+#mailnova-settings-overlay .mn-settings-section-content {
+    padding: 14px 34px 30px;
+}
+
+#mailnova-settings-overlay .mn-main-title {
+    font-family: inherit;
+    font-size: 25px !important;
+    font-weight: 650 !important;
+    line-height: 1.25;
+    letter-spacing: -0.35px;
+}
+
+#mailnova-settings-overlay .mn-main-description {
+    margin-top: 6px;
+    font-family: inherit;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+}
+
+#mailnova-settings-overlay .mn-setting-row {
+    min-height: 76px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+}
+
+#mailnova-settings-overlay .mn-setting-title {
+    font-family: inherit;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.35;
+}
+
+#mailnova-settings-overlay .mn-setting-description {
+    font-family: inherit;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+}
+
+#mailnova-settings-overlay .mn-priority-focus-text strong {
+    font-family: inherit;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+}
+
+#mailnova-settings-overlay .mn-priority-focus-text small {
+    font-family: inherit;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+}
+
+#mailnova-settings-overlay .mn-content-heading {
+    font-size: 17px !important;
+    line-height: 1.3;
+}
+
+#mailnova-settings-overlay .mn-content-subheading {
+    font-size: 12px !important;
+    line-height: 1.45;
+}
+
+#mailnova-settings-overlay .mn-loading-grid {
+    gap: 13px;
+    margin-top: 14px;
+}
+
+#mailnova-settings-overlay .mn-loading-option {
+    min-height: 132px !important;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 11px;
+    padding: 14px !important;
+    border-radius: 15px;
+}
+
+#mailnova-settings-overlay .mn-loading-option-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+#mailnova-settings-overlay .mn-loading-icon {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+}
+
+#mailnova-settings-overlay .mn-loading-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+#mailnova-settings-overlay .mn-loading-option-heading strong {
+    min-width: 0;
+    font-family: inherit;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.35;
+}
+
+#mailnova-settings-overlay .mn-loading-text {
+    display: block;
+    min-width: 0;
+}
+
+#mailnova-settings-overlay .mn-loading-text small {
+    display: block;
+    margin-top: 0;
+    font-family: inherit;
+    font-size: 12px !important;
+    line-height: 1.4;
+}
+
+#mailnova-settings-overlay .mn-loading-hint {
+    margin-top: 15px;
+    padding: 11px 13px;
+    font-size: 11.5px !important;
+    line-height: 1.5;
+}
+
+/* Each loading mode has its own clear accent. */
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="fast"] .mn-loading-icon {
+    color: #2563eb !important;
+    background: #edf4ff !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="balanced"] .mn-loading-icon {
+    color: #7c3aed !important;
+    background: #f2edff !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="complete"] .mn-loading-icon {
+    color: #0f766e !important;
+    background: #eaf8f6 !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="fast"] .mn-loading-option-heading strong {
+    color: #1d4ed8 !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="balanced"] .mn-loading-option-heading strong {
+    color: #6d28d9 !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="complete"] .mn-loading-option-heading strong {
+    color: #0f766e !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="fast"].active {
+    background: #f5f8ff !important;
+    border-color: #93b4fa !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="balanced"].active {
+    background: #faf7ff !important;
+    border-color: #b99af7 !important;
+}
+
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="complete"].active {
+    background: #f3fbf9 !important;
+    border-color: #83c9bc !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="fast"].active {
+    background: #1b2a40 !important;
+    border-color: #41699f !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="balanced"].active {
+    background: #2a2140 !important;
+    border-color: #7454a8 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark
+#mailnova-settings-overlay
+.mn-loading-option[data-loading="complete"].active {
+    background: #173532 !important;
+    border-color: #3e8b7e !important;
+}
+
+@media (max-width: 540px) {
+    #mailnova-settings-overlay .mn-settings-main-header {
+        padding: 22px 20px 14px;
+    }
+
+    #mailnova-settings-overlay .mn-settings-section-content {
+        padding: 12px 20px 24px;
+    }
+
+    #mailnova-settings-overlay .mn-loading-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    #mailnova-settings-overlay .mn-loading-option {
+        min-height: 78px !important;
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        padding: 12px !important;
+    }
+
+    #mailnova-settings-overlay .mn-loading-option-heading {
+        flex: 0 0 132px;
+    }
+
+    #mailnova-settings-overlay .mn-loading-text small {
+        font-size: 12px !important;
+    }
+}

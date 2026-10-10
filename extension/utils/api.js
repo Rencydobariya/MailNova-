@@ -1113,6 +1113,151 @@ async function fetchAllGmailEmails(
    SUMMARY CACHE
 ========================================= */
 
+const MAILNOVA_SUMMARY_CACHE_KEY =
+    "mailnova_summaries";
+
+const MAILNOVA_AUTO_SUMMARY_USAGE_KEY =
+    "mailnova_auto_summary_daily_usage";
+
+// Leave room for other AI features on accounts with limited daily quota.
+const MAILNOVA_AUTO_SUMMARY_DAILY_LIMIT = 5;
+
+let mailnovaSummaryQueueRunning = false;
+
+
+function getMailnovaSummaryDayKey() {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${now.getFullYear()}-${month}-${day}`;
+}
+
+
+async function restoreMailnovaSummaryCache(emails) {
+    if (!Array.isArray(emails) || !emails.length) {
+        return false;
+    }
+
+    try {
+        const saved = await chrome.storage.local.get(
+            MAILNOVA_SUMMARY_CACHE_KEY
+        );
+        const summaries = saved[MAILNOVA_SUMMARY_CACHE_KEY] || {};
+        let changed = false;
+
+        for (const email of emails) {
+            const emailId = String(email?.id || email?.threadId || "");
+            if (!emailId) {
+                continue;
+            }
+
+            if (email.summary) {
+                if (!summaries[emailId]) {
+                    summaries[emailId] = email.summary;
+                    changed = true;
+                }
+            }
+            else if (summaries[emailId]) {
+                email.summary = summaries[emailId];
+            }
+        }
+
+        if (changed) {
+            await chrome.storage.local.set({
+                [MAILNOVA_SUMMARY_CACHE_KEY]: summaries
+            });
+        }
+
+        return changed;
+    }
+    catch (error) {
+        console.warn("MailNova: Summary cache restore failed:", error);
+        return false;
+    }
+}
+
+
+async function startMailnovaSummaryGeneration(emails, onSummarySaved) {
+    if (
+        mailnovaSummaryQueueRunning ||
+        !Array.isArray(emails) ||
+        !emails.length
+    ) {
+        return;
+    }
+
+    mailnovaSummaryQueueRunning = true;
+
+    try {
+        await restoreMailnovaSummaryCache(emails);
+
+        const candidates = emails.filter(email =>
+            email &&
+            (email.id || email.threadId) &&
+            !email.summary &&
+            (email.body || email.snippet)
+        );
+
+        if (!candidates.length) {
+            return;
+        }
+
+        const dayKey = getMailnovaSummaryDayKey();
+        const savedUsage = await chrome.storage.local.get(
+            MAILNOVA_AUTO_SUMMARY_USAGE_KEY
+        );
+        let usage = savedUsage[MAILNOVA_AUTO_SUMMARY_USAGE_KEY];
+
+        if (!usage || usage.day !== dayKey) {
+            usage = { day: dayKey, attempts: 0 };
+        }
+
+        const remaining = Math.max(
+            0,
+            MAILNOVA_AUTO_SUMMARY_DAILY_LIMIT - Number(usage.attempts || 0)
+        );
+
+        if (!remaining) {
+            console.log(
+                `MailNova: Daily automatic summary limit (${MAILNOVA_AUTO_SUMMARY_DAILY_LIMIT}) reached; saved summaries remain available.`
+            );
+            return;
+        }
+
+        for (const email of candidates.slice(0, remaining)) {
+            usage.attempts = Number(usage.attempts || 0) + 1;
+            await chrome.storage.local.set({
+                [MAILNOVA_AUTO_SUMMARY_USAGE_KEY]: usage
+            });
+
+            try {
+                const summary = await summarizeEmail(email);
+                if (!summary) {
+                    break;
+                }
+
+                email.summary = summary;
+                if (typeof onSummarySaved === "function") {
+                    await onSummarySaved(email, summary);
+                }
+            }
+            catch (error) {
+                console.warn(
+                    "MailNova: Automatic summary generation stopped after an API error:",
+                    error
+                );
+                break;
+            }
+        }
+    }
+    catch (error) {
+        console.warn("MailNova: Automatic summary queue failed:", error);
+    }
+    finally {
+        mailnovaSummaryQueueRunning = false;
+    }
+}
+
 async function summarizeEmail(
     email
 ) {
@@ -1122,13 +1267,13 @@ async function summarizeEmail(
         const saved =
             await chrome.storage.local.get(
                 [
-                    "mailnova_summaries"
+                    MAILNOVA_SUMMARY_CACHE_KEY
                 ]
             );
 
 
         const summaries =
-            saved.mailnova_summaries ||
+            saved[MAILNOVA_SUMMARY_CACHE_KEY] ||
             {};
 
 
@@ -1185,9 +1330,8 @@ async function summarizeEmail(
                                 "No subject",
 
                             body:
-                                email.body ||
-                                email.snippet ||
-                                ""
+                                (email.body || email.snippet || "")
+                                    .slice(0, 4000)
 
                         })
 
@@ -1237,8 +1381,7 @@ async function summarizeEmail(
 
             await chrome.storage.local.set({
 
-                mailnova_summaries:
-                    summaries
+                [MAILNOVA_SUMMARY_CACHE_KEY]: summaries
 
             });
 
@@ -1257,7 +1400,7 @@ async function summarizeEmail(
         );
 
 
-        return "";
+        throw error;
 
     }
 
