@@ -3777,77 +3777,19 @@ body:has(#mailnova-workspace.mailnova-theme-dark)
     line-height: 1.5;
 }
 
-/* Each loading mode has its own clear accent. */
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="fast"] .mn-loading-icon {
+/* One consistent MailNova blue accent across all loading choices. */
+#mailnova-settings-overlay .mn-loading-option .mn-loading-icon {
     color: #2563eb !important;
     background: #edf4ff !important;
 }
 
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="balanced"] .mn-loading-icon {
-    color: #7c3aed !important;
-    background: #f2edff !important;
+#mailnova-settings-overlay .mn-loading-option-heading strong {
+    color: #2457b8 !important;
 }
 
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="complete"] .mn-loading-icon {
-    color: #0f766e !important;
-    background: #eaf8f6 !important;
-}
-
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="fast"] .mn-loading-option-heading strong {
-    color: #1d4ed8 !important;
-}
-
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="balanced"] .mn-loading-option-heading strong {
-    color: #6d28d9 !important;
-}
-
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="complete"] .mn-loading-option-heading strong {
-    color: #0f766e !important;
-}
-
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="fast"].active {
+#mailnova-settings-overlay .mn-loading-option.active {
     background: #f5f8ff !important;
     border-color: #93b4fa !important;
-}
-
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="balanced"].active {
-    background: #faf7ff !important;
-    border-color: #b99af7 !important;
-}
-
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="complete"].active {
-    background: #f3fbf9 !important;
-    border-color: #83c9bc !important;
-}
-
-#mailnova-workspace.mailnova-theme-dark
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="fast"].active {
-    background: #1b2a40 !important;
-    border-color: #41699f !important;
-}
-
-#mailnova-workspace.mailnova-theme-dark
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="balanced"].active {
-    background: #2a2140 !important;
-    border-color: #7454a8 !important;
-}
-
-#mailnova-workspace.mailnova-theme-dark
-#mailnova-settings-overlay
-.mn-loading-option[data-loading="complete"].active {
-    background: #173532 !important;
-    border-color: #3e8b7e !important;
 }
 
 @media (max-width: 540px) {
@@ -3879,4 +3821,57 @@ body:has(#mailnova-workspace.mailnova-theme-dark)
     #mailnova-settings-overlay .mn-loading-text small {
         font-size: 12px !important;
     }
+}
+
+/* Neutral, crisp Settings mark and stronger brand typography. */
+#mailnova-settings-overlay .mn-settings-brand-icon {
+    background: #f0f2f5 !important;
+    color: #424a55 !important;
+    border: 1px solid #dce1e7 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+#mailnova-settings-overlay .mn-settings-brand-title {
+    font-size: 21px !important;
+    font-weight: 750 !important;
+    letter-spacing: -0.35px;
+}
+
+#mailnova-settings-overlay .mn-main-title {
+    font-weight: 700 !important;
+}
+
+#mailnova-settings-overlay .mn-setting-switch:focus-visible,
+#mailnova-settings-overlay .mn-theme-card:focus-visible,
+#mailnova-settings-overlay .mn-priority-focus-option:focus-visible,
+#mailnova-settings-overlay .mn-loading-option:focus-visible,
+#mailnova-settings-overlay .mn-settings-nav-item:focus-visible,
+#mailnova-settings-overlay .mn-settings-modal-close:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.45) !important;
+    outline-offset: 2px !important;
+}
+
+/* Dark mode uses muted blue-gray icon tiles instead of pale/white tiles. */
+#mailnova-workspace.mailnova-theme-dark #mailnova-settings-overlay .mn-loading-option .mn-loading-icon {
+    color: #8bb8ff !important;
+    background: #202d3b !important;
+    border: 1px solid #34465a !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-settings-overlay .mn-loading-option-heading strong {
+    color: #a8c8ff !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-settings-overlay .mn-loading-option.active {
+    background: #1b2a3b !important;
+    border-color: #5276a2 !important;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-settings-overlay .mn-settings-brand-icon {
+    background: #252c35 !important;
+    color: #c0c8d2 !important;
+    border-color: #3b4652 !important;
 }

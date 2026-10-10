@@ -100,8 +100,8 @@ const MN_SETTINGS_ICONS = {
 
     glass: `
         <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m12 3 7.5 9L12 21 4.5 12 12 3Z"></path>
-            <path d="m8.3 12 3.7-4.5 3.7 4.5-3.7 4.5L8.3 12Z"></path>
+            <rect x="4" y="4" width="16" height="16" rx="2.5"></rect>
+            <path d="M8 8h8M8 12h5M8 16h8"></path>
         </svg>
     `,
 
@@ -1380,14 +1380,14 @@ function createMailnovaSettingsModal() {
                             id="mn-settings-section-title"
                             class="mn-main-title"
                         >
-                            Look & Feel
+                            Appearance
                         </div>
 
                         <div
                             id="mn-settings-section-description"
                             class="mn-main-description"
                         >
-                            Personalize how MailNova looks and feels.
+                            Customize how MailNova looks.
                         </div>
 
                     </div>
@@ -2148,8 +2148,8 @@ function switchSettingsSection(
     const titles = {
 
         appearance: [
-            "Look & Feel",
-            "Personalize how MailNova looks and feels."
+            "Appearance",
+            "Customize how MailNova looks."
         ],
 
         email: [
