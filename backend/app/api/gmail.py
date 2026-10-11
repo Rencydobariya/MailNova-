@@ -450,9 +450,9 @@ def get_gmail_emails(
     # -----------------------------------------
     # SAFE PAGE SIZE
     # -----------------------------------------
-    # Gmail API allows larger list pages, but MailNova fetches
-    # every message with format="full". Keeping the page at 50
-    # reduces burst quota usage and follows Google's batch guidance.
+    # Keep the first response small and fetch message metadata only.
+    # The workspace cards use Gmail's snippet and headers; downloading
+    # every full body before rendering made the inbox feel stalled.
     max_results = max(
         1,
         min(
@@ -523,12 +523,12 @@ def get_gmail_emails(
         )
 
 
-    def fetch_message_batch(message_ids, max_retries=3):
-        """Fetch full Gmail messages in batches of <= 50 with limited backoff."""
+    def fetch_message_batch(message_ids, max_retries=1):
+        """Fetch lightweight headers/snippets in Gmail batches of <= 50."""
 
         pending_ids = list(message_ids)
 
-        retry_delays = (2, 5, 10)
+        retry_delays = (1,)
 
 
         for attempt in range(max_retries + 1):
@@ -587,7 +587,8 @@ def get_gmail_emails(
                         .get(
                             userId="me",
                             id=message_id,
-                            format="full"
+                            format="metadata",
+                            metadataHeaders=["From", "Subject", "Date"]
                         ),
                         request_id=message_id
                     )
@@ -644,7 +645,7 @@ def get_gmail_emails(
 
 
     # =========================================
-    # FETCH FULL MESSAGE DATA
+    # FETCH THE CARD DATA NEEDED TO RENDER THE FIRST PAGE
     # =========================================
 
     message_ids = [

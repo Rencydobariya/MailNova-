@@ -351,6 +351,47 @@
 
 }
 
+.mailnova-email-list-status {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 28px;
+    color: #64748b;
+    text-align: center;
+    font-size: 14px;
+}
+
+.mailnova-email-list-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #dbeafe;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: mailnova-email-spin 0.8s linear infinite;
+}
+
+.mailnova-email-list-retry {
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 16px;
+    background: #2563eb;
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.mailnova-email-list-retry:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+@keyframes mailnova-email-spin {
+    to { transform: rotate(360deg); }
+}
+
 
 .mailnova-empty
 {

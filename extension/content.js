@@ -203,7 +203,7 @@ console.log("MailNova Initialized 🚀");
          * its initial rendering.
          */
 
-        const delay = 1800;
+        const delay = 350;
 
 
         setTimeout(
@@ -226,7 +226,7 @@ console.log("MailNova Initialized 🚀");
 
                         },
                         {
-                            timeout: 2500
+                            timeout: 500
                         }
                     );
 

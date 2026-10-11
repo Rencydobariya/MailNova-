@@ -678,6 +678,11 @@ if (refreshButton) {
             "MailNova: Gmail emails could not be loaded."
         );
 
+        setMailnovaEmailListStatus(
+            "Could not load Gmail. Check your connection and Google account in Settings, then try again.",
+            { retry: true }
+        );
+
         return;
 
     }
@@ -1129,16 +1134,6 @@ async function syncMailnovaInBackground() {
         firstPage.emails || []
     );
 
-const latestIds =
-    new Set(
-        latestEmails.map(
-            email =>
-                String(
-                    email.id
-                )
-        )
-    );
-
 /*
  * Preserve the current MailNova state for
  * emails that are already loaded.
@@ -1147,16 +1142,6 @@ const latestIds =
  * from temporarily reverting READ → UNREAD
  * or UNREAD → READ.
  */
-
-const olderCachedEmails =
-    mailnovaEmails.filter(
-        email =>
-            !latestIds.has(
-                String(
-                    email.id
-                )
-            )
-    );
 
 /*
  * Merge everything through the protected
@@ -1168,8 +1153,10 @@ const olderCachedEmails =
 
 mailnovaEmails =
     deduplicateMailnovaEmails([
-        ...latestEmails,
-        ...olderCachedEmails
+        ...mergeMailnovaEmails(
+            mailnovaEmails,
+            latestEmails
+        )
     ]);
 
 /*
@@ -1615,9 +1602,24 @@ function deduplicateMailnovaEmails(
          * response to overwrite that state.
          */
 
+        const previousEmail = map.get(id) || {};
         let finalEmail = {
+            ...previousEmail,
             ...email
         };
+
+        finalEmail.body = email.body || previousEmail.body || "";
+        finalEmail.summary = email.summary || previousEmail.summary || "";
+        finalEmail.aiCategory = email.aiCategory || previousEmail.aiCategory;
+        finalEmail.aiPriority = email.aiPriority || previousEmail.aiPriority;
+        finalEmail.aiPriorityScore = email.aiPriorityScore || previousEmail.aiPriorityScore;
+        finalEmail.aiSpam = typeof email.aiSpam === "boolean"
+            ? email.aiSpam
+            : previousEmail.aiSpam;
+        finalEmail.aiSpamConfidence = email.aiSpamConfidence || previousEmail.aiSpamConfidence;
+        finalEmail.aiSpamReason = email.aiSpamReason || previousEmail.aiSpamReason;
+        finalEmail.aiPriorityReason = email.aiPriorityReason || previousEmail.aiPriorityReason;
+        finalEmail.aiAnalysisComplete = email.aiAnalysisComplete || previousEmail.aiAnalysisComplete || false;
 
         if (
             mailnovaReadStateOverrides.has(id)

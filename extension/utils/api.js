@@ -806,14 +806,23 @@ function mergeMailnovaEmails(
             id
         ) {
 
-            /*
-               New Gmail data wins.
-            */
-
-            map.set(
-                id,
-                email
-            );
+            const previous = map.get(id) || {};
+            map.set(id, {
+                ...previous,
+                ...email,
+                body: email.body || previous.body || "",
+                summary: email.summary || previous.summary || "",
+                aiCategory: email.aiCategory || previous.aiCategory,
+                aiPriority: email.aiPriority || previous.aiPriority,
+                aiPriorityScore: email.aiPriorityScore || previous.aiPriorityScore,
+                aiSpam: typeof email.aiSpam === "boolean"
+                    ? email.aiSpam
+                    : previous.aiSpam,
+                aiSpamConfidence: email.aiSpamConfidence || previous.aiSpamConfidence,
+                aiSpamReason: email.aiSpamReason || previous.aiSpamReason,
+                aiPriorityReason: email.aiPriorityReason || previous.aiPriorityReason,
+                aiAnalysisComplete: email.aiAnalysisComplete || previous.aiAnalysisComplete || false
+            });
 
         }
 
