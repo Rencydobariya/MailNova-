@@ -683,11 +683,11 @@ if (refreshButton) {
         const authRequired = /connect your google account|sign-in|required/i.test(loadError);
         setMailnovaEmailListStatus(
             oauthClientMismatch
-                ? "Google OAuth is configured for a different Chrome extension ID. Match the OAuth client's Item ID with this extension ID in chrome://extensions."
+                ? `Google OAuth client is not registered for this extension ID: ${chrome.runtime.id}. Register this ID on the Chrome Extension OAuth client in Google Cloud.`
                 : authRequired
-                    ? "Google account is not connected. Open Settings → Google Account to authorize MailNova."
+                    ? "Connect your Google account to let MailNova load your inbox."
                     : "Could not load Gmail. Check your connection, then try again.",
-            { retry: !oauthClientMismatch }
+            { retry: true, connect: true }
         );
 
         return;
