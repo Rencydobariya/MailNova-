@@ -26,11 +26,11 @@ ALLOWED_CATEGORIES = {
 
 
 class EmailForAI(BaseModel):
-    id: str = ""
-    sender: str = ""
-    subject: str = ""
-    snippet: str = ""
-    body: str = ""
+    id: str = Field(default="", max_length=200)
+    sender: str = Field(default="", max_length=300)
+    subject: str = Field(default="", max_length=500)
+    snippet: str = Field(default="", max_length=800)
+    body: str = Field(default="", max_length=1200)
     gmail_spam: bool = False
 
 
@@ -39,7 +39,7 @@ class AnalyzeEmailsRequest(BaseModel):
 
 
 class NaturalSearchRequest(BaseModel):
-    query: str
+    query: str = Field(max_length=2000)
 
 
 def _extract_json(text: str):
@@ -80,7 +80,8 @@ def _normalise_analysis(item, email):
         priority = 3
     priority = max(1, min(5, priority))
 
-    spam = bool(item.get("spam", False)) or bool(email.gmail_spam)
+    spam_value = item.get("spam", False)
+    spam = spam_value if isinstance(spam_value, bool) else False
 
     try:
         spam_confidence = int(item.get("spam_confidence", 0))
@@ -138,7 +139,7 @@ Rules:
 2. Promotions are not automatically spam.
 3. Legitimate newsletters, receipts, bank alerts, college notices and job emails can be safe.
 4. Treat phishing, impersonation, credential theft, fake rewards, malicious payment requests and deceptive urgent-link requests as high spam risk.
-5. If gmail_spam is true, spam MUST be true.
+5. Treat Gmail's spam label as one signal only; make your own final decision from the message context.
 6. Do not invent dates, people, actions or facts.
 7. Keep reasons under 25 words.
 

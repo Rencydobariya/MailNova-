@@ -9,15 +9,15 @@
    - Analyzes only missing AI results.
    - Sends small batches.
    - Caches results in chrome.storage.local.
-   - Existing local logic remains the immediate fallback.
+   - Priority and spam are considered unknown until an AI result is applied.
 ========================================= */
 
 const MAILNOVA_AI_CACHE_KEY =
-    "mailnova_ai_intelligence_cache";
+    "mailnova_ai_intelligence_cache_v2";
 
 const MAILNOVA_AI_BATCH_SIZE = 20;
 // Keep automatic AI enrichment to one small batch per run.
-// Additional emails still use the local fallback until explicitly requested.
+// Additional emails remain neutral until a later AI analysis run.
 const MAILNOVA_AI_MAX_PER_RUN = 20;
 
 let mailnovaAIAnalysisRunning = false;
@@ -25,6 +25,7 @@ let mailnovaAIAnalysisRunning = false;
 
 async function loadMailnovaAICache() {
     try {
+        await ensureMailnovaUserCache();
         const saved =
             await chrome.storage.local.get(
                 MAILNOVA_AI_CACHE_KEY
@@ -44,6 +45,7 @@ async function loadMailnovaAICache() {
 
 async function saveMailnovaAICache(cache) {
     try {
+        await ensureMailnovaUserCache();
         await chrome.storage.local.set({
             [MAILNOVA_AI_CACHE_KEY]: cache
         });
@@ -83,12 +85,9 @@ function applyMailnovaAIResult(email, result) {
             Number(result.priority) || 3;
     }
 
-    if (result.spam === true) {
-        email.aiSpam = true;
-    }
-    else if (result.spam === false) {
-        email.aiSpam = false;
-    }
+    email.aiSpam = result.spam === true;
+    email.spam = email.aiSpam;
+    email.aiAnalysisComplete = true;
 
     email.aiSpamConfidence =
         Number(result.spam_confidence) || 0;
@@ -104,7 +103,7 @@ function applyMailnovaAIResult(email, result) {
 
 
 async function analyzeMailnovaEmailBatch(emails) {
-    const response = await fetch(
+    const response = await mailnovaApiFetch(
         `${MAILNOVA_API}/ai/analyze-emails`,
         {
             method: "POST",
@@ -118,7 +117,7 @@ async function analyzeMailnovaEmailBatch(emails) {
                     subject: email.subject || "",
                     snippet: email.snippet || "",
                     body: (email.body || "").slice(0, 1200),
-                    gmail_spam: Boolean(email.spam)
+                    gmail_spam: Boolean(email.gmail_spam)
                 }))
             })
         }
@@ -162,8 +161,8 @@ async function startMailnovaAIAnalysis(emails) {
 
         const candidates = emails
             .filter(email => email && email.id)
-            .slice(0, MAILNOVA_AI_MAX_PER_RUN)
-            .filter(email => !cache[String(email.id)]);
+            .filter(email => !cache[String(email.id)])
+            .slice(0, MAILNOVA_AI_MAX_PER_RUN);
 
         if (!candidates.length) {
             return;
@@ -266,7 +265,7 @@ async function resolveMailnovaNaturalSearch(query) {
         return "";
     }
 
-    const response = await fetch(
+    const response = await mailnovaApiFetch(
         `${MAILNOVA_API}/ai/natural-search`,
         {
             method: "POST",

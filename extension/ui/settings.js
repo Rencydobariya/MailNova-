@@ -1404,6 +1404,20 @@ function createMailnovaSettingsModal() {
 
                     </button>
 
+
+                    <button
+                        class="mn-settings-nav-item"
+                        data-section="account"
+                    >
+
+                        <span class="mn-nav-icon">${MN_SETTINGS_ICONS.email}</span>
+
+                        <span>
+                            Google Account
+                        </span>
+
+                    </button>
+
                 </nav>
 
 
@@ -1706,6 +1720,49 @@ function createMailnovaSettingsModal() {
 
                 </section>
 
+
+                <!-- GOOGLE ACCOUNT -->
+
+                <section
+                    class="mn-settings-section-content"
+                    data-content="account"
+                >
+
+                    <div class="mn-content-heading">
+                        <span class="mn-content-heading-icon">${MN_SETTINGS_ICONS.email}</span>
+                        Google Account
+                    </div>
+
+                    <div class="mn-content-subheading">
+                        Connect your Google account to use MailNova with your Gmail.
+                    </div>
+
+                    <p class="mn-account-disclosure">
+                        MailNova reads your Gmail messages for the features you use. AI summaries,
+                        priority, and spam analysis send message text to MailNova's backend and its
+                        AI provider. Read/unread changes update Gmail. A reply is sent only after
+                        you choose Send.
+                    </p>
+
+                    <div class="mn-account-actions">
+                        <button type="button" class="mn-account-button primary" data-account-action="connect">
+                            Connect with Google
+                        </button>
+                        <button type="button" class="mn-account-button" data-account-action="disconnect">
+                            Disconnect and clear local email data
+                        </button>
+                    </div>
+
+                    <p id="mn-account-status" class="mn-account-status" role="status" aria-live="polite">
+                        Choose Connect with Google to open Google's permission screen.
+                    </p>
+
+                    <p class="mn-account-revoke-note">
+                        To revoke MailNova's Google authorization, remove MailNova from your Google Account security settings.
+                    </p>
+
+                </section>
+
             </main>
 
         </div>
@@ -1777,6 +1834,7 @@ function setupMailnovaSettingsControls() {
                     ".mn-setting-switch, " +
                     ".mn-priority-focus-option, " +
                     ".mn-loading-option, " +
+                    ".mn-account-button, " +
                     ".mn-settings-modal-close"
                 );
 
@@ -1838,6 +1896,48 @@ function setupMailnovaSettingsControls() {
                 section
             );
 
+        },
+        true
+    );
+
+
+    overlay.addEventListener(
+        "click",
+        async function (event) {
+            const button = event.target.closest(".mn-account-button");
+            if (!button) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const status = overlay.querySelector("#mn-account-status");
+            const action = button.dataset.accountAction;
+            const buttons = overlay.querySelectorAll(".mn-account-button");
+            buttons.forEach(item => item.disabled = true);
+
+            try {
+                if (action === "connect") {
+                    if (status) status.textContent = "Opening Google's secure sign-in…";
+                    const response = await mailnovaApiFetch(
+                        `${MAILNOVA_API}/gmail/test`,
+                        { method: "GET", cache: "no-store", interactive: true }
+                    );
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || "Google account could not be verified.");
+                    }
+                    if (status) status.textContent = `Connected as ${data.email || "your Google account"}.`;
+                } else if (action === "disconnect") {
+                    await disconnectMailnovaGoogleAccount();
+                    if (status) status.textContent = "Disconnected. MailNova's cached email data was cleared from this browser.";
+                }
+            } catch (error) {
+                if (status) status.textContent = error.message || "Google account action failed.";
+            } finally {
+                buttons.forEach(item => item.disabled = false);
+            }
         },
         true
     );
@@ -2227,6 +2327,11 @@ function switchSettingsSection(
         notifications: [
             "Notification Settings",
             "Choose which alerts and unread badges MailNova shows."
+        ],
+
+        account: [
+            "Google Account",
+            "Review and manage MailNova's access to your Gmail."
         ]
 
     };

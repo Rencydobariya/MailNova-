@@ -415,7 +415,7 @@ async function sendAIMessage(
     try {
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 "https://mailnova-9tzz.onrender.com/ask-ai",
                 {
 

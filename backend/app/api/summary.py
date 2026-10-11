@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from google import genai
 from dotenv import load_dotenv
 import os
@@ -19,9 +19,9 @@ client = genai.Client(api_key=api_key)
 
 
 class SummaryRequest(BaseModel):
-    sender: str
-    subject: str
-    body: str
+    sender: str = Field(max_length=300)
+    subject: str = Field(max_length=500)
+    body: str = Field(max_length=12000)
 
 
 @router.post("/summarize")

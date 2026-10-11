@@ -34,7 +34,7 @@
     display: flex;
     align-items: center;
 
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
 
     color: #172033;
@@ -372,7 +372,7 @@
 
 
 #mailnova-workspace.mailnova-compact-mode .mailnova-title {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 
@@ -404,7 +404,7 @@
     }
 
     .mailnova-title {
-        font-size: 18px;
+        font-size: 20px;
     }
 
     .mailnova-header-buttons {

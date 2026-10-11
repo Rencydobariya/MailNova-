@@ -788,7 +788,7 @@ async function generateMailnovaReply(
     try {
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 `${MAILNOVA_API}/generate-reply`,
                 {
                     method: "POST",
@@ -936,7 +936,7 @@ async function sendMailnovaReply(
     try {
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 `${MAILNOVA_API}/gmail/reply`,
                 {
                     method: "POST",

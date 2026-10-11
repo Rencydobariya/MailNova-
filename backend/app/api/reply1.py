@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from google import genai
 from dotenv import load_dotenv
 import os
@@ -26,10 +26,10 @@ client = genai.Client(
 
 class ReplyRequest(BaseModel):
 
-    sender: str
-    subject: str
-    body: str
-    tone: str
+    sender: str = Field(max_length=300)
+    subject: str = Field(max_length=500)
+    body: str = Field(max_length=12000)
+    tone: str = Field(max_length=100)
 
 
 @router.post("/generate-reply")

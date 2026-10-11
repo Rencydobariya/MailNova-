@@ -1,6 +1,102 @@
 const MAILNOVA_API =
     "https://mailnova-9tzz.onrender.com";
 
+const MAILNOVA_CACHE_ACCOUNT_KEY = "mailnova_cache_google_subject";
+const MAILNOVA_USER_DATA_KEYS = [
+    "mailnova_email_cache",
+    "mailnova_email_cache_time",
+    "mailnova_email_cache_version",
+    "mailnova_summaries",
+    "mailnova_ai_intelligence_cache_v2",
+    "mailnova_read_state_overrides",
+    "mailnova_auto_summary_daily_usage"
+];
+
+
+function mailnovaApiFetch(url, options = {}) {
+    const headers = Object.fromEntries(
+        new Headers(options.headers || {}).entries()
+    );
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+            {
+                type: "MAILNOVA_API_REQUEST",
+                url: String(url),
+                options: {
+                    method: options.method || "GET",
+                    headers,
+                    body: options.body,
+                    interactive: options.interactive === true
+                }
+            },
+            response => {
+                const runtimeError = chrome.runtime.lastError;
+                if (runtimeError || !response?.success) {
+                    reject(new Error(
+                        response?.error || runtimeError?.message ||
+                        "MailNova could not complete the authenticated request."
+                    ));
+                    return;
+                }
+                resolve(new Response(response.body, {
+                    status: response.status,
+                    headers: response.headers
+                }));
+            }
+        );
+    });
+}
+
+
+async function ensureMailnovaUserCache() {
+    const response = await mailnovaApiFetch(
+        `${MAILNOVA_API}/auth/me`,
+        { method: "GET", cache: "no-store" }
+    );
+    const user = await response.json();
+    if (!response.ok || !user.success || !user.subject) {
+        throw new Error(user.error || "MailNova could not verify your Google account.");
+    }
+
+    const stored = await chrome.storage.local.get(MAILNOVA_CACHE_ACCOUNT_KEY);
+    if (stored[MAILNOVA_CACHE_ACCOUNT_KEY] !== user.subject) {
+        await chrome.storage.local.remove(MAILNOVA_USER_DATA_KEYS);
+        await chrome.storage.local.set({
+            [MAILNOVA_CACHE_ACCOUNT_KEY]: user.subject
+        });
+        if (typeof mailnovaEmails !== "undefined" && Array.isArray(mailnovaEmails)) {
+            mailnovaEmails.length = 0;
+        }
+    }
+    return user.subject;
+}
+
+
+function disconnectMailnovaGoogleAccount() {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+            { type: "MAILNOVA_DISCONNECT_GOOGLE" },
+            response => {
+                const runtimeError = chrome.runtime.lastError;
+                if (runtimeError || !response?.success) {
+                    reject(new Error(
+                        response?.error || runtimeError?.message ||
+                        "MailNova could not disconnect this Google account."
+                    ));
+                    return;
+                }
+                if (typeof mailnovaEmails !== "undefined" && Array.isArray(mailnovaEmails)) {
+                    mailnovaEmails.length = 0;
+                }
+                if (typeof renderEmails === "function") {
+                    renderEmails([]);
+                }
+                resolve(true);
+            }
+        );
+    });
+}
+
 
 /* =========================================
    GMAIL PAGINATION SETTINGS
@@ -53,7 +149,7 @@ const MAILNOVA_CACHE_TIME_KEY =
 
 
 const MAILNOVA_CACHE_VERSION =
-    2;
+    4;
 
 
 /* =========================================
@@ -102,7 +198,7 @@ async function fetchGmailEmails(
 
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 url,
                 {
                     method: "GET",
@@ -306,7 +402,7 @@ async function markEmailAsRead(
 
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 `${MAILNOVA_API}/gmail/mark-read`,
                 {
 
@@ -433,7 +529,7 @@ async function markEmailAsUnread(
 
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 `${MAILNOVA_API}/gmail/mark-unread`,
                 {
 
@@ -537,6 +633,8 @@ async function loadMailnovaEmailCache() {
 
     try {
 
+        await ensureMailnovaUserCache();
+
         const data =
             await chrome.storage.local.get(
                 [
@@ -611,6 +709,8 @@ async function saveMailnovaEmailCache(
 ) {
 
     try {
+
+        await ensureMailnovaUserCache();
 
         await chrome.storage.local.set({
 
@@ -1139,6 +1239,7 @@ async function restoreMailnovaSummaryCache(emails) {
     }
 
     try {
+        await ensureMailnovaUserCache();
         const saved = await chrome.storage.local.get(
             MAILNOVA_SUMMARY_CACHE_KEY
         );
@@ -1189,6 +1290,7 @@ async function startMailnovaSummaryGeneration(emails, onSummarySaved) {
     mailnovaSummaryQueueRunning = true;
 
     try {
+        await ensureMailnovaUserCache();
         await restoreMailnovaSummaryCache(emails);
 
         const candidates = emails.filter(email =>
@@ -1264,6 +1366,8 @@ async function summarizeEmail(
 
     try {
 
+        await ensureMailnovaUserCache();
+
         const saved =
             await chrome.storage.local.get(
                 [
@@ -1305,7 +1409,7 @@ async function summarizeEmail(
 
 
         const response =
-            await fetch(
+            await mailnovaApiFetch(
                 `${MAILNOVA_API}/summarize`,
                 {
 

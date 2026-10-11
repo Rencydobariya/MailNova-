@@ -1,13 +1,12 @@
 from fastapi import APIRouter
 from googleapiclient.discovery import build
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from email.mime.text import MIMEText
 from html.parser import HTMLParser
 import base64
 import time
 
 from backend.app.api.gmail_auth import get_gmail_credentials
-from backend.app.ai.spam_detector import is_probable_spam
 
 
 router = APIRouter()
@@ -423,22 +422,14 @@ def parse_gmail_message(message):
                 []
             ),
 
-        "spam":
-            is_probable_spam(
-                sender=sender,
-                subject=subject,
-                snippet=message.get(
-                    "snippet",
-                    ""
-                ),
-                body=body,
-                gmail_spam=(
-                    "SPAM" in message.get(
-                        "labelIds",
-                        []
-                    )
-                )
+        "spam": False,
+
+        "gmail_spam": (
+            "SPAM" in message.get(
+                "labelIds",
+                []
             )
+        )
 
     }
 
@@ -711,17 +702,17 @@ def get_gmail_emails(
         )
 
 
-    spam_count = sum(
+    gmail_spam_label_count = sum(
         1
         for email in emails
-        if email.get("spam") is True
+        if email.get("gmail_spam") is True
     )
 
 
     print(
         f"MailNova: Gmail page loaded: "
         f"{len(emails)} emails | "
-        f"Spam detected: {spam_count} | "
+        f"Gmail spam labels: {gmail_spam_label_count} | "
         f"Next page: "
         f"{bool(results.get('nextPageToken'))}"
     )
@@ -742,7 +733,7 @@ def get_gmail_emails(
 
 class MailReadStatusRequest(BaseModel):
 
-    message_id: str
+    message_id: str = Field(max_length=200)
 
 
 # =========================================
@@ -995,13 +986,13 @@ def mark_email_as_unread(
 
 class GmailReplyRequest(BaseModel):
 
-    thread_id: str
+    thread_id: str = Field(max_length=200)
 
-    to: str
+    to: str = Field(max_length=320)
 
-    subject: str
+    subject: str = Field(max_length=1000)
 
-    body: str
+    body: str = Field(max_length=50000)
 
 
 # =========================================

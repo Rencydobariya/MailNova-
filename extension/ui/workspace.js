@@ -25,6 +25,8 @@ async function loadMailnovaReadStateOverrides() {
 
     try {
 
+        await ensureMailnovaUserCache();
+
         const result =
             await chrome.storage.local.get(
                 MAILNOVA_READ_STATE_KEY
@@ -71,6 +73,8 @@ async function saveMailnovaReadStateOverride(
 ) {
 
     try {
+
+        await ensureMailnovaUserCache();
 
         const current =
             await chrome.storage.local.get(

@@ -572,122 +572,19 @@ function calculatePriority(email) {
         return 0;
     }
 
-
-    let score = 0;
-
-
-    /* =====================================
-       IMPORTANCE
-    ===================================== */
-
-    score +=
-        calculateImportanceScore(
-            email
-        );
-
-
-    /* =====================================
-       READ / UNREAD FOCUS BONUS
-    ===================================== */
-
-    score +=
-        calculateReadUnreadScore(
-            email
-        );
-
-
-    /* =====================================
-       CATEGORY
-    ===================================== */
-
-    score +=
-        calculateCategoryScore(
-            email
-        );
-
-
-    /* =====================================
-       TEXT INTELLIGENCE
-    ===================================== */
-
-    score +=
-        calculateTextPriorityScore(
-            email
-        );
-
-
-    /* =====================================
-       RECENCY
-    ===================================== */
-
-    score +=
-        calculateRecencyScore(
-            email
-        );
-
-
-    /* =====================================
-       OLD MAIL PENALTY
-    ===================================== */
-
-    const ageDays =
-        getEmailAgeDays(email);
-
-
-    if (ageDays > 60) {
-        score -= 8;
-    }
-
-
-    if (ageDays > 120) {
-        score -= 12;
-    }
-
-
-    if (ageDays > 180) {
-        score -= 15;
-    }
-
-
-    /* =====================================
-       LOW VALUE EXTRA PENALTY
-    ===================================== */
-
-    if (
-        isLowValueEmail(email)
-    ) {
-
-        score -= 8;
-
-    }
-
-
-    /* =====================================
-       AI PRIORITY BLEND
-
-       When AI has analyzed this email, its
-       contextual priority carries more weight
-       while the existing deterministic score
-       remains a safety/fallback signal.
-    ===================================== */
-
     const aiPriorityScore =
         Number(email?.aiPriorityScore);
 
-    if (Number.isFinite(aiPriorityScore)) {
-        return Math.max(
-            0,
-            Math.round(
-                (score * 0.35) +
-                (aiPriorityScore * 0.65)
-            )
-        );
+    if (!Number.isFinite(aiPriorityScore)) {
+        return 0;
     }
 
-
     return Math.max(
-        0,
-        Math.round(score)
+        20,
+        Math.min(
+            100,
+            Math.round(aiPriorityScore)
+        )
     );
 }
 
@@ -702,7 +599,7 @@ function getPriorityBadge(email) {
         calculatePriority(email);
 
 
-    if (score >= 105) {
+    if (score >= 95) {
 
         return {
             rating: "★ 5.0",
@@ -712,7 +609,7 @@ function getPriorityBadge(email) {
     }
 
 
-    if (score >= 85) {
+    if (score >= 75) {
 
         return {
             rating: "★ 4.5",
@@ -722,7 +619,7 @@ function getPriorityBadge(email) {
     }
 
 
-    if (score >= 65) {
+    if (score >= 55) {
 
         return {
             rating: "★ 4.0",
@@ -732,7 +629,7 @@ function getPriorityBadge(email) {
     }
 
 
-    if (score >= 45) {
+    if (score >= 35) {
 
         return {
             rating: "★ 3.5",

@@ -3849,6 +3849,7 @@ body:has(#mailnova-workspace.mailnova-theme-dark)
 #mailnova-settings-overlay .mn-priority-focus-option:focus-visible,
 #mailnova-settings-overlay .mn-loading-option:focus-visible,
 #mailnova-settings-overlay .mn-settings-nav-item:focus-visible,
+#mailnova-settings-overlay .mn-account-button:focus-visible,
 #mailnova-settings-overlay .mn-settings-modal-close:focus-visible {
     outline: 3px solid rgba(37, 99, 235, 0.45) !important;
     outline-offset: 2px !important;
@@ -3880,4 +3881,56 @@ body:has(#mailnova-workspace.mailnova-theme-dark)
 .mn-loading-option[data-loading="balanced"]
 .mn-loading-icon svg {
     stroke-width: 2.55 !important;
+}
+
+.mn-account-disclosure,
+.mn-account-revoke-note {
+    max-width: 720px;
+    color: var(--mn-text-secondary, #64748b);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.mn-account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.mn-account-button {
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: #fff;
+    color: #1e293b;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 14px;
+}
+
+.mn-account-button.primary {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+}
+
+.mn-account-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.mn-account-status {
+    min-height: 22px;
+    margin-top: 14px;
+    color: var(--mn-text-primary, #1e293b);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#mailnova-workspace.mailnova-theme-dark #mailnova-settings-overlay .mn-account-button:not(.primary) {
+    border-color: #475569;
+    background: #1e293b;
+    color: #e2e8f0;
 }
