@@ -678,9 +678,14 @@ if (refreshButton) {
             "MailNova: Gmail emails could not be loaded."
         );
 
+        const authRequired = /connect your google account|sign-in|required/i.test(
+            String(result?.error || "")
+        );
         setMailnovaEmailListStatus(
-            "Could not load Gmail. Check your connection and Google account in Settings, then try again.",
-            { retry: true }
+            authRequired
+                ? "Connect your Google account to let MailNova load your inbox."
+                : "Could not load Gmail. Check your connection, then try again.",
+            { retry: true, connect: authRequired }
         );
 
         return;
