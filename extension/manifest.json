@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MailNova",
   "description": "AI email assistant for Gmail: summarize and prioritize messages, flag spam, and send replies only when you choose.",
-  "version": "1.0",
+  "version": "1.0.1",
 
   "icons": {
     "16": "assets/icons/mailnova-mascot-16.png",
