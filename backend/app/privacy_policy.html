@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MailNova privacy policy describing Gmail data access, AI processing, storage, sharing, and user controls.">
+  <title>MailNova Privacy Policy</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; color: #20283a; background: #f5f7fb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 40px 18px; }
+    main { max-width: 850px; margin: 0 auto; padding: 42px clamp(22px, 6vw, 64px); background: #fff; border: 1px solid #e1e7f0; border-radius: 18px; box-shadow: 0 12px 38px rgba(30, 48, 80, .08); }
+    h1 { margin: 0 0 8px; font-size: clamp(30px, 5vw, 42px); letter-spacing: -.03em; }
+    .updated { margin: 0 0 30px; color: #65718a; }
+    h2 { margin: 32px 0 10px; font-size: 21px; }
+    p, li { color: #46536b; font-size: 16px; line-height: 1.7; }
+    ul { padding-left: 24px; }
+    a { color: #175ed8; overflow-wrap: anywhere; }
+    .notice { padding: 16px 18px; background: #f1f6ff; border-left: 4px solid #397cf6; border-radius: 8px; }
+    footer { margin-top: 36px; padding-top: 20px; border-top: 1px solid #e5eaf2; color: #65718a; font-size: 14px; }
+    @media (max-width: 560px) { body { padding: 14px 10px; } main { padding: 28px 20px; border-radius: 12px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>MailNova Privacy Policy</h1>
+  <p class="updated">Effective date: October 17, 2026</p>
+
+  <p>MailNova is a Chrome extension that helps people organize Gmail with email summaries, categories, priority and spam indicators, search assistance, and user-controlled email actions. This policy explains what information MailNova handles, why it is handled, and the choices available to you.</p>
+
+  <h2>Information MailNova handles</h2>
+  <ul>
+    <li><strong>Google account information:</strong> your verified Google email address and an account identifier used to associate a MailNova session and its local cache with the correct account.</li>
+    <li><strong>Gmail information:</strong> message sender, subject, date, snippet and message body, Gmail message/thread identifiers, and relevant Gmail labels such as unread, starred, important, or spam. MailNova retrieves messages from the Gmail account you connect.</li>
+    <li><strong>AI feature inputs and results:</strong> when an AI feature runs, MailNova may send the relevant sender, subject, message text or snippet, your natural-language search query, or reply-generation context for processing. Generated summaries, categories, priority/spam assessments, and other results may be cached in Chrome.</li>
+    <li><strong>Preferences and technical usage data:</strong> MailNova saves settings and email/AI caches in Chrome local extension storage. Its backend also keeps limited AI request counters associated with a hashed account identifier to enforce usage limits; these counters do not contain email message text.</li>
+  </ul>
+
+  <h2>How information is used and shared</h2>
+  <p>MailNova uses Gmail information only to provide its email-assistant features. The extension sends authenticated requests to the MailNova backend, hosted by Render, to retrieve or update Gmail data and to run requested email features. For summaries, email analysis, reply suggestions, and natural-language search, the backend may send the relevant prompt or message context to the Google Gemini API and return its response to the extension.</p>
+  <p>Google processes Gmail API, authentication, and Gemini API data under the Google policies and service terms that apply to those services. Gemini API data handling can depend on the billing and service tier configured for MailNova's API project. Google's published terms state that unpaid Gemini services may use submitted content to improve Google products and may involve human review; paid services have different terms and may retain prompts/responses for limited safety and abuse monitoring. MailNova does not control Google's provider-side handling or retention. Review the <a href="https://ai.google.dev/gemini-api/terms" rel="noopener noreferrer">Gemini API terms</a> before sending email content to AI features.
+  </p>
+  <p>MailNova does not sell Gmail data or use it for advertising. It does not send a reply unless you choose to send it. Marking a message read or unread updates that message in Gmail when you choose that action. MailNova does not use Google user data for purposes unrelated to the extension's disclosed email features.</p>
+
+  <h2>Storage and retention</h2>
+  <p>Email messages and AI results are cached in Chrome local extension storage to restore the workspace and avoid repeating work. This local cache remains until it is replaced, you clear Chrome's extension data, or you use <strong>Disconnect and clear local email data</strong> in MailNova settings. Disconnecting also clears Chrome's cached MailNova Google authentication tokens. Gmail remains in your Google account unless you change or delete it in Gmail.</p>
+  <p>MailNova's backend processes Gmail and AI request content to complete the current request and does not intentionally save full email message contents in its usage database. That database stores hashed account identifiers and AI request counts for rate limiting and removes older counter records as they age. The backend host may process limited operational information under its own policies.</p>
+
+  <h2>Security</h2>
+  <p>MailNova transmits requests to its backend over HTTPS. Google access tokens are verified and used for the current authenticated request; MailNova does not intentionally persist those tokens in its backend database. No method of transmission or storage is completely risk-free.</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li>You can disconnect Google and clear MailNova's local email/AI cache in the extension's Google Account settings.</li>
+    <li>You can revoke MailNova's Google access from your <a href="https://myaccount.google.com/permissions" rel="noopener noreferrer">Google Account security settings</a>.</li>
+    <li>You can choose whether to use AI features. Their inputs are sent to Google Gemini as described above.</li>
+    <li>For privacy questions or requests, contact <a href="mailto:rencydobariya76@gmail.com">rencydobariya76@gmail.com</a>.</li>
+  </ul>
+
+  <h2>Google API Limited Use</h2>
+  <p class="notice">MailNova's use and transfer of information received from Google APIs adheres to the <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use/" rel="noopener noreferrer">Chrome Web Store User Data Policy, including the Limited Use requirements</a>.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>This policy may be updated when MailNova's features or data practices change. The current version will be available at this page with its effective date.</p>
+
+  <footer>MailNova · Privacy questions: <a href="mailto:rencydobariya76@gmail.com">rencydobariya76@gmail.com</a></footer>
+</main>
+</body>
+</html>

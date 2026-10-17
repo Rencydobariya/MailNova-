@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from google import genai
 import os
+from pathlib import Path
 
 from backend.app.api.summary import router as summary_router
 from backend.app.api.gmail_routes import router as gmail_router
@@ -49,7 +50,7 @@ AI_ENDPOINTS = {
 @app.middleware("http")
 async def authenticate_and_limit_api(request: Request, call_next):
     """Authenticate every API call and enforce server-side AI usage limits."""
-    if request.url.path == "/" or request.method == "OPTIONS":
+    if request.url.path in {"/", "/privacy-policy"} or request.method == "OPTIONS":
         return await call_next(request)
 
     content_length = request.headers.get("content-length")
@@ -149,6 +150,15 @@ def root():
         "status": "success",
         "message": "MailNova AI Backend is running 🚀"
     }
+
+
+@app.get("/privacy-policy", include_in_schema=False)
+def privacy_policy():
+    """Serve the public privacy policy without requiring Google sign-in."""
+    return FileResponse(
+        Path(__file__).with_name("privacy_policy.html"),
+        media_type="text/html",
+    )
 
 
 @app.get("/auth/me")
