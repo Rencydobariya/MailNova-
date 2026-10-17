@@ -26,3 +26,6 @@ Thumbs.db
 
 # Node.js dependencies (if used)
 node_modules/
+
+# Generated Chrome Web Store upload packages
+MailNova-*.zip
