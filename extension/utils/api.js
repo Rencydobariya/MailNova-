@@ -6,6 +6,7 @@ const MAILNOVA_USER_DATA_KEYS = [
     "mailnova_email_cache",
     "mailnova_email_cache_time",
     "mailnova_email_cache_version",
+    "mailnova_email_cache_complete",
     "mailnova_summaries",
     "mailnova_ai_intelligence_cache_v2",
     "mailnova_read_state_overrides",
@@ -64,6 +65,9 @@ async function ensureMailnovaUserCache() {
         await chrome.storage.local.set({
             [MAILNOVA_CACHE_ACCOUNT_KEY]: user.subject
         });
+        if (typeof mailnovaCacheComplete !== "undefined") {
+            mailnovaCacheComplete = false;
+        }
         if (typeof mailnovaEmails !== "undefined" && Array.isArray(mailnovaEmails)) {
             mailnovaEmails.length = 0;
         }
@@ -103,29 +107,27 @@ function disconnectMailnovaGoogleAccount() {
 ========================================= */
 
 const MAILNOVA_PAGE_SIZE =
-    25;
+    50;
 
 
 /*
    Gmail quota protection.
 
-   25 full Gmail messages can consume a
-   significant amount of Gmail API quota.
-
-   We therefore wait between pages instead
-   of hammering Gmail continuously.
+   Gmail metadata is fetched in batches of up
+   to 50. A short pause between pages helps
+   avoid hitting per-user Gmail rate limits.
 */
 const MAILNOVA_PAGE_DELAY_MS =
-    6000;
+    1500;
 
 
 /*
-   Retry delays for Gmail 403 / 429 errors.
+   Retry delays for Gmail quota and temporary server errors.
 */
 const MAILNOVA_RETRY_DELAYS = [
-    10000,
-    20000,
-    40000
+    3000,
+    8000,
+    15000
 ];
 
 
@@ -146,6 +148,9 @@ const MAILNOVA_CACHE_KEY =
 
 const MAILNOVA_CACHE_TIME_KEY =
     "mailnova_email_cache_time";
+
+const MAILNOVA_CACHE_COMPLETE_KEY =
+    "mailnova_email_cache_complete";
 
 
 const MAILNOVA_CACHE_VERSION =
@@ -640,6 +645,7 @@ async function loadMailnovaEmailCache() {
                 [
                     MAILNOVA_CACHE_KEY,
                     MAILNOVA_CACHE_TIME_KEY,
+                    MAILNOVA_CACHE_COMPLETE_KEY,
                     "mailnova_email_cache_version"
                 ]
             );
@@ -673,7 +679,10 @@ async function loadMailnovaEmailCache() {
             timestamp:
                 Number(
                     data[MAILNOVA_CACHE_TIME_KEY]
-                ) || 0
+                ) || 0,
+
+            complete:
+                data[MAILNOVA_CACHE_COMPLETE_KEY] === true
 
         };
 
@@ -705,14 +714,15 @@ async function loadMailnovaEmailCache() {
 ========================================= */
 
 async function saveMailnovaEmailCache(
-    emails
+    emails,
+    complete = null
 ) {
 
     try {
 
         await ensureMailnovaUserCache();
 
-        await chrome.storage.local.set({
+        const cacheData = {
 
             [MAILNOVA_CACHE_KEY]:
                 emails,
@@ -723,7 +733,13 @@ async function saveMailnovaEmailCache(
             mailnova_email_cache_version:
                 MAILNOVA_CACHE_VERSION
 
-        });
+        };
+
+        if (typeof complete === "boolean") {
+            cacheData[MAILNOVA_CACHE_COMPLETE_KEY] = complete;
+        }
+
+        await chrome.storage.local.set(cacheData);
 
 
         console.log(

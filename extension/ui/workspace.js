@@ -5,6 +5,7 @@
 let workspace = null;
 
 let mailnovaEmails = [];
+let mailnovaCacheComplete = false;
 
 
 /* =========================================
@@ -123,7 +124,7 @@ let mailnovaIsRefreshing = false;
 
 let mailnovaCategoryRefreshTimer = null;
 
-const MAILNOVA_SYNC_INTERVAL = 30000;
+const MAILNOVA_SYNC_INTERVAL = 5 * 60 * 1000;
 
 
 /* =========================================
@@ -558,6 +559,7 @@ if (refreshButton) {
             buildMailnovaEmailData(
                 cache.emails
             );
+        mailnovaCacheComplete = cache.complete === true;
 
         await restoreMailnovaSummaryCache(
             mailnovaEmails
@@ -626,10 +628,13 @@ if (refreshButton) {
             );
 
 
+        const needsMailboxContinuation =
+            getMailnovaLoadingMode() === "complete" &&
+            !mailnovaCacheComplete;
+
         if (
             backgroundSyncEnabled &&
-            cacheAge >
-            MAILNOVA_SYNC_INTERVAL
+            (needsMailboxContinuation || cacheAge > MAILNOVA_SYNC_INTERVAL)
         ) {
 
             /*
@@ -663,9 +668,9 @@ if (refreshButton) {
 
 
     const result =
-        await fetchGmailEmails(
+        await fetchGmailPageWithRetry(
             null,
-            25
+            MAILNOVA_PAGE_SIZE
         );
 
 
@@ -703,6 +708,7 @@ if (refreshButton) {
         buildMailnovaEmailData(
             result.emails || []
         );
+    mailnovaCacheComplete = !result.next_page_token;
 
     await restoreMailnovaSummaryCache(
         mailnovaEmails
@@ -710,7 +716,7 @@ if (refreshButton) {
 
 
     /* =====================================
-       RENDER FIRST 25 IMMEDIATELY
+       RENDER THE FIRST PAGE IMMEDIATELY
     ===================================== */
 
     applyAllMailnovaFilters();
@@ -728,7 +734,8 @@ if (refreshButton) {
     ===================================== */
 
     await saveMailnovaEmailCache(
-        mailnovaEmails
+        mailnovaEmails,
+        mailnovaCacheComplete
     );
 
 
@@ -761,7 +768,7 @@ if (refreshButton) {
 
     /* =====================================
        FAST
-       Keep first load to the newest 25 emails.
+       Keep first load to the newest page.
        This avoids silently walking the whole inbox.
     ===================================== */
 
@@ -815,7 +822,7 @@ if (refreshButton) {
    GET LOADING MODE
 ========================================= */
 
-const MAILNOVA_BALANCED_EXTRA_PAGES = 3;
+const MAILNOVA_BALANCED_EXTRA_PAGES = 1;
 
 
 function getMailnovaLoadingMode() {
@@ -825,7 +832,7 @@ function getMailnovaLoadingMode() {
         "undefined"
     ) {
 
-        return "fast";
+        return "complete";
 
     }
 
@@ -852,7 +859,7 @@ function getMailnovaLoadingMode() {
     }
 
 
-    return "fast";
+    return "complete";
 
 }
 
@@ -1120,9 +1127,9 @@ async function syncMailnovaInBackground() {
 
 
                 const firstPage =
-                    await fetchGmailEmails(
+                    await fetchGmailPageWithRetry(
                         null,
-                        25
+                        MAILNOVA_PAGE_SIZE
                     );
 
 
@@ -1165,6 +1172,17 @@ mailnovaEmails =
             latestEmails
         )
     ]);
+
+                const loadingMode =
+                    getMailnovaLoadingMode();
+
+                const shouldLoadOlderPages =
+                    loadingMode === "complete" &&
+                    !mailnovaCacheComplete;
+
+                if (!firstPage.next_page_token) {
+                    mailnovaCacheComplete = true;
+                }
 
 /*
  * Final safety pass:
@@ -1227,7 +1245,8 @@ mailnovaEmails =
 
 
                 await saveMailnovaEmailCache(
-                    mailnovaEmails
+                    mailnovaEmails,
+                    mailnovaCacheComplete
                 );
 
                 scheduleMailnovaAutoSummaries(2500);
@@ -1239,12 +1258,8 @@ mailnovaEmails =
                    pages; Complete intentionally walks the whole mailbox.
                 */
 
-                const loadingMode =
-                    getMailnovaLoadingMode();
-
-
                 if (
-                    loadingMode === "complete"
+                    shouldLoadOlderPages
                 ) {
 
                     /*
@@ -1269,6 +1284,14 @@ mailnovaEmails =
                         window.__mailnovaManualRefresh ? 0 : 500,
                         false,
                         MAILNOVA_BALANCED_EXTRA_PAGES
+                    );
+
+                }
+
+                else if (loadingMode === "complete") {
+
+                    console.log(
+                        "MailNova: Mailbox cache is complete; refreshed the latest Gmail page only."
                     );
 
                 }
@@ -1428,10 +1451,14 @@ async function syncRemainingMailPages(
             );
 
 
+            if (typeof mailnovaDelay === "function") {
+                await mailnovaDelay(MAILNOVA_PAGE_DELAY_MS);
+            }
+
             const page =
-                await fetchGmailEmails(
+                await fetchGmailPageWithRetry(
                     nextPageToken,
-                    25
+                    MAILNOVA_PAGE_SIZE
                 );
 
 
@@ -1459,7 +1486,6 @@ async function syncRemainingMailPages(
 
             }
 
-
             mailnovaEmails =
                 deduplicateMailnovaEmails([
                     ...mailnovaEmails,
@@ -1476,7 +1502,6 @@ async function syncRemainingMailPages(
 
             pagesSinceRender++;
 
-
             /*
                Render only every 3 pages.
 
@@ -1490,8 +1515,26 @@ async function syncRemainingMailPages(
 
                 applyAllMailnovaFilters();
 
+                // Save in small chunks to retain progress without making
+                // an extra account-verification request for every page.
                 pagesSinceRender =
                     0;
+
+                const pageCursor =
+                    page.next_page_token;
+
+                const cacheSaved =
+                    await saveMailnovaEmailCache(
+                        mailnovaEmails,
+                        !pageCursor
+                    );
+
+                if (cacheSaved) {
+                    changedSinceSave = false;
+                }
+
+                mailnovaCacheComplete =
+                    !pageCursor;
 
             }
 
@@ -1533,8 +1576,12 @@ async function syncRemainingMailPages(
         ) {
 
             await saveMailnovaEmailCache(
-                mailnovaEmails
+                mailnovaEmails,
+                !nextPageToken
             );
+
+            mailnovaCacheComplete =
+                !nextPageToken;
 
         }
 

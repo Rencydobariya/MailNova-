@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from googleapiclient.discovery import build
 from pydantic import BaseModel, Field
 from email.mime.text import MIMEText
@@ -505,8 +505,8 @@ def get_gmail_emails(
     message_data = {}
 
 
-    def is_rate_limit_error(exception):
-        """Return True when Gmail reports a temporary quota/rate limit error."""
+    def is_retryable_gmail_error(exception):
+        """Return True for Gmail quota and temporary server errors."""
 
         error_text = str(exception).lower()
 
@@ -518,17 +518,25 @@ def get_gmail_emails(
                 "quota exceeded",
                 "too many requests",
                 "http error 429",
-                "status code: 429"
+                "status code: 429",
+                "http error 500",
+                "http error 502",
+                "http error 503",
+                "http error 504",
+                "status code: 500",
+                "status code: 502",
+                "status code: 503",
+                "status code: 504"
             )
         )
 
 
-    def fetch_message_batch(message_ids, max_retries=1):
+    def fetch_message_batch(message_ids, max_retries=2):
         """Fetch lightweight headers/snippets in Gmail batches of <= 50."""
 
         pending_ids = list(message_ids)
 
-        retry_delays = (1,)
+        retry_delays = (1, 2)
 
 
         for attempt in range(max_retries + 1):
@@ -538,6 +546,7 @@ def get_gmail_emails(
 
 
             failed_retryable = []
+            failed_permanent = []
 
 
             def batch_callback(
@@ -554,8 +563,18 @@ def get_gmail_emails(
                         exception
                     )
 
-                    if is_rate_limit_error(exception):
+                    status = getattr(
+                        getattr(exception, "resp", None),
+                        "status",
+                        None
+                    )
+                    if status == 404:
+                        # The message may have been deleted after Gmail listed it.
+                        return
+                    if is_retryable_gmail_error(exception):
                         failed_retryable.append(request_id)
+                    else:
+                        failed_permanent.append(request_id)
 
                     return
 
@@ -605,7 +624,7 @@ def get_gmail_emails(
                         error
                     )
 
-                    if is_rate_limit_error(error):
+                    if is_retryable_gmail_error(error):
 
                         for message_id in batch_ids:
 
@@ -613,10 +632,10 @@ def get_gmail_emails(
                                 failed_retryable.append(message_id)
 
                     else:
-
-                        # A non-rate-limit batch failure should not cause
-                        # the whole Gmail endpoint to crash.
-                        continue
+                        raise HTTPException(
+                            status_code=502,
+                            detail="Gmail could not load this page. Please retry."
+                        ) from error
 
 
             pending_ids = [
@@ -624,6 +643,13 @@ def get_gmail_emails(
                 for message_id in failed_retryable
                 if message_id not in message_data
             ]
+            pending_ids = list(dict.fromkeys(pending_ids))
+
+            if failed_permanent:
+                raise HTTPException(
+                    status_code=502,
+                    detail="Gmail could not load all messages on this page. Please retry."
+                )
 
 
             if pending_ids and attempt < max_retries:
@@ -639,6 +665,12 @@ def get_gmail_emails(
                 )
 
                 time.sleep(delay)
+
+        if pending_ids:
+            raise HTTPException(
+                status_code=503,
+                detail="Gmail is temporarily limiting requests. Please retry this page."
+            )
 
 
         return len(message_data)

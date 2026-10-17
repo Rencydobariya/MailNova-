@@ -30,7 +30,7 @@ const MAILNOVA_DEFAULT_SETTINGS = {
     smartReply: true,
 
     /* Loading */
-    emailLoading: "fast",
+    emailLoading: "complete",
 
     /* Notifications */
     importantNotifications: true,
@@ -244,7 +244,10 @@ async function loadMailnovaSettings() {
 
         const result =
             await chrome.storage.local.get(
-                MAILNOVA_SETTINGS_KEY
+                [
+                    MAILNOVA_SETTINGS_KEY,
+                    "mailnova_complete_loading_migration_v1"
+                ]
             );
 
 
@@ -257,6 +260,22 @@ async function loadMailnovaSettings() {
             ] || {})
 
         };
+
+        // Older MailNova versions defaulted to Fast (25 emails). Upgrade
+        // that one-time default so this release completes the mailbox sync.
+        if (!result.mailnova_complete_loading_migration_v1) {
+            if (mailnovaSettings.emailLoading !== "complete") {
+                mailnovaSettings.emailLoading = "complete";
+                await chrome.storage.local.set({
+                    [MAILNOVA_SETTINGS_KEY]: mailnovaSettings,
+                    mailnova_complete_loading_migration_v1: true
+                });
+            } else {
+                await chrome.storage.local.set({
+                    mailnova_complete_loading_migration_v1: true
+                });
+            }
+        }
 
     }
 
@@ -1669,7 +1688,7 @@ function createMailnovaSettingsModal() {
                             "fast",
                             MN_SETTINGS_ICONS.fast,
                             "Fast",
-                            "Newest 25 emails first."
+                            "Newest 50 emails first."
                         )}
 
                         ${createLoadingOption(
@@ -1683,7 +1702,7 @@ function createMailnovaSettingsModal() {
                             "complete",
                             MN_SETTINGS_ICONS.complete,
                             "Complete",
-                            "All available Gmail pages."
+                            "All available Gmail pages, loaded gradually."
                         )}
 
                     </div>
@@ -2502,7 +2521,7 @@ function updateSettingsUI() {
                     button.dataset.loading ===
                     (
                         mailnovaSettings.emailLoading ||
-                        "fast"
+                        "complete"
                     )
 
                 );
@@ -2542,20 +2561,20 @@ function updateLoadingHint(
     const messages = {
 
         fast:
-            "Shows the newest 25 emails first. Choose Balanced or Complete to load older messages.",
+            "Shows the newest 50 emails first. Choose Balanced or Complete to load older messages.",
 
         balanced:
             "Loads up to 100 recent emails.",
 
         complete:
-            "Loads all available Gmail pages; this may take longer."
+            "Loads all available Gmail pages in batches and keeps them cached; a large mailbox may take several minutes."
 
     };
 
 
     hint.textContent =
         messages[value] ||
-        messages.fast;
+        messages.complete;
 
 }
 
