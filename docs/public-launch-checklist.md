@@ -1,9 +1,55 @@
 # MailNova public launch checklist
 
+## Current release state — 2 November 2026
+
+- A public product homepage is now served at `/`; the privacy policy is served
+  at `/privacy-policy`, and `/healthz` is available for the hosting health
+  check. These changes are local and still need to be deployed.
+- `MailNova-1.0.4.zip` matches the current distributable files in `extension/`;
+  it requests only the scopes used by the public feature set and contains no
+  local environment or token files.
+  The Chrome Web Store dashboard item, package ID, and listing state still need
+  to be confirmed in the publisher account.
+- The connected Google Cloud project currently lists only the restricted
+  `gmail.readonly` scope. Release source now requests `gmail.modify`, which
+  covers the implemented read, update, compose, and send operations without
+  separately requesting the redundant `gmail.send` scope. Add `gmail.modify`
+  to the consent configuration before requesting verification.
+- A registered domain whose DNS the owner controls is required for the OAuth
+  homepage, privacy policy, and Google domain ownership verification. Google
+  requires a verified domain property; the shared Render subdomain alone does
+  not provide control of its DNS.
+- The Google Cloud project and Chrome Web Store account were accessible in the
+  user's Chrome profile, but no account settings or submissions have been
+  changed in this workspace session.
+
+## Go-live gates
+
+1. Connect a user-owned domain to the Render service. Put the homepage and
+   privacy policy on that same verified domain, then complete Google's
+   Search Console DNS ownership check with the Google Cloud project owner.
+2. Confirm the actual Chrome Web Store item ID and OAuth client ID. If the
+   store item ID differs from the development extension ID, update the OAuth
+   client registration and the backend's `MAILNOVA_EXTENSION_ID` together.
+3. Declare every scope the public extension actually requests. Current source
+   uses `gmail.modify` for Gmail operations. Keep the policy and in-product
+   disclosure consistent with backend and Gemini data processing.
+4. Complete OAuth branding and verification. Since Gmail data is handled by
+   the backend, prepare for Google's restricted-scope security assessment and
+   its annual re-assessment requirement.
+5. Configure Render production secrets and a persistent disk for the SQLite
+   quota database. Set `MAILNOVA_ENV=production`, `GOOGLE_OAUTH_CLIENT_ID`,
+   `MAILNOVA_EXTENSION_ID`, `GEMINI_API_KEY`, and
+   `MAILNOVA_USAGE_DB_PATH`; keep a single backend instance while SQLite is
+   used.
+6. Finish the Chrome Web Store listing and privacy declarations, confirm the
+   desired public regions, then submit the package for review. Chrome Web Store
+   review must complete before users can install it from a public listing.
+
 ## Implemented in this repository
 
 - Chrome extension OAuth uses the supplied extension client ID and requests
-  `openid`, `email`, `gmail.modify`, and `gmail.send` through `chrome.identity`.
+  `openid`, `email`, and `gmail.modify` through `chrome.identity`.
 - Every non-health API route requires a Google access token whose audience,
   scopes, and verified user profile are checked by the backend.
 - Gmail reads, read/unread changes, and replies use only the verified
@@ -27,8 +73,7 @@ owner and set the following values in Google Auth Platform:
 - **Developer contact email:** a monitored MailNova operator address
 - **Application homepage and privacy policy:** published MailNova HTTPS pages
 - **Authorized domain:** the verified domain hosting those pages and the API
-- **Scopes:** `openid`, `email`, `https://www.googleapis.com/auth/gmail.modify`,
-  and `https://www.googleapis.com/auth/gmail.send`
+- **Scopes:** `openid`, `email`, and `https://www.googleapis.com/auth/gmail.modify`
 
 Suggested plain-language purpose for the Google verification form and product
 disclosure:

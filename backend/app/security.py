@@ -111,7 +111,6 @@ def verify_google_access_token(access_token: str) -> GoogleUser:
             "openid",
             "email",
             "https://www.googleapis.com/auth/gmail.modify",
-            "https://www.googleapis.com/auth/gmail.send",
         }
         if not required_scopes.issubset(scopes):
             raise GoogleAuthenticationError(

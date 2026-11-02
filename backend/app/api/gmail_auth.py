@@ -8,7 +8,6 @@ from backend.app.security import get_request_access_token
 
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.modify",
-    "https://www.googleapis.com/auth/gmail.send"
 ]
 
 

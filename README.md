@@ -23,12 +23,15 @@ uses a Python/FastAPI backend for Gmail and Gemini API operations.
 
 ## Public launch status
 
-The extension now requests per-user Google OAuth, and all non-health backend
+The extension requests per-user Google OAuth, and all non-health backend
 routes require a verified user token. Gmail actions use that user's token, and
-AI routes enforce server-side quotas. Public release still depends on setting
-the registered extension ID and persistent quota database in production,
-configuring Google Auth Platform branding and verification, and publishing the
-privacy/store disclosures. See
+AI routes enforce server-side quotas. The backend serves a public product
+homepage at `/`, the privacy policy at `/privacy-policy`, and a health check at
+`/healthz`. Public release still depends on a user-owned verified domain,
+matching the production OAuth client and extension ID, Google OAuth scope
+verification (including any required restricted-scope assessment), production
+Render settings with persistent quota storage, and Chrome Web Store review.
+See
 [`docs/public-launch-checklist.md`](docs/public-launch-checklist.md).
 
 Do not upload the repository root or commit `.env`, `credentials.json`, or

@@ -50,7 +50,7 @@ AI_ENDPOINTS = {
 @app.middleware("http")
 async def authenticate_and_limit_api(request: Request, call_next):
     """Authenticate every API call and enforce server-side AI usage limits."""
-    if request.url.path in {"/", "/privacy-policy"} or request.method == "OPTIONS":
+    if request.url.path in {"/", "/healthz", "/privacy-policy"} or request.method == "OPTIONS":
         return await call_next(request)
 
     content_length = request.headers.get("content-length")
@@ -146,10 +146,17 @@ class EmailRequest(BaseModel):
 
 @app.get("/")
 def root():
-    return {
-        "status": "success",
-        "message": "MailNova AI Backend is running 🚀"
-    }
+    """Serve MailNova's public product homepage."""
+    return FileResponse(
+        Path(__file__).with_name("homepage.html"),
+        media_type="text/html",
+    )
+
+
+@app.get("/healthz", include_in_schema=False)
+def health_check():
+    """Expose a lightweight health check for the hosting platform."""
+    return {"status": "success", "message": "MailNova API is running."}
 
 
 @app.get("/privacy-policy", include_in_schema=False)

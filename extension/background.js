@@ -65,6 +65,7 @@ async function fetchMailnovaApi(message) {
     const options = message.options || {};
     const headers = new Headers(options.headers || {});
     const interactive = options.interactive === true;
+    const isPublicHealthCheck = method === "GET" && url.pathname === "/";
     const send = async token => {
         headers.set("Authorization", `Bearer ${token}`);
         return fetch(url.href, {
@@ -75,12 +76,30 @@ async function fetchMailnovaApi(message) {
         });
     };
 
-    let accessToken = await requestMailnovaAccessToken(interactive);
-    let response = await send(accessToken);
-    if (response.status === 401) {
-        await removeMailnovaCachedToken(accessToken);
-        accessToken = await requestMailnovaAccessToken(interactive);
+    let response;
+    if (isPublicHealthCheck) {
+        // The backend deliberately leaves its root health endpoint public. Use
+        // it to wake hosted instances without requiring a Google token first.
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        try {
+            response = await fetch(url.href, {
+                method,
+                headers,
+                cache: "no-store",
+                signal: controller.signal
+            });
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    } else {
+        let accessToken = await requestMailnovaAccessToken(interactive);
         response = await send(accessToken);
+        if (response.status === 401) {
+            await removeMailnovaCachedToken(accessToken);
+            accessToken = await requestMailnovaAccessToken(interactive);
+            response = await send(accessToken);
+        }
     }
 
     return {

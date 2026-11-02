@@ -357,6 +357,44 @@ function openAskAI(email) {
 
 
 /* =========================================================
+   WAIT FOR THE HOSTED BACKEND
+========================================================= */
+
+async function waitForMailnovaBackend() {
+    const retryDelays = [0, 2000, 4000, 7000, 9000, 10000, 10000, 10000];
+    let lastError = null;
+
+    for (const delay of retryDelays) {
+        if (delay) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        try {
+            const response = await mailnovaApiFetch(`${MAILNOVA_API}/`, {
+                method: "GET"
+            });
+            if (response.ok) {
+                return;
+            }
+            lastError = new Error(`The hosted API returned HTTP ${response.status}.`);
+            if (response.status < 500) {
+                break;
+            }
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    const detail = lastError?.message ? ` (${lastError.message})` : "";
+    throw new Error(
+        `MailNova's hosted backend is not responding${detail}. ` +
+        "You do not need to keep VS Code open. Please retry in a minute; " +
+        "if this continues, the deployed Render service or its URL needs attention."
+    );
+}
+
+
+/* =========================================================
    SEND AI MESSAGE
 ========================================================= */
 
@@ -407,16 +445,18 @@ async function sendAIMessage(
     ===================================== */
 
     addAIMessage(
-        "Thinking... 🤔",
+        "Connecting to MailNova AI...",
         "ai"
     );
 
 
     try {
 
+        await waitForMailnovaBackend();
+
         const response =
             await mailnovaApiFetch(
-                "https://mailnova-9tzz.onrender.com/ask-ai",
+                `${MAILNOVA_API}/ask-ai`,
                 {
 
                     method: "POST",
@@ -450,8 +490,20 @@ async function sendAIMessage(
             );
 
 
-        const data =
-            await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (_parseError) {
+            throw new Error(
+                `The MailNova backend returned an unreadable response (HTTP ${response.status}).`
+            );
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                data?.error || `The MailNova backend returned HTTP ${response.status}.`
+            );
+        }
 
 
         /* =====================================
@@ -480,7 +532,7 @@ async function sendAIMessage(
         else {
 
             addAIMessage(
-                "Sorry, I couldn't analyze this email.",
+                data?.error || "Sorry, I couldn't analyze this email.",
                 "ai"
             );
 
@@ -500,7 +552,7 @@ async function sendAIMessage(
 
 
         addAIMessage(
-            "Unable to connect to MailNova AI backend. Please make sure the FastAPI server is running.",
+            error?.message || "MailNova AI could not complete this request. Please try again.",
             "ai"
         );
 

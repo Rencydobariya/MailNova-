@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MailNova",
   "description": "AI email assistant for Gmail: summarize and prioritize messages, flag spam, and send replies only when you choose.",
-  "version": "1.0.2",
+  "version": "1.0.4",
 
   "icons": {
     "16": "assets/icons/mailnova-mascot-16.png",
@@ -20,16 +20,13 @@
     "scopes": [
       "openid",
       "email",
-      "https://www.googleapis.com/auth/gmail.modify",
-      "https://www.googleapis.com/auth/gmail.send"
+      "https://www.googleapis.com/auth/gmail.modify"
     ]
   },
 
   "host_permissions": [
     "https://mail.google.com/*",
-    "https://mailnova-9tzz.onrender.com/*",
-    "http://127.0.0.1:8000/*",
-    "http://localhost:8000/*"
+    "https://mailnova-9tzz.onrender.com/*"
   ],
 
   "background": {
